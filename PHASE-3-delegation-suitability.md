@@ -143,6 +143,62 @@ For each score, note:
 
 ---
 
+## Refinement Prompts: Commands Used to Improve This Deliverable
+
+The initial draft of DELIVERABLE-3 had a Full Scoring Summary table with 8 narrow columns using abbreviations (e.g., "Decision Determ.", "Risk/Reverse") that required the reader to cross-reference the scoring rubric to understand each score. The following prompt was used to make the table self-explanatory.
+
+---
+
+### Prompt 1: Make the scoring table readable without the rubric
+
+```
+Make sure all tables are formatted properly and are easy to read.
+Make sure any diagrams are easily understood.
+```
+
+**What this caught:** The 8-column summary table used abbreviations that only made sense if the reader had the scoring rubric open alongside it. Scores alone (e.g., "4 / 3 / 5 / 4 / 3") conveyed no meaning without context.
+
+---
+
+### Prompt 2: Restructure the summary table to carry its own meaning
+
+```
+Rewrite the Full Scoring Summary table so a reader can understand each row
+without looking at the scoring rubric. Replace the 8 score columns with 6 descriptive columns:
+
+1. Decision Rule? — Yes/No with one-line explanation
+2. Tools Available? — Yes/Partial/No with one-line explanation  
+3. Exception Rate — Low/Medium/High with one-line explanation
+4. Risk if Wrong — Low/Medium/High/Critical with one-line explanation
+5. Suitability Score — numeric with brief rationale in the cell
+6. Delegation Level — the archetype name
+
+Build the rationale into each cell rather than requiring the reader to decode numbers.
+Add a one-line explanatory note above the table explaining what it shows.
+```
+
+**What this fixed:** Replaced the abbreviation-heavy 8-column table with a 6-column table where each cell carries enough context to be understood standalone. The Delegation Level column is now the rightmost column so the eye naturally reads to the conclusion after scanning the evidence.
+
+---
+
+### Prompt 3: Anti-pattern check after restructure
+
+```
+Review the delegation archetypes assigned across all clusters.
+Are any clusters assigned "Fully Agentic" that should have lower autonomy?
+Specifically check:
+- Clusters where Risk if Wrong is High or Critical
+- Clusters where Exception Rate is Medium or High
+- Clusters that involve irreversible employment decisions
+
+If you find any over-automation, explain why the boundary should be lower
+and revise the archetype accordingly.
+```
+
+**What this reinforced:** Hold decisions (Cluster 8) and hire-type classification (Cluster 2) were confirmed as correctly scored low — not by accident but as deliberate design choices grounded in specific risk criteria.
+
+---
+
 ## Next Step
 
 Once delegation archetypes are assigned, move to **Phase 4: Volume × Value Analysis**.

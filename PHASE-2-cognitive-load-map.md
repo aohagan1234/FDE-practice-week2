@@ -161,6 +161,56 @@ Create a markdown table for each work stream:
 
 ---
 
+## Refinement Prompts: Commands Used to Improve This Deliverable
+
+The initial draft of DELIVERABLE-2 had tables that were technically complete but hard to scan — the "Decision or Execution?" column had verbose multi-line entries that broke table alignment. The following prompts were used to standardize and improve readability.
+
+---
+
+### Prompt 1: Fix table column width and verbosity
+
+```
+Make sure all tables are formatted properly and are easy to read.
+Make sure any diagrams are easily understood.
+```
+
+**What this caught:** Long values in the "Decision or Execution?" column (e.g., "Decision (Judgment on seniority norms + team dynamics)") were breaking table alignment across 11 micro-task tables. All values needed to be shortened to a consistent format.
+
+---
+
+### Prompt 2: Standardize the type column to short codes
+
+```
+The "Decision or Execution?" column header and values are too verbose for a table.
+
+Replace the column header with "Type" across all micro-task tables.
+
+Standardize all values to short codes:
+- D — [brief reason]  for any step requiring judgment or discretion
+- E — [brief reason]  for any step that is rule-based or agent-safe
+
+Add a key in the intro text: D = Decision/judgment required, E = Execution/agent-safe.
+
+Apply replace_all so the change is consistent across all tables.
+```
+
+**What this fixed:** Replaced approximately 23 verbose cell values with consistent short codes (e.g., "**D** — judgment (team dynamics)", "**E** — rule-based", "**E** — query"). The column is now scannable; the reader can visually separate agent-safe steps from judgment steps without reading each cell in full.
+
+---
+
+### Prompt 3: Check for inconsistent formatting after bulk replace
+
+```
+After applying the replace_all, check for any cells where:
+- The original wording had slight variations (e.g., "Execution (deterministic)" vs "Execution (query)")
+- The value was a standalone word ("Execution") with no qualifier
+- The format differs from the D/E shortcode pattern
+
+Fix each individually so the column is consistent across all 11 tables.
+```
+
+---
+
 ## Next Step
 
 Once mapped, move to **Phase 3: Delegation Suitability Matrix**.

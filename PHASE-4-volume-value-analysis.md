@@ -214,6 +214,66 @@ For each claim, cite discovery or evidence:
 
 ---
 
+## Refinement Prompts: Commands Used to Improve This Deliverable
+
+The initial draft of DELIVERABLE-4 had two issues: a duplicate section header (introduced during editing) and a terminology inconsistency where the column was labelled "Automation Gain" but the description said the opposite of what the formula actually does. The following prompts fixed both.
+
+---
+
+### Prompt 1: Fix duplicate section and terminology inconsistency
+
+```
+Make sure all tables are formatted properly and are easy to read.
+Make sure any diagrams are easily understood.
+```
+
+**What this caught:** Two problems appeared on review:
+1. The `## Volume Scoring (1–5 Scale)` header appeared twice with a `---` separator between them (introduced by a prior edit).
+2. The column renamed "Automation Gain" contradicted the rubric: the description said "fully mechanical tasks score HIGH" but the actual data shows ND=1 (no judgment) produces the LOWEST formula multiplier.
+
+---
+
+### Prompt 2: Fix the Non-Determinism Score explanation
+
+```
+The column explanation for Non-Determinism Score is contradicting the actual rubric data.
+The current explanation implies that fully mechanical tasks score HIGH, but in the formula,
+ND=1 (no judgment) produces the lowest Agentic Value score, not the highest.
+
+Rewrite the explanation to accurately describe what the formula rewards:
+- Tasks that are high-volume AND have some (but not complete) judgment load
+- Lower ND = more agent-safe, but also lower formula multiplier
+- The formula surfaces tasks where the agent saves cognitive work, not just clock time
+
+Then rename the column back to "Non-Determinism Score" and add a directional note
+so a reader knows which direction is "better" for automation.
+```
+
+**What this fixed:** The column was renamed from the confusing "Automation Gain" back to "Non-Determinism Score" with an explicit note: "Lower = more agent-safe; higher = more judgment-heavy. The formula rewards the middle ground." This matches what the data actually shows.
+
+---
+
+### Prompt 3: Improve the Agentic Value matrix notes column
+
+```
+Rewrite the Notes column in the Agentic Value matrix table so each cell explains
+what the score combination means in plain English — not just a label.
+For each cluster, the note should answer: "why does this score make it a good or poor
+automation target, given both its volume and its judgment level?"
+```
+
+**What this fixed:** Changed generic notes (e.g., "Medium — good candidate") to specific rationale (e.g., "Steady volume + codifiable rules make this the strongest automation candidate despite moderate ND score").
+
+---
+
+### Watch out for: Edit failing because string already changed
+
+If you make multiple edits to the same file in a session, a later edit may fail because
+an earlier edit already changed the string you are trying to match. Always re-read the
+file before attempting a second edit to the same section, to get the current exact string.
+
+---
+
 ## Next Step
 
 Once your primary target is selected and justified, move to **Phase 5: Agent Purpose Document**.

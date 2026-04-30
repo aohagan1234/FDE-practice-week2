@@ -92,6 +92,82 @@ Record at least **6 design-changing discovery questions** whose answers would ma
 
 ---
 
+## Refinement Prompts: Commands Used to Improve This Deliverable
+
+The initial draft of DELIVERABLE-1 produced six technically sound discovery questions that read like an audit checklist — they confirmed what was in the SOP rather than surfacing what the human actually does. The following prompts were used to rewrite it into a lived-work discovery document.
+
+---
+
+### Prompt 1: Rewrite for lived work, not SOP confirmation
+
+```
+Rewrite the discovery questions so they surface lived work, not documented processes.
+Each question must probe one of these categories:
+
+- What is actually on the human's screen (not what the system is supposed to show)
+- Workarounds and shadow systems they use instead of the official tool
+- Informal channels used when something is urgent (Teams, WhatsApp, phone)
+- Instinct decisions made before checking any system
+- What tribal knowledge would be lost if this person left
+
+Do not ask "how does the process work?" Ask questions that force the human to describe
+specific recent incidents, name actual tools they use, and reveal the gap between
+what the SOP says and what they do.
+```
+
+**What this fixed:** Moved from 6 confirmatory questions ("What systems do you use?") to 6 operational probes ("What's on your screen right now when you do this work?"), each targeting a distinct category of lived-work signal.
+
+---
+
+### Prompt 2: Simulate the stakeholder answering
+
+```
+Imagine you are [stakeholder name], the [role], answering these discovery questions.
+Answer each one as someone who:
+- Has been doing this work for [X] years
+- Has developed workarounds because the official system is unreliable
+- Uses informal channels the SOP doesn't mention
+- Has specific incidents in mind (name real artifacts, real people, real systems)
+- Would not volunteer these details unless asked directly
+
+Use the answers to identify what changed in the agent design — not what you already knew,
+but what the lived-work answers revealed that the SOP didn't show.
+```
+
+**What this fixed:** Produced a COO simulation with specific named artifacts (iPhone Notes app as real I-9 tracker, Priya's Excel tracker as operational source of truth, Legacy HR tab for pre-2019 contractor records). Each answer revealed a concrete design change.
+
+---
+
+### Prompt 3: Generate refined follow-up questions from the answers
+
+```
+For each COO answer that revealed a gap or assumption not in the original design,
+write one targeted follow-up question. The follow-up should:
+- Target the specific gap the answer opened (not a general probe)
+- Use the stakeholder's own language from their answer
+- Have a clear design impact if answered "yes" vs. "no"
+
+Structure as: RQ[N]: [Question] — Design impact: [what changes if the answer is X]
+```
+
+**What this fixed:** Turned the COO simulation into 7 actionable follow-ups (RQ1–RQ7), each with a stated design consequence, so the next conversation with the real stakeholder has a precise agenda rather than open-ended questions.
+
+---
+
+### Prompt 4: Update the assumptions table to reflect what the simulation revealed
+
+```
+Review the original assumptions table against the COO simulation answers.
+For each assumption:
+- If the simulation confirmed it: keep, mark HIGH confidence
+- If the simulation revealed it may be wrong: update, mark LOW confidence, add "What changes if wrong"
+- If the simulation revealed a new assumption not in the original table: add it
+
+Mark any assumption as LOW if the only evidence for it is the SOP.
+```
+
+---
+
 ## Next Step
 
 Once you have recorded lived-work insights and discovery questions, move to **Phase 2: Cognitive Load Mapping**.

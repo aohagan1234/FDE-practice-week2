@@ -483,6 +483,93 @@ Compile all sections into a single document for your implementation team:
 
 ---
 
+## Refinement Prompts: Commands Used to Improve This Deliverable
+
+DELIVERABLE-6 was created after the build loop revealed a critical error in DELIVERABLE-5: Saba LMS was described as having a SOAP API when the scenario brief explicitly states it has no API at all. The following prompts were used to identify the error, create the inventory document, and improve its readability.
+
+---
+
+### Prompt 1: Cross-check system descriptions against the scenario brief
+
+```
+Review all systems listed in the Agent Purpose Document's System & Data Requirements section.
+For each system:
+1. Check the scenario brief (enriched_scenarios.md) for any description of that system
+2. If the scenario brief describes the integration method, does the spec match it?
+3. Flag any system where the spec claims an API exists but the brief says otherwise
+
+Pay particular attention to legacy or third-party systems — these are most likely to have
+incorrect integration assumptions.
+```
+
+**What this found:** DELIVERABLE-5 Section 7 described Saba LMS as "SOAP API (legacy)." The enriched scenario (Week2_Docs/enriched_scenarios.md) explicitly states Saba LMS has **no API** — it exports via weekly SFTP batch file only. This changes detection latency from 2 hours to 7 days for all LMS-sourced tasks, invalidates the 4-hour SLA claim, and requires the LMSClient to be an SFTP file reader, not an HTTP client.
+
+---
+
+### Prompt 2: Create the system inventory document
+
+```
+Create a System/Data Inventory document (DELIVERABLE-6) for the [agent name].
+For each system the agent touches, document:
+- Integration method (REST API / SFTP / webhook / no access)
+- Authentication method
+- Data freshness (real-time / daily batch / weekly batch)
+- Known data quality issues
+- What the agent reads and writes
+- Fallback if the system is unavailable
+
+Add a dedicated section for any system where the integration method is significantly
+different from what a developer would assume (e.g., batch-only when API was expected).
+For that system, document: what changes in the agent design, what SLA claims are affected,
+and how the agent should handle the batch window.
+```
+
+---
+
+### Prompt 3: Improve the data flow diagram
+
+```
+Make sure all tables are formatted properly and are easy to read.
+Make sure any diagrams are easily understood.
+
+Specifically: replace the plain text data flow (numbered list with arrows using hyphens)
+with a Unicode box diagram using ┌──┐ │ └──┘ and ▼ characters.
+Each stage should be a distinct box with a label, the systems involved, and the
+direction of data flow shown by ▼ connectors between stages.
+```
+
+**What this fixed:** The plain-text data flow was a numbered list with `→` arrows that couldn't visually convey stages or parallel operations. The Unicode box diagram makes stages visually distinct and the data flow direction unambiguous.
+
+---
+
+### Prompt 4: Add a three-state handling model for batch-sourced data
+
+```
+For any system that uses batch-only integration (not real-time API), add a section
+explaining how the agent handles the three states that exist between batch runs:
+
+State 1: Task completed — batch not yet delivered (agent sees task as outstanding)
+State 2: Task outstanding — batch not yet delivered (agent correctly sees it as outstanding)  
+State 3: Task completed — batch delivered (agent updates status correctly)
+
+For State 1, specify: does the agent send a false reminder? How does it recover
+when the batch arrives? Does it log a correction?
+
+This prevents the agent from sending incorrect escalations during the batch window.
+```
+
+**What this fixed:** DELIVERABLE-6 Section 5 now includes a three-state model for Saba LMS specifically, with explicit rules for each state and a note that the "completed but not yet delivered" case is the most dangerous (agent sends a reminder for work already done).
+
+---
+
+### The key lesson from this phase
+
+The Phase 7 inventory is most valuable when it reveals a **spec error** in Phase 5, not just when it confirms what you already assumed. The discipline of checking every system claim against primary sources (the scenario brief, not your own earlier document) is what makes the inventory worth doing.
+
+If your inventory only confirms what you wrote in Phase 5, you probably haven't checked carefully enough.
+
+---
+
 ## Next Step
 
 Once your System/Data Inventory is complete, you're ready to:

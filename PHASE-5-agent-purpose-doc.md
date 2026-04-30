@@ -271,6 +271,80 @@ Then review Claude's output for:
 
 ---
 
+## Refinement Prompts: Commands Used to Improve This Deliverable
+
+The initial draft of DELIVERABLE-5 was technically complete but written primarily for a technical audience. The escalation workflow diagrams were simple text arrows (↓) with no branch logic shown. The following prompts improved clarity for a mixed audience and made the diagrams testable.
+
+---
+
+### Prompt 1: Add a plain-English introduction
+
+```
+Add a "The Problem This Agent Solves" section at the very top of the document,
+before Section 1. Write it in plain English for a non-technical reader who has
+not read the discovery or delegation documents. It should answer:
+- What problem exists today (specific, with numbers if available)
+- What the agent does about it
+- What humans still control and why
+Keep it to 3–4 short paragraphs. No jargon.
+```
+
+**What this fixed:** Non-technical reviewers (HR leadership, compliance) can now understand the agent's purpose without reading 10 sections. The plain-English section also served as the verbal 5-minute summary anchor.
+
+---
+
+### Prompt 2: Rewrite escalation diagrams to show branch logic
+
+```
+The escalation workflow diagrams in Section 8 use simple downward arrows (↓) with no
+branch logic. Rewrite each diagram as a box-flow using:
+
+- TRIGGER: [condition] as the entry point
+- Labeled boxes for Agent steps and Human steps
+- Branch paths using ├── for intermediate branches and └── for the final path
+- Clear labels: [Agent] and [Human] before each action
+- A timeout/fallback path shown as a separate branch
+
+The reader should be able to trace exactly what happens in each scenario
+without reading the surrounding text.
+```
+
+**What this fixed:** Replaced 4 flat arrow-chain diagrams with branching box-flow diagrams that show TRIGGER → Agent action → branch condition → Human action, with escalation and timeout paths visible as separate branches. The diagrams are now directly testable against the code.
+
+---
+
+### Prompt 3: Review section headers for accessibility
+
+```
+Review all section headers in this document. Rename any that:
+- Use technical jargon a non-technical reader would not understand
+- Are vague (e.g., "Scope" — scope of what?)
+- Don't tell the reader what they are about to learn
+
+Replace with headers that state the content, not just the category.
+```
+
+**What this fixed:** Changed "Scope" → "What This Agent Handles (and What It Doesn't)", "Autonomy Matrix" → "Who Decides What: The Autonomy Matrix", "Activity Catalog" → "Activity Catalog: What the Agent Does, Step by Step".
+
+---
+
+### Prompt 4: Check for spec claims the build loop might invalidate
+
+```
+Review Sections 3 (Autonomy Matrix) and 8 (Escalation Workflows) for claims
+that assume system capabilities not yet confirmed:
+- SLA claims that depend on polling frequency
+- Escalation triggers that assume specific API responses
+- KPIs that assume data freshness levels not yet verified
+
+Flag each claim with [ASSUMPTION — verify before build] and state what would
+need to be true for the claim to hold.
+```
+
+**Why this matters:** The build loop (Phase 6) identified that Activity 5's daily I-9 polling was insufficient for the stated 15-minute SLA. Doing this check before the build loop would have caught it earlier.
+
+---
+
 ## Next Step
 
 Once your Agent Purpose Document is draft-ready, move to **Phase 6: Build Loop & Refinement** or **Phase 7: System/Data Inventory** (if pursuing a formal submission).

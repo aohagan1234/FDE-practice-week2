@@ -217,6 +217,99 @@ This is your signal to move to **Phase 7: System/Data Inventory** (if needed for
 
 ---
 
+## Refinement Prompts: Commands Used to Improve This Deliverable
+
+Running the build loop against DELIVERABLE-5 revealed two critical spec gaps that would have caused production failures. The following prompts were used to surface them and revise the spec.
+
+---
+
+### Prompt 1: The standard build loop prompt (run this first)
+
+```
+I am developing an agent for [process name]. Read my Agent Purpose Document carefully,
+then answer three questions:
+
+1. What can you build confidently from this document?
+   List the components you understand well enough to code without asking questions.
+
+2. What do you need me to clarify before building the rest?
+   For each gap, explain why it's ambiguous and suggest what information would resolve it.
+   If it's a delegation boundary, ask: "Should the agent decide this, or escalate to the human?"
+
+3. Build the parts you're confident about.
+   Show me code/pseudocode. Leave commented TODOs for the gaps from question 2.
+
+Focus on:
+- Are escalation triggers clear enough to code as if/else conditions?
+- Can you access all data sources and perform all actions listed?
+- Are there polling intervals or SLA claims that the system design can't actually meet?
+- Would any activity produce duplicate side effects if it ran twice in the same cycle?
+```
+
+---
+
+### Prompt 2: Probe for the idempotency gap specifically
+
+```
+Review every activity in the agent that sends notifications, creates tickets, or writes
+to an external system. For each one, ask:
+
+- What happens if this activity runs twice in the same polling cycle?
+- Is there a deduplication check before the action fires?
+- Could the same escalation be sent 12 times per day if the condition persists?
+
+If any activity lacks an idempotency check, flag it and propose a fix
+(e.g., check if escalation already exists for this hire_id + type before creating a new one).
+```
+
+**What this found in DELIVERABLE-5:** Activity 5 (I-9 monitoring) had no idempotency rule for escalations. Without it, the agent would generate 12 duplicate I-9 alerts per day (one per 2-hour poll cycle) for every overdue hire. Fix: `_escalation_exists(hire_id, esc_type)` guard added to orchestrator.
+
+---
+
+### Prompt 3: Probe for SLA claims the polling interval can't meet
+
+```
+Review all SLA claims in the Agent Purpose Document (KPIs section and escalation workflows).
+For each claim, check:
+- What polling interval does the agent use?
+- Is that interval fast enough to meet the claimed SLA?
+- If the agent polls every X hours, what is the maximum possible detection latency?
+- Does the SLA claim account for that latency, or does it assume real-time detection?
+
+Flag any SLA claim that the polling interval makes impossible.
+```
+
+**What this found in DELIVERABLE-5:** Activity 5 specified daily I-9 polling but the KPIs claimed "≥80% of overdue tasks detected within 4 hours." Daily polling = maximum 24-hour detection window; the 4-hour claim was impossible. Fix: changed I-9 polling to every 2 hours.
+
+---
+
+### Prompt 4: After revising the spec, re-run for residual gaps
+
+```
+I've revised the Agent Purpose Document based on your feedback. Specifically:
+- [list each gap you fixed and what the fix was]
+
+Can you now build more of this? What new questions do you have?
+What remains as a TODO that still needs clarification?
+```
+
+**When to stop:** Stop when the only remaining questions are implementation details (error handling patterns, retry counts, monitoring thresholds) rather than design questions (who decides, what triggers escalation, what data is available).
+
+---
+
+### Gaps found in this project's build loop (for reference)
+
+| Gap | Type | Fix Applied |
+|---|---|---|
+| I-9 polling interval insufficient for SLA | Workflow ambiguous | Changed daily → every 2 hours |
+| No idempotency rule for escalations | Failure mode incomplete | Added `_escalation_exists()` guard |
+| Saba LMS described as SOAP API — it has no API | Data missing | Corrected to SFTP batch; revised detection latency from 2h to 7 days |
+| Hold decision write path not guarded | Delegation boundary | Added Guardrail #1: agent detects trigger, human writes status |
+| ServiceNow routing rules not verified | Assumption not tested | Marked LOW confidence; flagged for IT validation |
+| Compliance matrix in SharePoint — stale? | Assumption not tested | Marked LOW confidence; flagged for Priya validation |
+
+---
+
 ## Next Step
 
 Depending on your timeline:
