@@ -57,7 +57,7 @@ The table below separates what the agent handles on its own, what it never touch
 |---|---|---|
 | **Hire type classification** | Judgment required; ambiguous cases need legal review | HR Ops + HR Manager |
 | **Buddy matching** | Ranking is deterministic (sort by seniority_delta, tenure, department); team fit selection is human-only judgment | HR Ops (receives sorted candidate list from automation; makes selection based on team dynamics) |
-| **Compliance track selection** | Low-confidence matches need policy interpretation | HR Ops + Compliance |
+| **Compliance track selection** | Low-confidence matches need LLM inference + HR Ops approval — Phase 2 Proposal Router | HR Ops (approves agent proposal) |
 | **Hold decision** | Irreversible employment action; legal implications | HR Manager + Legal |
 | **Escalation response** | Agent escalates; human decides action (close, reassign, override) | HR Ops on-call / task owner |
 | **IT provisioning approval** | IT system approves/rejects; agent submits only | IT team (in IT system) |

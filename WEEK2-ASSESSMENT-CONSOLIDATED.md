@@ -23,12 +23,12 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
    - Value Score: 10/25 (solid candidate when bundled with I-9 monitoring)
 
 2. **Delegation Profile:** 50% of onboarding is rule-based and automatable; 35% requires human oversight; 15% must remain human-only
-   - Fully Automated (rule engine / scheduled job): 5 clusters (deadline calc, IT provisioning main path, task monitoring, I-9 escalation, manager handoff)
-   - Agent-Led + Oversight (genuine LLM use): 1 cluster (compliance training track — partial matrix match reasoning)
-   - Human-Led + Automation Support: 1 cluster (buddy matching — ranking is automation; selection is human)
-   - Human-Led + Agent Support: 1 cluster (hire type classification)
-   - Human Only: 1 cluster (hold decisions)
-   - Note: "Fully Agentic" (LLM reasoning, no human in loop) applies to zero clusters in this project
+   - Fully Automated (rule engine / scheduled job): clusters 1, 5 main path, 6, 7, 9 — Phase 1 CoordinationOrchestrator
+   - Agent-Led + Oversight (LLM, human approves): 3 use cases — compliance track partial matching (C3), hire type from employment agreement text (C2 ambiguous path), access package for unmapped roles (C5 exception path) — Phase 2 Proposal Router
+   - Human-Led + Automation Support: cluster 4 (buddy ranking is automation; selection is human judgment)
+   - Human-Led + Agent Support: cluster 2 (clear path) — automation flags; human classifies
+   - Human Only: cluster 8 (hold decisions)
+   - Note: "Fully Agentic" (LLM, no human in loop) applies to zero clusters
 
 3. **ROI Reality:** Marginal monetary ROI (18–24 month payback) but significant compliance & experience benefits
    - Time freed: ~16 hours/person/year from automation
@@ -140,10 +140,10 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
 | Cluster | Suitability | Archetype | Primary Reason |
 |---|---|---|---|
 | 1. Task Deadline Calculation | 5.0/5 | **Fully Automated** | Pure arithmetic; no LLM reasoning; implement as cron job |
-| 2. Hire Type Classification | 2.3/5 | **Human-Led + Agent Support** | 30% judgment required; policy interpretation; high risk |
+| 2. Hire Type Classification | 2.3/5 | **Human-Led + Agent Support** (LLM for ambiguous ~10%) | Clear path: automation flags; ambiguous path: LLM reads employment agreement text and proposes classification |
 | 3. Compliance Training Track Proposal | 3.3/5 | **Agent-Led + Oversight** | 20% exception rate; human approval required |
 | 4. Buddy Matching & Selection | 3.0/5 | **Human-Led + Automation Support** | Ranking is arithmetic (sort by seniority_delta); team fit decision is human-only |
-| 5. IT Provisioning Request | 3.7/5 | **Fully Automated** | Main path is lookup + API submit; IT approval gate is IT's governance; unmapped roles escalate to human |
+| 5. IT Provisioning Request | 3.7/5 | **Fully Automated** (main) + **Agent-Led + Oversight** (unmapped) | Main path: lookup + submit. Unmapped roles (~10%): LLM proposes nearest access package; IT Manager approves |
 | 6. Task Status Monitoring & Reminders | 4.0/5 | **Fully Automated** | Deterministic threshold logic; scheduled poller; no LLM needed |
 | 7. I-9 Compliance Monitoring | 4.8/5 | **Fully Automated (Mandatory)** | Federal mandate; binary day-count rule; zero discretion |
 | 8. Hold Decision & Onboarding Pause | 2.0/5 | **Human Only** | Irreversible employment action; legal implications |

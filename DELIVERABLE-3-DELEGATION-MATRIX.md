@@ -82,9 +82,9 @@ The detailed scoring for each cluster follows.
 | **Tool Coverage** | 3 | Hire_type may be in HRIS, but may also require manual review of employment agreement in document system. Not fully automated data source. |
 | **Risk/Reversibility** | 2 | Incorrect hire_type cascades: wrong compliance training, wrong task set (contractor doesn't need I-9). Downstream impact is medium ($500–$5,000 rework). Reversible but costly. |
 | **Suitability Score** | 2.3 | (3+2+3)/3 |
-| **Delegation Archetype** | **Human-Led + Agent Support** | Agent can flag NULL hire_type or ambiguous cases; agent cannot decide. Human must review employment agreement and confirm classification. Agent's role: escalate and surface data for human decision. |
+| **Delegation Archetype** | **Human-Led + Agent Support** (LLM-assisted for ambiguous cases) | For the clear path (hire_type populated and unambiguous), automation flags and routes. For the ambiguous ~5–10%, an LLM reads the employment agreement text in SharePoint and reasons about likely classification — surfacing the specific clauses that point to EMPLOYEE vs CONTRACTOR, with a confidence score. Human reviews the reasoning and confirms. The LLM proposes; the human decides. |
 
-**Rationale for archetype:** Too much judgment and risk for fully agentic. Agent surfaces data; human decides.
+**Rationale for archetype:** Too high-risk for the agent to decide (cascading classification errors). But raw data surfacing understates what the agent can do — unstructured employment agreement text requires reasoning, not just field lookup. This is a genuine LLM use case within a human-led workflow. Part of the Phase 2 Proposal Router.
 
 ---
 
@@ -130,9 +130,9 @@ The detailed scoring for each cluster follows.
 | **Tool Coverage** | 3 | Can query IT role-access matrix. Can call IT provisioning API to submit request. BUT IT system has approval gate (external human reviews request before provisioning), and IT system may be unavailable (fallback: escalate to IT Support). Not fully autonomous. |
 | **Risk/Reversibility** | 2 | Incorrect access grant = security incident ($1,000–$5,000 remediation) or compliance violation. Non-trivial risk. Reversible (revoke access) but requires security team. High-stakes. |
 | **Suitability Score** | 3.7 | (4+4+3)/3 |
-| **Delegation Archetype** | **Fully Automated** (main path; human escalation for unmapped roles) | The main path is a deterministic lookup (`hire.role → access_package_id`) followed by an API submit. This is automation, not agency — a lookup table and an API call. The IT approval gate that follows is IT's internal governance process, not agent reasoning. For the ~5–10% of unmapped roles, the agent escalates to IT Manager; a human makes the non-deterministic decision about what access a novel role needs. |
+| **Delegation Archetype** | **Fully Automated** (main path) **+ Agent-Led + Oversight** (unmapped role exception) | **Main path (~90%):** Deterministic lookup (`hire.role → access_package_id`) + API submit. Automation. The IT approval gate is IT's governance, not agent reasoning. **Unmapped role path (~10%):** Rather than firing a blind `ROLE_NOT_MAPPED` escalation, an LLM reads the role title and department, compares to similar roles in the matrix, and proposes the nearest access package with a rationale ("Head of ESG Compliance — closest match: Compliance Manager, 85% similarity. Suggested package: Compliance_Senior"). IT Manager approves or adjusts. Part of the Phase 2 Proposal Router. |
 
-**Rationale for archetype:** Lookup + API submit is automation. Having a human approve the result downstream does not make the submission step "agentic" — the agent applied a rule, not judgment. The only genuinely non-deterministic part (unmapped role → what access?) correctly escalates to a human rather than being guessed by the automation.
+**Rationale for archetype:** The main path needs no LLM — a rules engine handles it correctly and cheaply. The exception path (unmapped role) currently produces a blind escalation that IT Manager must resolve from scratch. An LLM proposal reduces that from "figure it out" to "approve or adjust" — genuine value at low volume (~22–33 cases/year).
 
 ---
 
@@ -194,9 +194,11 @@ The detailed scoring for each cluster follows.
 | **Tool Coverage** | 5 | All task data available. Email system available. Can send handoff notifications. Full coverage. |
 | **Risk/Reversibility** | 4 | Late handoff = manager not prepared for Day 1 (friction, poor new hire experience). Reversible (send late notification). Low cost (~$200). |
 | **Suitability Score** | 4.6 | (5+4+5)/3 |
-| **Delegation Archetype** | **Fully Automated (rule engine)** | Checks all PRE_DAY_1 tasks. If complete, sends handoff summary. If incomplete, sends handoff with incomplete items flagged. Manager has full visibility. No LLM reasoning required — the trigger condition is a deterministic boolean check. |
+| **Delegation Archetype** | **Fully Automated (rule engine)** | Checks all PRE_DAY_1 tasks. If complete, sends handoff summary. If incomplete, sends handoff with incomplete items flagged. Manager has full visibility. No LLM reasoning required for the trigger or content structure. |
 
-**Rationale for archetype:** Deterministic logic, low risk, reversible. The exception case (incomplete tasks at Day -2) requires conditional logic, not judgment. Implement as a scheduled job or workflow trigger; no agent framework needed.
+**Rationale for archetype:** Deterministic logic, low risk, reversible. The exception case (incomplete tasks at Day -2) requires conditional logic, not judgment. Implement as a scheduled job or workflow trigger; no agent framework needed. **Optional lower-priority enhancement:** LLM-generated handoff content (contextualised summary rather than template) could add value for managers, but at 220 hires/year the template is sufficient — the content enhancement is not worth the added complexity at this scale.
+
+
 
 ---
 
@@ -207,10 +209,10 @@ Scores are on a 1–5 scale. The Suitability Score is the average of Input Struc
 | Cluster | Decision Rule? | Tools Available? | Exception Rate | Risk if Wrong | Suitability | Delegation Level |
 |---|---|---|---|---|---|---|
 | 1. Deadline Calc | 5 — pure maths | 5 — all data in HRIS | 5 — almost never | 5 — easily corrected | **5.0** | Fully Automated |
-| 2. Hire Type Class | 2 — often ambiguous | 3 — agreement may need manual review | 2 — 5–10% of hires | 2 — cascades into wrong tasks | **2.3** | Human-Led + Support |
-| 3. Training Track | 3 — 20–30% partial matches | 4 — matrix available | 2 — 10–15% unclear | 2 — audit risk | **3.3** | Agent-Led + Oversight |
+| 2. Hire Type Class | 2 — ambiguous cases require LLM reasoning from employment agreement text | 3 — agreement text in SharePoint; LLM reads and reasons for ambiguous ~10% | 2 — 5–10% of hires ambiguous | 2 — cascades into wrong tasks | **2.3** | Human-Led + Agent Support (LLM for ambiguous path) |
+| 3. Training Track | 3 — 20–30% partial matches require LLM inference | 4 — matrix available; LLM handles no-exact-match cases | 2 — 10–15% unclear | 2 — audit risk | **3.3** | Agent-Led + Oversight |
 | 4. Buddy Match | 2 — ranking is arithmetic; team fit selection is human judgment | 4 — directory available | 3 — 15% gap/missing | 3 — retention risk | **3.0** | Human-Led + Automation Support |
-| 5. IT Provision | 4 — deterministic lookup (main path); unmapped roles escalate | 3 — IT approval gate is IT's governance, not agent reasoning | 2 — 15–20% unmapped | 2 — security risk | **3.7** | Fully Automated |
+| 5. IT Provision | 4 — deterministic lookup (main path); LLM proposes for unmapped roles | 3 — main path: automation; unmapped: LLM proposes nearest package for IT to approve | 2 — 15–20% unmapped | 2 — security risk | **3.7** | Fully Automated (main) + Agent-Led + Oversight (unmapped) |
 | 6. Task Monitor | 5 — deterministic threshold | 3 — 2h polling latency | 2 — 10–15% overdue | 4 — low; easily fixed | **4.0** | Fully Automated |
 | 7. I-9 Monitoring | 5 — federal mandate, no discretion | 5 — fully available | 3 — 3–5% hit AT_RISK | 1 — federal penalty | **4.8** | Fully Automated (Mandatory) |
 | 8. Hold Decision | 1 — no rule; all context | 3 — can detect but not execute | 3 — rare but high stakes | 1 — irreversible legal action | **2.0** | Human Only |
@@ -222,14 +224,14 @@ Scores are on a 1–5 scale. The Suitability Score is the average of Input Struc
 
 | Archetype | Clusters | % of Work | Implementation |
 |---|---|---|---|
-| **Fully Automated** (rule engine / scheduled job) | 5 (clusters 1, 5, 6, 7, 9) | ~55% | Scheduled Python job or workflow automation (Power Automate, Azure Logic Apps). No LLM reasoning at runtime. Cluster 5's unmapped-role exception escalates to human. |
-| **Agent-Led + Oversight** (genuine non-determinism) | 1 (cluster 3 only) | ~15% | Compliance track partial-match reasoning — the only cluster where LLM inference adds value over a lookup table. Agent proposes; HR Ops approves. |
-| **Human-Led + Automation Support** | 1 (cluster 4) | ~15% | Automation sorts the buddy candidate list (deterministic algorithm). Human makes the selection based on team dynamics the system cannot observe. |
-| **Human-Led + Agent Support** | 1 (cluster 2) | ~10% | Agent surfaces hire record data and flags ambiguities. Human makes the hire type classification decision. |
-| **Human Only** | 1 (cluster 8) | ~5% | No automation. Irreversible legal action requires human accountability. |
-| **Fully Agentic** (LLM reasoning, no human in loop) | 0 | — | No cluster in this project qualifies. True agentic work (non-deterministic, autonomous, LLM-reasoning) does not exist in this onboarding workflow at this scale. |
+| **Fully Automated** (rule engine / scheduled job) | 4 dominant + 1 partial (clusters 1, 5 main path, 6, 7, 9) | ~50% | Phase 1: CoordinationOrchestrator. Scheduled Python job or workflow automation. No LLM reasoning at runtime. |
+| **Agent-Led + Oversight** (LLM reasoning, human approves) | 3 use cases: cluster 3 (full), cluster 2 (ambiguous path), cluster 5 (unmapped role path) | ~20% | Phase 2: Proposal Router. One agent, three trigger types, one approval workflow. LLM proposes; HR Ops or IT Manager approves before execution. |
+| **Human-Led + Automation Support** | 1 (cluster 4) | ~15% | Automation sorts the buddy candidate list (deterministic sort). Human selects based on team dynamics the system cannot observe. |
+| **Human-Led + Agent Support** | 1 (cluster 2 clear path) | ~10% | For unambiguous cases, automation flags and routes. LLM reasoning activates only on the ambiguous ~10% (see Agent-Led row). |
+| **Human Only** | 1 (cluster 8) | ~5% | No automation. Irreversible legal action. |
+| **Fully Agentic** (LLM, no human in loop) | 0 | — | No cluster qualifies. All LLM use cases include a human approval step. |
 
-**What this means in practice:** The CoordinationOrchestrator is correctly a rule engine, not an AI agent. The only genuine LLM use case is Cluster 3 (compliance track matching with partial matrix results) — and that still requires human approval before execution. Everything else is either deterministic automation, human judgment with a sorted data feed, or human-only. This is the honest shape of this problem. If someone at Aldridge & Sykes asks "where does AI add value?" — the answer is Cluster 3, and only there.
+**What this means in practice:** Phase 1 (CoordinationOrchestrator) is a rule engine — ~50% of work, no LLM. Phase 2 (Proposal Router) is where AI genuinely adds value: three non-deterministic use cases that share the same pattern — LLM reasons over ambiguous input, proposes a structured answer, human approves. The test that separates automation from agentic: *"Can you write the complete if/else rule right now with no ambiguity?"* If yes: automation. If the answer requires reading unstructured text or reasoning across partial matches: agentic.
 
 ---
 
@@ -237,13 +239,15 @@ Scores are on a 1–5 scale. The Suitability Score is the average of Input Struc
 
 **Is everything "Fully Agentic"?** NO — and nothing is, by design.
 
-- Clusters 1, 5, 6, 7, 9 are **Fully Automated** (rule engine / scheduled job). No LLM reasoning. Cluster 5's IT provisioning is a lookup + API call — the downstream IT approval gate is IT's governance process, not agent reasoning.
-- Cluster 3 is the **only Agent-Led + Oversight** task — the only place where partial compliance matrix matches genuinely require inference that a lookup table cannot provide. Agent proposes; HR Ops approves.
-- Cluster 4 (Buddy Matching) is **Human-Led + Automation Support** — the ranking is arithmetic. The human makes the real decision based on team dynamics. Calling this "agent-led" would misrepresent what the system does.
-- Cluster 2 (Hire Type) is **Human-Led + Agent Support** — agent surfaces data and flags ambiguity; human classifies.
+- Clusters 1, 5 (main path), 6, 7, 9 are **Fully Automated** — rule engines. No LLM.
+- **Three genuine LLM use cases** across two clusters, all in the Phase 2 Proposal Router:
+  - Cluster 3 (full): compliance track partial-match reasoning
+  - Cluster 2 (ambiguous ~10%): hire type inference from employment agreement text
+  - Cluster 5 (unmapped ~10%): access package proposal from role title/department similarity
+- Cluster 4 (Buddy Matching) is **Human-Led + Automation Support** — sorting is arithmetic; selection is human judgment.
 - Cluster 8 (Hold Decision) is **Human Only** — irreversible legal action.
 
-**No cluster warrants "Fully Agentic" (LLM reasoning, no human in loop).** The one cluster using LLM reasoning (Cluster 3) still requires human approval before execution. For everything else: deterministic rules are more reliable, cheaper, and easier to audit than LLM inference. The right question is not "can an agent do this?" but "does non-determinism exist here that justifies the cost and complexity of an LLM?"
+**No cluster warrants "Fully Agentic" (LLM, no human in loop).** All three LLM use cases include a human approval step. The distinction that matters: automation handles deterministic work reliably and cheaply; LLM agents handle non-deterministic work where a rule cannot cover the full input space. Both are needed. Neither replaces the other.
 
 ---
 

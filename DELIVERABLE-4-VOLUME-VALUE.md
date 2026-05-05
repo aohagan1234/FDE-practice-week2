@@ -285,7 +285,7 @@ Although Cluster 6 is the only strong candidate, **combining multiple clusters i
 **Primary Agent: Coordination Orchestrator**
 
 **Scope:**
-1. **Monitor task status** across 6 source systems (Cluster 6 core)
+1. **Monitor task status** across 5 source systems (Cluster 6 core)
 2. **Calculate deadlines** for all 40 tasks per hire (Cluster 1 support)
 3. **Send reminders** to task owners based on deadline (Cluster 6 core)
 4. **Route escalations** to HR Ops when overdue >24h or >72h (Cluster 6 core)
@@ -310,11 +310,18 @@ Although Cluster 6 is the only strong candidate, **combining multiple clusters i
 ## Secondary Targets (Future Phases)
 
 **If Agent 1 delivers ROI, invest in Agent 2 (Proposal Router):**
-- Compliance training proposal generation (with confidence scoring)
-- Buddy matching recommendation (with top-3 ranked candidates + reasoning)
-- IT provisioning request (with unmapped role escalation)
 
-Combined secondary value: 6 + 8 + 4 = 18 points (above 15 threshold).
+A single agent handling three non-deterministic use cases that share the same pattern — LLM reasons over ambiguous input, proposes a structured answer, human approves:
+
+| Use Case | Trigger | LLM Task | Approver |
+|---|---|---|---|
+| **Cluster 3 — Compliance track** | Hire record has no exact matrix match (10–15% of hires) | Read partial matches; propose best-fit track with rationale and confidence | HR Ops |
+| **Cluster 2 — Hire type (ambiguous)** | hire_type is NULL or contradicted by contract terms (~5–10% of hires) | Read employment agreement text from SharePoint; reason about EMPLOYEE vs CONTRACTOR signals | HR Ops |
+| **Cluster 5 — Unmapped role** | hire.role not found in IT access matrix (~5–10% of hires) | Compare role title + department to existing matrix entries; propose nearest access package | IT Manager |
+
+**Note:** Buddy matching (Cluster 4) is deterministic automation (sort by seniority_delta, tenure, department) — it belongs in the Phase 1 Orchestrator scope, not the Proposal Router. The human selection from the sorted list requires judgment the system cannot replicate; that is human-led, not agentic.
+
+Combined secondary value: 6 + 4 + 4 = 14 points. Below the 15-point threshold on volume alone, but justified by risk reduction: one avoided audit finding or misclassification event covers build cost.
 
 ---
 
