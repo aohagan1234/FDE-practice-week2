@@ -1,4 +1,4 @@
-"""API client stubs for all 6 source systems.
+"""API client stubs for 5 source systems and EmailClient (notification only).
 
 Each client exposes the interface the orchestrator needs. Replace
 NotImplementedError bodies with real HTTP calls for the target system.
@@ -97,11 +97,12 @@ class ITProvisioningClient(BaseAPIClient):
 
 
 class LMSClient(BaseAPIClient):
-    """Fetch compliance training enrollment status via SOAP (legacy).
+    """Fetch compliance training enrollment status.
 
-    Wraps SOAP response into TaskStatus enum.
-    Rate limit: 100 req/hr   SLA: 98%
-    Fallback: weekly batch export
+    NOTE: Saba LMS has no API. Production implementation must read the
+    weekly SFTP batch file (delivered Sunday ~23:00 UTC), not make HTTP calls.
+    Detection latency for LMS tasks: up to 7 days, not 2 hours.
+    See DELIVERABLE-6 Section 5 for the three-state handling model.
     """
     system_name = "LMS"
 

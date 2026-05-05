@@ -23,10 +23,12 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
    - Value Score: 10/25 (solid candidate when bundled with I-9 monitoring)
 
 2. **Delegation Profile:** 50% of onboarding is rule-based and automatable; 35% requires human oversight; 15% must remain human-only
-   - Fully Agentic: 4 clusters (deadline calc, task monitoring, I-9 escalation, manager handoff)
-   - Agent-Led + Oversight: 3 clusters (compliance training, buddy matching, IT provisioning)
-   - Human-Led + Support: 1 cluster (hire type classification)
+   - Fully Automated (rule engine / scheduled job): 5 clusters (deadline calc, IT provisioning main path, task monitoring, I-9 escalation, manager handoff)
+   - Agent-Led + Oversight (genuine LLM use): 1 cluster (compliance training track — partial matrix match reasoning)
+   - Human-Led + Automation Support: 1 cluster (buddy matching — ranking is automation; selection is human)
+   - Human-Led + Agent Support: 1 cluster (hire type classification)
    - Human Only: 1 cluster (hold decisions)
+   - Note: "Fully Agentic" (LLM reasoning, no human in loop) applies to zero clusters in this project
 
 3. **ROI Reality:** Marginal monetary ROI (18–24 month payback) but significant compliance & experience benefits
    - Time freed: ~16 hours/person/year from automation
@@ -37,7 +39,7 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
    - **Phase 1 (Primary):** Coordination Orchestrator (monitoring + reminders + I-9 compliance)
    - **Phase 2 (Secondary):** Proposal Router (training + buddy + IT provisioning recommendations)
 
-5. **Critical Success Factor:** API availability for all 6 source systems (HRIS, IT, LMS, calendar, email, fulfillment)
+5. **Critical Success Factor:** API availability for all 5 source systems (Workday, ServiceNow, Saba LMS, calendar, fulfillment)
    - Confidence: LOW
    - Mitigation: Technical audit required before build commitment
 
@@ -52,7 +54,7 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
 | **Volume** | 220+ hires/year; ~73 per person per HR Ops team member (4–5 per week) |
 | **Coordination overhead** | 2.5 hours per hire = 550 hours/year team-wide (~183 hours per person) |
 | **Task scope** | 40 tasks per hire across 3 categories (PRE_DAY_1, POST_DAY_1, ONGOING) |
-| **Systems** | 6 disconnected (HRIS, IT provisioning, compliance training, calendar, email, fulfillment) |
+| **Systems** | 5 source systems (Workday/HRIS, ServiceNow/IT provisioning, Saba LMS, calendar, fulfillment) |
 | **Judgment boundary** | 85% routine/deterministic; 15% judgment-required |
 | **Compliance mandate** | I-9 verification must complete by Day 3 (federal 3-day deadline) |
 | **Success targets** | ≥97% tasks on-time, 0 I-9 violations, ≥95% escalations routed correctly, ≤0.75 hrs per hire |
@@ -61,7 +63,7 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
 
 | Question | Importance | Current Assumption | Confidence |
 |---|---|---|---|
-| Which systems have reliable APIs available? | CRITICAL | All 6 have APIs | LOW |
+| Which systems have reliable APIs available? | CRITICAL | All 5 have APIs | LOW |
 | What's the actual 2.5h coordination time breakdown? | HIGH | Baseline includes all non-judgment time | MEDIUM |
 | How often do holds occur, and who decides? | MEDIUM | Holds are <5% of hires | MEDIUM |
 | What defines the 15% judgment cases operationally? | HIGH | Judgment is primarily compliance track ambiguity + buddy team fit | MEDIUM |
@@ -137,24 +139,25 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
 
 | Cluster | Suitability | Archetype | Primary Reason |
 |---|---|---|---|
-| 1. Task Deadline Calculation | 5.0/5 | **Fully Agentic** | Pure computation; zero judgment; low risk |
+| 1. Task Deadline Calculation | 5.0/5 | **Fully Automated** | Pure arithmetic; no LLM reasoning; implement as cron job |
 | 2. Hire Type Classification | 2.3/5 | **Human-Led + Agent Support** | 30% judgment required; policy interpretation; high risk |
 | 3. Compliance Training Track Proposal | 3.3/5 | **Agent-Led + Oversight** | 20% exception rate; human approval required |
-| 4. Buddy Matching & Selection | 3.0/5 | **Agent-Led + Oversight** | 40% judgment; team fit assessment; medium risk |
-| 5. IT Provisioning Request | 3.7/5 | **Agent-Led + Oversight** | External approval gate (IT); unmapped role escalation |
-| 6. Task Status Monitoring & Reminders | 4.0/5 | **Fully Agentic** | Deterministic; low risk; reversible; high volume |
-| 7. I-9 Compliance Monitoring | 4.8/5 | **Fully Agentic (Mandatory)** | Federal mandate; non-negotiable escalation; zero discretion |
+| 4. Buddy Matching & Selection | 3.0/5 | **Human-Led + Automation Support** | Ranking is arithmetic (sort by seniority_delta); team fit decision is human-only |
+| 5. IT Provisioning Request | 3.7/5 | **Fully Automated** | Main path is lookup + API submit; IT approval gate is IT's governance; unmapped roles escalate to human |
+| 6. Task Status Monitoring & Reminders | 4.0/5 | **Fully Automated** | Deterministic threshold logic; scheduled poller; no LLM needed |
+| 7. I-9 Compliance Monitoring | 4.8/5 | **Fully Automated (Mandatory)** | Federal mandate; binary day-count rule; zero discretion |
 | 8. Hold Decision & Onboarding Pause | 2.0/5 | **Human Only** | Irreversible employment action; legal implications |
-| 9. Manager Handoff & Completion Check | 4.6/5 | **Fully Agentic** | Deterministic; low risk; reversible |
+| 9. Manager Handoff & Completion Check | 4.6/5 | **Fully Automated** | Deterministic boolean trigger; scheduled job |
 
 ### Archetype Distribution
 
-- **Fully Agentic:** 4 clusters = 50% of work
-- **Agent-Led + Oversight:** 3 clusters = 35% of work
-- **Human-Led + Support:** 1 cluster = 10% of work
-- **Human Only:** 1 cluster = 5% of work
+- **Fully Automated** (rule engine / scheduled job): 5 clusters = ~55% of work
+- **Agent-Led + Oversight** (genuine LLM use): 1 cluster = ~15% of work
+- **Human-Led + Automation Support**: 1 cluster = ~15% of work
+- **Human-Led + Agent Support**: 1 cluster = ~10% of work
+- **Human Only**: 1 cluster = ~5% of work
 
-**Interpretation:** Delegation boundaries are intentional. Not everything is "fully agentic" (anti-pattern check ✓). Archetypes vary by complexity and risk.
+**Interpretation:** The CoordinationOrchestrator is correctly a rule engine, not an AI agent. The only genuine LLM use case is Cluster 3 (compliance track partial-match reasoning), and even that requires human approval. Clusters 4 and 5 were reclassified after applying the test: "Can the decision be expressed as a complete if/else rule right now?" — if yes, it is automation, not agency.
 
 ---
 

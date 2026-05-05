@@ -37,6 +37,17 @@ These questions are designed to find that gap. They ask for stories, not procedu
 
 Six questions designed to surface what SOP interviews miss: the workarounds, the screen-switching, the instinct calls, the legacy tabs, and the moments where the real answer isn't in any official system.
 
+> **Simulation note:** The answers labelled "The COO's answer" below were generated through a structured role-play exercise in which an AI simulated a senior stakeholder's responses. The actual primary stakeholder at Aldridge & Sykes is **Priya Aggarwal (HR Ops Lead)** — not a COO. Several details in the simulated answers are **not confirmed by the enriched scenario brief** and must be validated with Priya before being treated as real design inputs:
+>
+> - iPhone Notes app as I-9 tracker — **not in scenario**
+> - Legacy HR system from 2014 — **not in scenario** (scenario lists 5 systems: Workday, ServiceNow, Saba LMS, SharePoint, Outlook)
+> - "Mark in IT" as informal contact — **not in scenario**
+> - WhatsApp for urgent escalations — **not in scenario**
+> - Connections HR recruiter mislabelling hire_type — **not in scenario**
+> - Strategy/Finance buddy exclusion rule — **not in scenario**
+>
+> Details that **are** confirmed in the enriched scenario: Priya's Excel tracker on OneDrive (Artefact 1.2), the TEMP-EXT hire type retired Q1 2024 (Artefact 1.3), and CFO (not COO) involvement. The questions themselves are valid discovery questions. The simulated answers illustrate the *type* of detail discovery questions should surface — treat them as hypotheses to validate, not confirmed facts.
+
 ---
 
 ### Q1 — "What's on your screen?" *(targets: shadow systems, screen-switching sequence)*

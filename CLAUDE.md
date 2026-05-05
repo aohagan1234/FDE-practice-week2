@@ -112,9 +112,11 @@ Counter-intuitive: the highest-risk item is the most appropriate for full automa
 
 The spec's "≥80% of overdue tasks detected within 4 hours" is unachievable for LMS-sourced tasks. Rather than keep the claim and quietly fail, DELIVERABLE-6 corrects the SLA to reflect the 7-day batch window for LMS tasks. Honesty about system constraints is preferable to a spec that passes review and fails in production.
 
-### Why buddy matching is Agent-Led + Oversight rather than Fully Agentic
+### Why buddy matching is Human-Led + Automation Support (not Agent-Led)
 
-Team dynamics judgment cannot be codified. The ranking algorithm is deterministic; the final selection from the ranked list is not. HR Ops approves the agent's top-3 proposal. This is Cluster 4's archetype and matches the enriched scenario's context: Tom Reeves' buddy assignment was overridden (Artefact 1.2 hidden column: "Paired with Sarah J (peer level), not Anna (rule says senior pair)").
+The ranking algorithm is a deterministic sort: seniority_delta arithmetic, tenure comparison, department filter. This is automation, not agency — a sort function does not require an LLM. The human decision (which person actually fits this hire's team dynamics) cannot be reduced to a rule, which is exactly why it remains human-led. HR Ops sees a sorted list and makes the call. This is Cluster 4's archetype.
+
+Evidence: Tom Reeves' buddy assignment was overridden (Artefact 1.2 hidden column: "Paired with Sarah J (peer level), not Anna (rule says senior pair)"). The rule produced Anna; the human chose Sarah J. The automation surface the candidates; the human applied judgment the rule couldn't encode.
 
 ---
 

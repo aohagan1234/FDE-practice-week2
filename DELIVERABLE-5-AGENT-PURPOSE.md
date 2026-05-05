@@ -22,7 +22,7 @@ This document specifies exactly what the agent does, where it stops, and what su
 
 ## 1. Purpose Statement
 
-The Coordination Orchestrator agent automates the HR Ops team's "monitoring and reminder" workload. It tracks 40 onboarding tasks per hire across 6 disconnected systems (HRIS, IT provisioning, compliance training, calendar, email, fulfillment), detects when tasks are overdue, sends reminders to task owners, and escalates blockers to HR Ops. 
+The Coordination Orchestrator agent automates the HR Ops team's "monitoring and reminder" workload. It tracks onboarding tasks per hire across 5 source systems (Workday/HRIS, ServiceNow/IT provisioning, Saba LMS/compliance training, calendar, fulfillment), detects when tasks are overdue, sends reminders to task owners, and escalates blockers to HR Ops.
 
 **Primary outcome:** Reduce HR Ops monitoring time by 50%, improve on-time task completion to ≥97%, ensure I-9 compliance with zero violations via automatic Day-2 and Day-3 escalation.
 
@@ -42,7 +42,7 @@ The table below separates what the agent handles on its own, what it never touch
 
 | Activity | Decision Rule | Output |
 |---|---|---|
-| **Monitor task status** | Poll 6 systems every 2 hours for task status | Task status snapshot per hire |
+| **Monitor task status** | Poll 5 source systems every 2 hours for task status | Task status snapshot per hire |
 | **Calculate deadlines** | deadline = hire.start_date + task_type.offset_days | Deadline per task |
 | **Detect overdue tasks** | if (current_time > deadline + 24h) & (task.status != COMPLETE) → mark OVERDUE_24 | Overdue flags per hire |
 | **Send reminders** | if (OVERDUE_24 within last 24h & no reminder in last 24h) → send email to task owner | Reminder email |
@@ -56,7 +56,7 @@ The table below separates what the agent handles on its own, what it never touch
 | Activity | Why Not Agentic | Who Does |
 |---|---|---|
 | **Hire type classification** | Judgment required; ambiguous cases need legal review | HR Ops + HR Manager |
-| **Buddy matching** | Team dynamics judgment; agent can propose only | HR Ops (makes final decision from agent rankings) |
+| **Buddy matching** | Ranking is deterministic (sort by seniority_delta, tenure, department); team fit selection is human-only judgment | HR Ops (receives sorted candidate list from automation; makes selection based on team dynamics) |
 | **Compliance track selection** | Low-confidence matches need policy interpretation | HR Ops + Compliance |
 | **Hold decision** | Irreversible employment action; legal implications | HR Manager + Legal |
 | **Escalation response** | Agent escalates; human decides action (close, reassign, override) | HR Ops on-call / task owner |
@@ -231,6 +231,8 @@ Each activity below is one discrete unit of agent behaviour. They run together i
 ---
 
 ## 7. System & Data Requirements
+
+**DELIVERABLE-6 supersedes this section** for Saba LMS integration. The table below has been corrected to reflect the SFTP batch approach, but DELIVERABLE-6 contains the authoritative constraint analysis, three-state handling model, and full data dictionary for all source systems. If DELIVERABLE-6 and this section conflict, DELIVERABLE-6 is correct.
 
 ### Source Systems (Data Inputs)
 
@@ -435,7 +437,7 @@ TRIGGER  hire.role not found in IT role-access matrix
 
 | Assumption | Confidence | Validation Method | Impact if Wrong |
 |---|---|---|---|
-| All 6 source systems have APIs available | LOW | Technical audit with IT; request API docs | If APIs unavailable, polling becomes batch-only (12–24h latency); agent effectiveness drops 60% |
+| All 5 source systems have APIs available | LOW | Technical audit with IT; request API docs | If APIs unavailable, polling becomes batch-only (12–24h latency); agent effectiveness drops 60% |
 | Task status is updated within 2 hours of completion | MEDIUM | Monitor data freshness field; compare agent detection vs. actual completion time | If latency >4h, reminders will be late; may miss escalation windows |
 | HR Ops team responds to escalations within SLA | MEDIUM | Interview Priya; measure actual response times on sample escalations | If response is slow (>30 min), escalation queue grows; agent load backs up |
 | I-9 task status is available in HRIS or separate system | HIGH | Confirm in HRIS schema review | If I-9 tracking is manual (email), agent cannot monitor; compliance risk remains |
@@ -451,10 +453,10 @@ TRIGGER  hire.role not found in IT role-access matrix
 
 > You are building an autonomous onboarding orchestration system. Here's your specification:
 >
-> **Core mission:** Monitor 40 tasks per hire across 6 source systems; detect delays; send reminders; escalate blockers.
+> **Core mission:** Monitor onboarding tasks per hire across 5 source systems (Workday, ServiceNow, Saba LMS, Calendar, Fulfillment); detect delays; send reminders; escalate blockers.
 >
 > **Primary features to build:**
-> 1. Poll task status from [HRIS, IT, LMS, Calendar, Email, Fulfillment] every 2 hours
+> 1. Poll task status from [Workday/HRIS, ServiceNow, Saba LMS, Calendar, Fulfillment] every 2 hours
 > 2. Calculate task deadlines (start_date + offset_days)
 > 3. Detect overdue tasks (>24 hours past deadline + not complete)
 > 4. Send email reminders to task owners (rate-limited to 1 per task per 24h)

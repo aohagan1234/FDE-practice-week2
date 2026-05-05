@@ -1,7 +1,7 @@
 """Coordination Orchestrator — all 9 activities + main poll cycle.
 
 Activities implemented:
-  1. Poll task status across 6 source systems
+  1. Poll task status across 5 source systems
   2. Calculate deadlines (once per hire at intake)
   3. Detect overdue tasks
   4. Send reminders (rate-limited, idempotent)

@@ -147,7 +147,7 @@ This changes four things:
 - LMSClient stub in `api_clients.py` retains `NotImplementedError` — but the comment now signals the correct implementation path.
 - The SLA claim in DELIVERABLE-5 was revised to acknowledge the LMS batch window exception.
 
-**Note on api_clients.py:** The current `LMSClient` docstring still reads "SOAP (legacy)" — this is technically incorrect and must be replaced before any production implementation. See DELIVERABLE-6 Section 5 for the correct integration specification.
+**Note on api_clients.py:** The `LMSClient` docstring has been corrected — it now documents the SFTP batch approach rather than the incorrect "SOAP (legacy)" description. The stub still raises `NotImplementedError`; the production implementation must be an SFTP file reader, not an HTTP client. See DELIVERABLE-6 Section 5 for the correct integration specification.
 
 ```python
 # api_clients.py — LMSClient (stub — NOT an HTTP client in production)

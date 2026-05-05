@@ -66,10 +66,13 @@ Based on your scores, assign each task cluster to one of five operating modes:
 | Archetype | Characteristics | Score Drivers | Example |
 |---|---|---|---|
 | **Human Only** | No delegation; human does all work | Very high judgment + critical risk | Visa compliance review for expired work permit |
-| **Human-led + Automation Support** | Tools accelerate execution; human controls | Deterministic rules + human prefers control | Auto-populate form fields; human reviews and submits |
+| **Human-led + Automation Support** | Tools accelerate execution; human controls | Deterministic rules + human must make the real decision | Auto-sort buddy candidates by seniority; human selects based on team fit |
 | **Human-led + Agent Support** | Agent synthesizes & recommends; human decides | Mixed determinism + moderate complexity | Agent pulls salary benchmarks; HR approves offer |
-| **Agent-led + Human Oversight** | Agent executes autonomously; human spot-checks | Mostly deterministic + low exception rate + reversible | Agent auto-assigns training modules; HR weekly audit |
-| **Fully Agentic** | Agent acts without human in loop | Highly deterministic + low exception + low risk + full tool coverage | Auto-create Workday record from hire form |
+| **Agent-led + Human Oversight** | Agent reasons and proposes; human approves before execution | Non-deterministic input + LLM inference adds value over a lookup | Agent proposes compliance track when matrix has partial match; HR approves |
+| **Fully Automated** | Deterministic rule engine or scheduled job; no LLM reasoning | Highly deterministic + low exception + low risk + full tool coverage | Deadline calculation (`start_date + offset_days`); I-9 day-count monitoring |
+| **Fully Agentic** | LLM reasons and acts without human in loop | Non-deterministic input + LLM reasoning required + reversible + low risk | Spam classification at scale; sentiment routing where rules can't cover all cases |
+
+> **Critical distinction:** "Fully Automated" and "Fully Agentic" are not the same tier. High-volume + deterministic work (form routing, status polling, threshold alerts) belongs in **Fully Automated** — a rules engine is cheaper, faster, and more auditable than an LLM for this work. Reserve "Fully Agentic" for tasks where the correct answer genuinely cannot be expressed as an if/else rule.
 
 ---
 
@@ -88,10 +91,14 @@ Based on your scores, assign each task cluster to one of five operating modes:
    - Low exception rate (< 5%) + low risk (score 4–5) → can reduce to agent-led
 
 3. **Assign archetype**:
-   - Suitability ≥ 4.5 + low exception + low risk → **Fully Agentic**
-   - Suitability ≥ 4.5 + moderate exception → **Agent-led + Human Oversight**
-   - Suitability 3–4.4 + mixed judgment → **Human-led + Agent Support**
-   - Suitability < 3 → **Human-led + Automation Support** or **Human Only**
+   - Suitability ≥ 4.5 + low exception + low risk + **deterministic** → **Fully Automated** (rule engine / cron job — not an LLM agent)
+   - Suitability ≥ 4.5 + low exception + low risk + **non-deterministic** → **Fully Agentic** (LLM reasoning required; rare)
+   - Suitability 3–4.4 + non-deterministic inputs + LLM adds value over lookup → **Agent-led + Human Oversight**
+   - Suitability 3–4.4 + deterministic ranking/surfacing but human makes final call → **Human-led + Automation Support**
+   - Suitability 3–4.4 + mixed judgment + agent synthesises for human → **Human-led + Agent Support**
+   - Suitability < 3 or critical risk → **Human Only**
+
+   > **Watch out for:** Assigning "Fully Agentic" or "Agent-led" to tasks that score high on determinism. A high determinism score means a rules engine is the right tool — not an LLM. The score tells you automation is safe; it does not tell you an agent is required.
 
 ---
 
@@ -110,7 +117,7 @@ Based on your scores, assign each task cluster to one of five operating modes:
 
 ---
 
-## The Anti-Pattern: "Everything is Fully Agentic"
+## Anti-Pattern 1: "Everything is Fully Agentic"
 
 **Most common Week 2 mistake:** Assigning "Fully Agentic" to everything because the agent *can* technically do it.
 
@@ -119,6 +126,26 @@ Based on your scores, assign each task cluster to one of five operating modes:
 - Ask: "What's the exception rate?" If > 15%, human must review or escalate.
 - Ask: "If it fails, who notices?" If "the customer complains first," it's human-led oversight territory.
 - Ask: "Is there policy discretion here?" If yes, agent can recommend but human should decide.
+
+---
+
+## Anti-Pattern 2: Confusing High-Volume Deterministic Work with "Agentic"
+
+**Second most common mistake:** Assigning "Fully Agentic" or "Agent-led" to high-volume, rule-based tasks because they "feel" like automation.
+
+**The distinction that matters:**
+
+| Work type | Right tool | Wrong label |
+|---|---|---|
+| `if deadline + 24h < now → send reminder` | Cron job / scheduled script | ~~Fully Agentic~~ |
+| `start_date + offset_days` | Formula / workflow rule | ~~Agent-led~~ |
+| `role → lookup access_package → submit API` | Workflow automation | ~~Agent-led + Oversight~~ |
+| `sort candidates by seniority_delta` | Sort algorithm | ~~Agent-led + Oversight~~ |
+| Compliance track when matrix has no exact match | LLM inference | **Agent-led + Oversight** ✓ |
+
+**The test:** Can you write the decision as a complete if/else rule *right now*, with no ambiguity? If yes → automation. If you'd need an LLM to handle edge cases because the rule space is too large or context-dependent → agentic.
+
+**Why it matters:** LLM inference is slower, more expensive, and harder to audit than a rules engine. Using an agent where a scheduled job works is over-engineering, not sophistication. It also creates a false impression that "AI" is doing something intelligent when it isn't.
 
 ---
 
@@ -178,6 +205,34 @@ Add a one-line explanatory note above the table explaining what it shows.
 ```
 
 **What this fixed:** Replaced the abbreviation-heavy 8-column table with a 6-column table where each cell carries enough context to be understood standalone. The Delegation Level column is now the rightmost column so the eye naturally reads to the conclusion after scanning the evidence.
+
+---
+
+### Prompt 4: Distinguish deterministic automation from agentic work
+
+```
+Review the delegation archetypes in this document.
+High-volume + low non-determinism work (e.g. spam filtering, form routing, threshold
+alerts, lookup-based submissions) belongs in "Fully Automated" or
+"Human-led + Automation Support" — NOT "Fully Agentic" or "Agent-led + Oversight."
+Agents are for non-determinism. A rules engine is cheaper, faster, and more reliable
+for deterministic work.
+
+For each cluster currently labelled "Fully Agentic" or "Agent-led + Oversight":
+1. Can the decision be expressed as a complete if/else rule right now?
+2. Would a rules engine produce the same output as an LLM 95%+ of the time?
+
+If both answers are yes: reclassify as "Fully Automated."
+If the agent's value is only in sorting/filtering for a human: reclassify as
+"Human-led + Automation Support."
+Reserve "Agent-led + Oversight" only for tasks where LLM inference handles cases
+a lookup table cannot.
+```
+
+**What this caught in the Aldridge & Sykes project:**
+- Cluster 4 (Buddy Matching) reclassified from "Agent-Led + Oversight" → "Human-Led + Automation Support". The ranking algorithm is a sort function. The human decision (team fit) is not reducible to a rule.
+- Cluster 5 (IT Provisioning) reclassified from "Agent-Led + Oversight" → "Fully Automated". The main path is a matrix lookup + API call. The IT approval gate is IT's governance, not agent reasoning.
+- Cluster 3 (Compliance Training) **retained** as "Agent-Led + Oversight" — the only cluster where partial matrix matches genuinely require LLM inference over a lookup.
 
 ---
 
