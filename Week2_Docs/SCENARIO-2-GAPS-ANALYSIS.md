@@ -471,3 +471,143 @@ Example for Scenario 2:
 
 ---
 
+## Pass / Fail Verdict: Would Scenario 2 Assessment Pass as-is?
+
+### ⚠️ **Current Status: PASS with Caveats (72% Readiness)**
+
+Someone completing a Scenario 2 assessment with the current Week2_Docs **would likely pass**, but they would do so despite gaps, not because of them. Here's why:
+
+---
+
+### What Would Pass
+
+✅ **Deliverable 1 (Discovery Questions)** — Likely to pass, but could be stronger
+- The framework for eliciting lived work is solid
+- The funneling structure (broad → narrow → probe) is effective
+- A participant will produce 6 defensible discovery questions
+- **Missing:** Explicit prompting to ask *why* hard boundaries exist; Labor Arbitrage questions
+- **Outcome:** Pass, but discovery questions won't surface the hidden risks that would strengthen the design
+
+✅ **Deliverable 2 (Cognitive Load Map)** — Likely to pass
+- The 4 work streams decompose cleanly into Jobs to be Done
+- Artefacts provide concrete material to map against
+- The zones/breakpoints structure works well
+- **Missing:** Clear guidance on how to map judgment-based work; no examples of how lived work differs from SOP
+- **Outcome:** Pass, but map might be incomplete on escalation decision logic
+
+✅ **Deliverable 3 (Delegation Suitability Matrix)** — Likely to pass, but with major risk
+- The 5-dimension rubric is solid
+- Scoring logic is clear
+- **RISK:** Participant might score counteroffer work as "Fully Agentic" or "Agent-Led" when it should be "Human-Only"
+- **Missing:** Guidance on hard boundaries (Gap 1) that explicitly states: "Stakeholder veto overrides scoring"
+- **Outcome:** Pass, but might recommend wrong delegation architecture if peer review doesn't catch the over-automation
+
+✅ **Deliverable 4 (Volume × Value Analysis)** — Likely to pass
+- The V×V framework is clear and reusable
+- Volumes are provided in the brief (300/quarter contracts, 4 work streams)
+- Scoring and prioritization logic works
+- **Missing:** Guidance on how stakeholder risk tolerance affects ROI; how labor arbitrage changes the economic case
+- **Outcome:** Pass, but economic analysis might miss organizational constraints (Tom's role, budget implications)
+
+⚠️ **Deliverable 5 (Agent Purpose Document)** — RISKY; might pass, but with major gaps
+- The 10-section structure is excellent
+- Purpose statement, scope, autonomy matrix, activities all have good guidance
+- **CRITICAL GAPS:**
+  - No guidance on audit trail design (Gap 4) → agent design won't include evidence chains needed for legal compliance
+  - No guidance on vendor-controlled interfaces (Gap 2) → agent design assumes centralized workflows when really redlines come via email
+  - No guidance on handling stale data (Gap 6) → agent design assumes playbook is current when it's known to be outdated
+- **Outcome:** Likely pass (the structure is there), but agent design will be incomplete and won't address real constraints; would fail real implementation
+
+❌ **Deliverable 6 (System/Data Inventory)** — RISKY; likely to underperform
+- The system inventory template is solid for API-first systems
+- **Critical gaps:**
+  - No template for vendor-controlled or batch-only systems (Gap 2)
+  - No column for data debt/staleness (Gap 6)
+  - No guidance on how to document email/attachment-based workflows
+- **Outcome:** Inventory will be incomplete; won't capture VendorCo email attachment constraint, Saba LMS batch window, or playbook staleness
+- This is a Gate 2 rubric item ("addresses real integration constraints") — likely to score lower
+
+⚠️ **Deliverable 7 (Discovery Questions for Stakeholder)** — Likely to pass, but weak
+- Participants will generate 6 valid discovery questions
+- **Missing:** Explicit prompting to surface hidden reasons behind hard boundaries (Gap 5); questions about labor arbitrage (Gap 3)
+- **Outcome:** Pass, but discovery questions won't be as sharp or design-changing as they could be
+
+❌ **CLAUDE.md (Workflow Discipline)** — Depends on participant execution
+- No Week 2-specific guidance provided in current docs
+- Participant must infer how to document their ATX thinking
+- **Outcome:** Varies by participant; not a docs gap per se, but lack of Week 2-specific CLAUDE.md examples is a miss
+
+---
+
+### What Would Likely Fail or Score Low
+
+❌ **Failure Mode 1: Over-Automation**
+- **Scenario:** Participant scores counteroffer work as "Fully Agentic" or "Agent-Led" because Gap 1 (hard boundaries) isn't explained
+- **Why it happens:** The scoring rubric looks good on paper; participant doesn't realize hard boundaries override scores
+- **Peer review catch:** Week 2 peer reviewers are trained to spot this anti-pattern, so it *might* get caught
+- **Gate 2 catch:** Coaches will ask in clarification round: "Can the agent decide whether to propose a counteroffer, or does the lawyer always decide?" — if participant says "agent decides," that's a failing answer
+- **Verdict:** Would likely be corrected by peer review or gate clarification, but without Gap 1 guidance, it's a risk
+
+❌ **Failure Mode 2: Incomplete Agent Design**
+- **Scenario:** Participant builds Agent Purpose Document without audit trail section (Gap 4), without handling for email/batch systems (Gap 2), and without data debt flags (Gap 6)
+- **Why it happens:** Section 7 of DELIVERABLE-5 (System & Data Requirements) doesn't prompt for these
+- **Outcome:** Agent design looks complete on surface, but is missing critical implementation details that would surface in real build
+- **Verdict:** Would pass as a Week 2 deliverable (it's well-structured), but would score lower on "completeness" and "addresses real constraints" rubric items
+
+❌ **Failure Mode 3: Weak Discovery Questions**
+- **Scenario:** Participant generates 6 valid but generic discovery questions without surfacing the hidden risks
+- **Example weak questions:** "What's your typical contract volume?" vs. **strong question:** "If a customer later disputed clause X, what evidence would you need to prove we reviewed it?" (reveals audit trail requirement)
+- **Why it happens:** Gap 5 (surfacing hidden reasons behind hard boundaries) isn't explicit in discovery guidance
+- **Outcome:** Questions pass the "valid discovery question" bar, but don't hit the "design-changing" bar
+- **Verdict:** Pass on technical criteria, but score lower on "judgment" and "FDE thinking" dimensions of rubric
+
+---
+
+### The Real Risk: Implementation vs. Assessment
+
+**For Week 2 assessment:** Current docs would likely yield a **PASS** (probably 70-80% score depending on rubric weights)
+
+**For real implementation:** Current docs would lead to **FAILURE** because:
+1. Agent would lack audit trail design
+2. Agent wouldn't handle email/batch constraints
+3. Agent would depend on stale playbook
+4. Organizational implications (Tom's role) weren't addressed
+
+**This is the distinction:** Week 2 is assessing *thinking*, not implementation. The gaps don't prevent someone from passing Week 2, but they do prevent the designed agent from working in production.
+
+---
+
+### Recommendation: What's Needed for Strong Pass (85%+)
+
+To move from **72% readiness → 90%+ readiness**, add:
+
+1. **Gap 1 (Hard Boundaries)** — 15 min to add to PHASE-3
+2. **Gap 5 (Why Behind the Rule)** — 10 min to add to PHASE-1
+3. **Gap 2 (Vendor-Controlled Systems)** — 20 min to add to PHASE-7
+4. **Gap 6 (Data Debt)** — 15 min to add to PHASE-7
+5. **Gap 3 (Labor Arbitrage)** — 10 min to add to PHASE-1
+6. **Gap 4 (Audit Trail)** — 20 min to add to PHASE-5
+
+**Total effort:** ~90 minutes to augment Week2_Docs to 90%+ readiness.
+
+**Impact:** Participants would produce stronger assessments, catch the anti-patterns earlier (peer review), and design agents that are closer to implementable.
+
+---
+
+### Bottom Line
+
+| Assessment Dimension | Current Readiness | Pass? | Score Range | Risk |
+|---|---|---|---|---|
+| **Discovery Questions** | 80% | Yes | 70-80% | Medium — lacks deep probing on hard boundaries |
+| **Cognitive Load Map** | 75% | Yes | 70-80% | Medium — might miss judgment-based zones |
+| **Delegation Matrix** | 65% | Risky | 60-75% | **High** — risk of over-automation without Gap 1 guidance |
+| **Volume × Value** | 80% | Yes | 75-85% | Low |
+| **Agent Purpose Doc** | 70% | Yes, but weak | 65-75% | Medium — missing audit/batch/data-debt sections |
+| **System/Data Inventory** | 60% | No | 50-70% | **High** — missing vendor-controlled systems; incomplete |
+| **CLAUDE.md** | 50% | Depends | 40-70% | High — no Week 2-specific guidance |
+| **Overall** | **72%** | **Borderline Pass** | **65-78%** | **Medium-High** |
+
+**Verdict:** Would likely pass (most deliverables have solid structure), but would score in the **70-75% range** rather than 80%+. With the 6 gaps addressed, could easily reach **85%+**.
+
+---
+
