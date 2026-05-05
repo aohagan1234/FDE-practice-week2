@@ -4,6 +4,51 @@ This document shows exactly where gaps exist in Week2_Docs, what's currently the
 
 ---
 
+## What's Working Well (Strengths of Current Week2_Docs)
+
+### ✅ 1. Scenario 2 Brief is Excellent
+
+The enriched scenario brief is well-crafted and will enable strong assessments:
+
+- **Three artefacts surface real tensions:** Tom's margin notes show judgment calls and tribal knowledge; VendorCo's email shows system constraints; Amelia's sticky note shows data debt. These aren't superficial examples — they ground work in lived reality.
+- **Stakeholder motivations are clear:** Amelia has a hard rule (no counteroffer without sign-off), CRO is pushing for faster turnaround, Tom does routine work that feels automatable. These constraints create real design-changing tensions.
+- **"What you're expected to elicit" section is spot-on:** Correctly identifies that discovery should surface *why* the hard rule exists, not just confirm it exists.
+
+### ✅ 2. ATX Reference Library is Reusable for Legal Workflows
+
+The existing ATX docs (Concepts, Scoring, Agent Mapping, Assessment, Economics) work just as well for contract review as they do for HR onboarding:
+
+- **Delegation archetype taxonomy** applies cleanly: "Fully Agentic" for standard clause classification, "Agent-Led + Oversight" for escalations, "Human-Only" for counteroffer strategy.
+- **Volume × Value analysis** framework works: You can score contract review on the same dimensions (volume, non-determinism, risk, reversibility).
+- **Cognitive Load Map** structure fits: You can decompose the 4 work streams into Jobs to be Done, micro-tasks, zones, and breakpoints.
+
+**No new methodology is needed.** The existing framework is sound.
+
+### ✅ 3. Peer Review Rubric Catches the Right Anti-Pattern
+
+The Week 2 guidance explicitly warns: *"Everything is fully agentic" is the anti-pattern to catch.*
+
+This is exactly what people building a contract-review agent will try to do, because:
+- Clause classification *feels* like a machine-learning task
+- It's high-volume and rule-heavy
+- An AI model can read contracts
+
+But Scenario 2 forces the real question: "If we automate clause classification, what about the counteroffer negotiation? Can we automate that too?" The answer is "no" (Amelia's hard rule), and the peer review rubric will catch anyone who tries.
+
+### ✅ 4. Sample Artefacts Show Lived Work, Not Just SOPs
+
+- **Artefact 2.1 (Tom's margin notes)** reveals the paralegal's mental model — not a checklist, but judgment calls with nuance ("FLAG — but negotiable")
+- **Artefact 2.2 (VendorCo email)** shows a real system constraint — vendor-controlled interface that breaks assumptions about centralized workflows
+- **Artefact 2.3 (Amelia's sticky note)** exposes organizational debt — the playbook is stale, updates are pending, but haven't been implemented
+
+These artefacts are teaching moments. They show that the real workflow is messier, more constrained, and more human-dependent than the SOP suggests.
+
+---
+
+## The 6 Gaps (Where Week2_Docs Needs Augmentation)
+
+---
+
 ## Gap 1: Rule-Based vs Judgment-Based Work
 
 **File:** `PHASE-3-delegation-suitability.md`  
