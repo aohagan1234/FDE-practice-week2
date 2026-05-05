@@ -22,13 +22,12 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
    - Determinism: 90% rule-based logic, 10% judgment/exception handling
    - Value Score: 10/25 (solid candidate when bundled with I-9 monitoring)
 
-2. **Delegation Profile:** 50% of onboarding is rule-based and automatable; 35% requires human oversight; 15% must remain human-only
-   - Fully Automated (rule engine / scheduled job): clusters 1, 5 main path, 6, 7, 9 — Phase 1 CoordinationOrchestrator
-   - Agent-Led + Oversight (LLM, human approves): 3 use cases — compliance track partial matching (C3), hire type from employment agreement text (C2 ambiguous path), access package for unmapped roles (C5 exception path) — Phase 2 Proposal Router
-   - Human-Led + Automation Support: cluster 4 (buddy ranking is automation; selection is human judgment)
-   - Human-Led + Agent Support: cluster 2 (clear path) — automation flags; human classifies
-   - Human Only: cluster 8 (hold decisions)
-   - Note: "Fully Agentic" (LLM, no human in loop) applies to zero clusters
+2. **Delegation Profile:** 50% of onboarding is rule-based and runs fully autonomously; 35% requires human oversight; 15% must remain human-only
+   - **Fully Agentic** (autonomous within defined bounds): clusters 1, 5 main path, 6, 7, 9 — Phase 1 CoordinationOrchestrator (rule engine; no LLM)
+   - **Agent-led + Human Oversight** (LLM proposes, human approves): 3 use cases — compliance track partial matching (C3), hire type from employment agreement text (C2 ambiguous path), access package for unmapped roles (C5 exception path) — Phase 2 Proposal Router
+   - **Human-led + Automation Support**: cluster 4 (buddy ranking is automation; selection is human judgment)
+   - **Human-led + Agent Support**: cluster 2 (clear path) — automation flags; human classifies
+   - **Human Only**: cluster 8 (hold decisions)
 
 3. **ROI Reality:** Marginal monetary ROI (18–24 month payback) but significant compliance & experience benefits
    - Time freed: ~16 hours/person/year from automation
@@ -139,23 +138,23 @@ This document presents a comprehensive Week 2 ATX assessment of the HR Onboardin
 
 | Cluster | Suitability | Archetype | Primary Reason |
 |---|---|---|---|
-| 1. Task Deadline Calculation | 5.0/5 | **Fully Automated** | Pure arithmetic; no LLM reasoning; implement as cron job |
-| 2. Hire Type Classification | 2.3/5 | **Human-Led + Agent Support** (LLM for ambiguous ~10%) | Clear path: automation flags; ambiguous path: LLM reads employment agreement text and proposes classification |
-| 3. Compliance Training Track Proposal | 3.3/5 | **Agent-Led + Oversight** | 20% exception rate; human approval required |
-| 4. Buddy Matching & Selection | 3.0/5 | **Human-Led + Automation Support** | Ranking is arithmetic (sort by seniority_delta); team fit decision is human-only |
-| 5. IT Provisioning Request | 3.7/5 | **Fully Automated** (main) + **Agent-Led + Oversight** (unmapped) | Main path: lookup + submit. Unmapped roles (~10%): LLM proposes nearest access package; IT Manager approves |
-| 6. Task Status Monitoring & Reminders | 4.0/5 | **Fully Automated** | Deterministic threshold logic; scheduled poller; no LLM needed |
-| 7. I-9 Compliance Monitoring | 4.8/5 | **Fully Automated (Mandatory)** | Federal mandate; binary day-count rule; zero discretion |
+| 1. Task Deadline Calculation | 5.0/5 | **Fully Agentic** | Pure arithmetic; autonomous within defined bounds; implement as rule engine / cron job (no LLM) |
+| 2. Hire Type Classification | 2.3/5 | **Human-led + Agent Support** (LLM for ambiguous ~10%) | Clear path: automation flags; ambiguous path: LLM reads employment agreement text and proposes classification |
+| 3. Compliance Training Track Proposal | 3.3/5 | **Agent-led + Human Oversight** | 20% exception rate; LLM proposes from partial matrix matches; human approval required |
+| 4. Buddy Matching & Selection | 3.0/5 | **Human-led + Automation Support** | Ranking is arithmetic (sort by seniority_delta); team fit decision is human-only |
+| 5. IT Provisioning Request | 3.7/5 | **Fully Agentic** (main) + **Agent-led + Human Oversight** (unmapped) | Main path: autonomous lookup + submit. Unmapped roles (~10%): LLM proposes nearest access package; IT Manager approves |
+| 6. Task Status Monitoring & Reminders | 4.0/5 | **Fully Agentic** | Deterministic threshold logic; autonomous scheduled poller; no LLM needed |
+| 7. I-9 Compliance Monitoring | 4.8/5 | **Fully Agentic (mandatory)** | Federal mandate; binary day-count rule; zero discretion; autonomous escalation |
 | 8. Hold Decision & Onboarding Pause | 2.0/5 | **Human Only** | Irreversible employment action; legal implications |
-| 9. Manager Handoff & Completion Check | 4.6/5 | **Fully Automated** | Deterministic boolean trigger; scheduled job |
+| 9. Manager Handoff & Completion Check | 4.6/5 | **Fully Agentic** | Deterministic boolean trigger; autonomous scheduled job |
 
 ### Archetype Distribution
 
-- **Fully Automated** (rule engine / scheduled job): 5 clusters = ~55% of work
-- **Agent-Led + Oversight** (genuine LLM use): 1 cluster = ~15% of work
-- **Human-Led + Automation Support**: 1 cluster = ~15% of work
-- **Human-Led + Agent Support**: 1 cluster = ~10% of work
-- **Human Only**: 1 cluster = ~5% of work
+- **Fully Agentic** (autonomous within defined bounds): clusters 1, 5 (main), 6, 7, 9 = ~50% of work — Phase 1 rule engine, no LLM
+- **Agent-led + Human Oversight** (LLM proposes, human approves): 3 use cases across clusters 2, 3, 5 = ~20% of work — Phase 2 Proposal Router
+- **Human-led + Automation Support**: cluster 4 = ~15% of work
+- **Human-led + Agent Support**: cluster 2 (clear path) = ~10% of work
+- **Human Only**: cluster 8 = ~5% of work
 
 **Interpretation:** The CoordinationOrchestrator is correctly a rule engine, not an AI agent. The only genuine LLM use case is Cluster 3 (compliance track partial-match reasoning), and even that requires human approval. Clusters 4 and 5 were reclassified after applying the test: "Can the decision be expressed as a complete if/else rule right now?" — if yes, it is automation, not agency.
 

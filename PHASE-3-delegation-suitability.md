@@ -66,13 +66,14 @@ Based on your scores, assign each task cluster to one of five operating modes:
 | Archetype | Characteristics | Score Drivers | Example |
 |---|---|---|---|
 | **Human Only** | No delegation; human does all work | Very high judgment + critical risk | Visa compliance review for expired work permit |
-| **Human-led + Automation Support** | Tools accelerate execution; human controls | Deterministic rules + human must make the real decision | Auto-sort buddy candidates by seniority; human selects based on team fit |
+| **Human-led + Automation Support** | Tools accelerate execution; judgment stays human | Deterministic rules + human must make the real decision | Auto-sort buddy candidates by seniority; human selects based on team fit |
 | **Human-led + Agent Support** | Agent synthesizes & recommends; human decides | Mixed determinism + moderate complexity | Agent pulls salary benchmarks; HR approves offer |
-| **Agent-led + Human Oversight** | Agent reasons and proposes; human approves before execution | Non-deterministic input + LLM inference adds value over a lookup | Agent proposes compliance track when matrix has partial match; HR approves |
-| **Fully Automated** | Deterministic rule engine or scheduled job; no LLM reasoning | Highly deterministic + low exception + low risk + full tool coverage | Deadline calculation (`start_date + offset_days`); I-9 day-count monitoring |
-| **Fully Agentic** | LLM reasons and acts without human in loop | Non-deterministic input + LLM reasoning required + reversible + low risk | Spam classification at scale; sentiment routing where rules can't cover all cases |
+| **Agent-led + Human Oversight** | Execution delegated; supervision mandatory; human approves before or after | Non-deterministic input + LLM inference adds value over a lookup | Agent proposes compliance track when matrix has partial match; HR approves |
+| **Fully Agentic** | Autonomous within defined bounds; no per-case human review | High-volume, structured, reversible, well-governed | Deadline calculation (`start_date + offset_days`); I-9 day-count monitoring; spam classification at scale |
 
-> **Critical distinction:** "Fully Automated" and "Fully Agentic" are not the same tier. High-volume + deterministic work (form routing, status polling, threshold alerts) belongs in **Fully Automated** — a rules engine is cheaper, faster, and more auditable than an LLM for this work. Reserve "Fully Agentic" for tasks where the correct answer genuinely cannot be expressed as an if/else rule.
+> **Implementation note:** "Fully Agentic" describes the *governance model* — the agent acts without per-case human review. The implementation may be a rule engine, a scheduled job, or an LLM depending on whether the task is deterministic. Both are correctly "Fully Agentic" if they execute autonomously within defined bounds. The technology choice (rules engine vs LLM) belongs in the rationale, not the archetype label.
+>
+> **The determinism test:** Can you write the complete if/else rule right now with no ambiguity? If **yes** → implement as a rule engine (Fully Agentic). If **no** (input space too large, context-dependent, or unstructured) → LLM reasoning needed; add a human approval step (Agent-led + Human Oversight). A rules engine is cheaper, faster, and more auditable than an LLM for deterministic work — never use an LLM where a rule will do.
 
 ---
 
@@ -91,14 +92,13 @@ Based on your scores, assign each task cluster to one of five operating modes:
    - Low exception rate (< 5%) + low risk (score 4–5) → can reduce to agent-led
 
 3. **Assign archetype**:
-   - Suitability ≥ 4.5 + low exception + low risk + **deterministic** → **Fully Automated** (rule engine / cron job — not an LLM agent)
-   - Suitability ≥ 4.5 + low exception + low risk + **non-deterministic** → **Fully Agentic** (LLM reasoning required; rare)
+   - Suitability ≥ 4.5 + low exception + low risk → **Fully Agentic** (autonomous within defined bounds; implement as rule engine if deterministic, LLM if not)
    - Suitability 3–4.4 + non-deterministic inputs + LLM adds value over lookup → **Agent-led + Human Oversight**
    - Suitability 3–4.4 + deterministic ranking/surfacing but human makes final call → **Human-led + Automation Support**
    - Suitability 3–4.4 + mixed judgment + agent synthesises for human → **Human-led + Agent Support**
    - Suitability < 3 or critical risk → **Human Only**
 
-   > **Watch out for:** Assigning "Fully Agentic" or "Agent-led" to tasks that score high on determinism. A high determinism score means a rules engine is the right tool — not an LLM. The score tells you automation is safe; it does not tell you an agent is required.
+   > **Watch out for:** Assigning "Agent-led + Human Oversight" to tasks that score high on determinism. A high determinism score means a rules engine is the right tool — implement as Fully Agentic (rule engine), not as an LLM agent. The score tells you autonomous execution is safe; the determinism test tells you which implementation to use.
 
 ---
 
@@ -230,9 +230,9 @@ a lookup table cannot.
 ```
 
 **What this caught in the Aldridge & Sykes project:**
-- Cluster 4 (Buddy Matching) reclassified from "Agent-Led + Oversight" → "Human-Led + Automation Support". The ranking algorithm is a sort function. The human decision (team fit) is not reducible to a rule.
-- Cluster 5 (IT Provisioning) reclassified from "Agent-Led + Oversight" → "Fully Automated". The main path is a matrix lookup + API call. The IT approval gate is IT's governance, not agent reasoning.
-- Cluster 3 (Compliance Training) **retained** as "Agent-Led + Oversight" — the only cluster where partial matrix matches genuinely require LLM inference over a lookup.
+- Cluster 4 (Buddy Matching) reclassified from "Agent-led + Human Oversight" → "Human-led + Automation Support". The ranking algorithm is a sort function. The human decision (team fit) is not reducible to a rule.
+- Cluster 5 (IT Provisioning) main path reclassified from "Agent-led + Human Oversight" → "Fully Agentic" (rule engine). The main path is a matrix lookup + API call — autonomous within defined bounds. The IT approval gate is IT's governance, not agent reasoning. The unmapped role exception (~10%) remains "Agent-led + Human Oversight" (LLM proposes nearest package; IT Manager approves).
+- Cluster 3 (Compliance Training) **retained** as "Agent-led + Human Oversight" — the only cluster where partial matrix matches genuinely require LLM inference over a lookup.
 
 ---
 
