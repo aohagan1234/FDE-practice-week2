@@ -35,6 +35,7 @@
 | **Consignment lookup** | Consignment ID matches CRM record | Status is one of: pre-dispatch, out-for-delivery, delivered | Return status to customer | <1 min |
 | **Status = Delivered** | Delivery already completed | Return delivery time + signature | Reply: "Delivered at [time], signed by [name]" | <1 min |
 | **Status = Pre-dispatch** | Consignment not yet left warehouse | No driver assigned yet | Reply: "Departing tomorrow 08:00. Will arrive by [next-day window]" | <1 min |
+| **Status = Exception** | Delivery flagged as refused / damaged / on-hold | Return exception reason from CRM; create escalation case | Reply: "There's an issue with this delivery — our team will contact you within [SLA]"; route to dispatcher queue | <1 min (reply); dispatcher picks up case |
 | **Inquiry deduplication** | Same customer + consignment asked <1h ago | Prior response is cached | Reply from cache (avoid duplicate driver query) | <30 sec |
 
 ### 2.2 Agent-led with explicit escalation
@@ -221,7 +222,7 @@ END
 - **Message queue:** Use existing SMS/call/app routing (agent replies go to same channel as inquiry)
 - **Manual escalation:** Create cases in CRM "ETA escalation" queue for humans to handle
 
-**Integration effort:** LOW. All systems already exist; agent is middleware (read from CRM, message driver, write to case queue, send customer reply).
+**Integration effort:** LOW to MEDIUM. Salesforce CRM REST API is confirmed available. Driver app integration is LOW confidence (D5 Assumption A2): the brief states driver-to-dispatch messaging exists, but whether the agent can programmatically query GPS coordinates or send messages via API is unconfirmed. If the driver app exposes a messaging API, integration effort is LOW. If message-only access exists via the existing dispatch channel, integration effort is MEDIUM (async message pattern). If no API surface is available, the driver contact capability is removed and integration effort drops back to LOW (CRM-only) but ETA tightness degrades.
 
 ---
 
