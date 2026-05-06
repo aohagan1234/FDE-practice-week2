@@ -28,17 +28,19 @@
 
 ## 2. AGENT AUTONOMY MATRIX
 
-### 2.1 Fully autonomous (Agent decides, no human involved)
+**Implementation note:** Not every task in this matrix requires an LLM agent. Tasks that are deterministic lookups or rule evaluations are handled by the workflow layer (event-driven API calls, rule-based response templates). The LLM agent layer handles only tasks where ambiguity resolution, async reasoning, or contextual judgment is required — primarily Cluster 2b (ETA generation + driver sync). This distinction is intentional; applying LLM inference to a database lookup is over-engineering.
 
-| Task | Condition | Decision | Action | SLA |
+### 2.1 Workflow-handled (no LLM agent — deterministic rule/lookup)
+
+| Task | Condition | Logic | Action | SLA |
 |---|---|---|---|---|
-| **Consignment lookup** | Consignment ID matches CRM record | Status is one of: pre-dispatch, out-for-delivery, delivered | Return status to customer | <1 min |
-| **Status = Delivered** | Delivery already completed | Return delivery time + signature | Reply: "Delivered at [time], signed by [name]" | <1 min |
-| **Status = Pre-dispatch** | Consignment not yet left warehouse | No driver assigned yet | Reply: "Departing tomorrow 08:00. Will arrive by [next-day window]" | <1 min |
-| **Status = Exception** | Delivery flagged as refused / damaged / on-hold | Return exception reason from CRM; create escalation case | Reply: "There's an issue with this delivery — our team will contact you within [SLA]"; route to dispatcher queue | <1 min (reply); dispatcher picks up case |
-| **Inquiry deduplication** | Same customer + consignment asked <1h ago | Prior response is cached | Reply from cache (avoid duplicate driver query) | <30 sec |
+| **Consignment lookup** | Consignment ID matches CRM record | CRM REST API query → status enum | Return status to customer via template | <1 min |
+| **Status = Delivered** | Delivery already completed | Template: delivery time + signature | Reply: "Delivered at [time], signed by [name]" | <1 min |
+| **Status = Pre-dispatch** | Consignment not yet left warehouse | Template: next-day window | Reply: "Departing tomorrow 08:00. Will arrive by [next-day window]" | <1 min |
+| **Status = Exception** | Delivery flagged as refused / damaged / on-hold | Template: exception reason + CRM escalation case creation | Reply with exception reason; route to dispatcher queue | <1 min (reply); dispatcher picks up case |
+| **Inquiry deduplication** | Same customer + consignment asked <1h ago | Cache lookup | Reply from cache (avoid duplicate driver query) | <30 sec |
 
-### 2.2 Agent-led with explicit escalation
+### 2.2 LLM Agent-handled (async reasoning, fallback decisions, escalation judgments)
 
 | Task | Condition | Happy path | Exception path | Escalation SLA |
 |---|---|---|---|---|

@@ -50,9 +50,11 @@
 | **Exception frequency** | **HIGH** | 95%+ of inquiries return a valid consignment. <5% are "not found" (customer error or data lag). Happy path is dominant. |
 | **TOTAL** | **5/6 HIGH** | — |
 
-**Archetype: FULLY AGENTIC**
+**Archetype: WORKFLOW / API INTEGRATION — not an LLM agent**
 
-**Rationale:** This task is an ideal candidate for autonomous handling. Agent can independently resolve 95%+ of incoming inquiries without human oversight. For the <5% "not found" cases, agent falls back to: "This delivery is not yet in our system; checking manual records…" or escalates to dispatcher. The only constraint is Salesforce API availability; if API is down, escalate to manual queue. No compliance risk, no reversibility risk, no judgment required.
+**Rationale:** Determinism is necessary but not sufficient to justify an agent. This task is a database query followed by a `switch` on a status enum (5 states). No natural language reasoning, no ambiguity resolution, no multi-step judgment — just a lookup and a template response. An event-driven API wrapper or rule-based SMS responder handles the 95% happy path cheaper, faster, and with zero hallucination risk. An LLM agent adds no value on a deterministic lookup. The agent earns its place only at the edges: malformed or unrecognised consignment IDs, null/unknown status states, and the exception-routing handoff to the dispatcher. Implementing the whole cluster as "fully agentic" would be over-engineering a database call.
+
+**Correct implementation:** Event-driven workflow (triggered by customer inquiry) → CRM REST API call → rule-based response template keyed on status. LLM agent invoked only for the <5% edge cases (ID not found, null status, ambiguous input).
 
 **Escalation triggers:** (1) Consignment not found → fall back to "checking manual records"; (2) CRM API unavailable → escalate to manual queue; (3) Status is "exception" (delivery refused, damaged, held) → escalate to dispatcher for root-cause context (this is an information handoff, not an approval).
 
@@ -98,11 +100,13 @@
 | **Exception frequency** | **HIGH** | >95% of disputes fit one of the 5 categories. <5% are truly ambiguous (customer vague or dispute type is novel). Escalation is rare. |
 | **TOTAL** | **5/6 HIGH** | — |
 
-**Archetype: FULLY AGENTIC**
+**Archetype: RULE-BASED CLASSIFIER (primary) + LLM FALLBACK (ambiguous cases only)**
 
-**Rationale:** Dispute triage is an ideal candidate for autonomous handling. Agent can independently log and categorize all disputes. For the <5% ambiguous cases, agent can escalate to billing supervisor with flagged comment: "Dispute type unclear; customer says '[quote]'; recommend manual categorization." No human oversight required for the happy path. Categorization is reversible if needed; no financial transaction has been triggered.
+**Rationale:** For 95% of disputes, categorisation is keyword classification: "fuel surcharge" → FUEL_SURCH, "redelivery" → REDELIVERY_FEE, "weight" → DIM_WEIGHT. A lightweight keyword classifier or decision-tree matcher handles this with no LLM needed. An LLM agent earns its place only for the ~5% where the customer is vague ("this charge seems wrong" with no further detail) and category must be inferred from context, tone, or cross-referenced invoice history. Implementing the full cluster as "fully agentic" applies LLM inference to 95% of cases that don't need it.
 
-**Escalation triggers:** (1) Dispute type is ambiguous (customer didn't specify reason) → flag for manual triage; (2) Dispute contains multiple issues (e.g., "charged for surcharge + redelivery fee on same invoice") → split into multiple case records or flag for manual handling.
+**Correct implementation:** Rule-based keyword classifier as primary path (handles ~95%). LLM agent as fallback for inputs the classifier cannot confidently categorise above a confidence threshold. This minimises inference cost and latency on the happy path.
+
+**Escalation triggers:** (1) Classifier confidence below threshold → escalate to LLM agent for interpretation; (2) Dispute contains multiple issues → split into multiple case records or flag for manual handling.
 
 ---
 
@@ -150,9 +154,11 @@
 | **Exception frequency** | **HIGH** | ~70% of disputes result in approval (charge was wrong). ~10% result in rejection (charge is correct). ~20% are edge cases or pending external confirmation. For the 70% approval rate, ~65% are <£50 (agent auto-approves); ~5% are ≥£50 (manager approval). So ~93% of approvals are <£50 (happy path for agent-only decisions). |
 | **TOTAL** | **5/6 HIGH** (assuming audit logging is enforced) | — |
 
-**Archetype: FULLY AGENTIC (approval decision only) + AGENT-LED WITH OVERSIGHT (execution)**
+**Archetype: WORKFLOW RULE EVALUATION — not an LLM agent**
 
-**Rationale:** Credit *approval* for <£50 is rule-based and low-consequence — the agent independently makes the approve/reject decision. However, credit *execution* (entering the credit into Aurum) cannot be fully agentic: Aurum has no API, so entry requires either manual UI or a support ticket (48h turnaround). This is handled in Cluster 4d. The boundary is explicit: agent autonomously decides, then initiates execution via the structured path (which enforces audit logging). CRITICAL CONSTRAINT: Audit logging is mandatory. Agent must log credit decision with (1) APPROVER_ID = agent ID; (2) AUDIT_REF = case ID; (3) REASON_CODE = category; (4) timestamp. This closes the compliance gap shown in Artefact 2. If audit logging is not enforced, this task downgrades to "agent-led with oversight" (human spot-checks audit trail). Artefact 2 incident (manual credit with no AUDIT_REF) is a known compliance risk; agent design must eliminate this risk by making the structured entry path the only available path.
+**Rationale:** The decision rule is `IF charge_is_incorrect AND credit_amount < £50 THEN approve`. That is a conditional expression, not a reasoning task. A workflow rule engine evaluates this in milliseconds with no inference cost, no hallucination risk, and deterministic auditability. An LLM agent deciding this adds nothing. The agent's role in the wider W4 flow (4b investigation) has already produced the `charge_is_incorrect` determination; 4c-i is just applying a threshold check to route to execution. Calling this "fully agentic" conflates automatable with agentic.
+
+**Correct implementation:** Workflow rule evaluation triggered on completion of 4b investigation. If `charge_is_incorrect = true AND credit_amount < £50`, auto-route to 4d execution with logged AUDIT_REF. No LLM agent required. CRITICAL: Audit logging must be enforced by the workflow — APPROVER_ID (workflow/system), AUDIT_REF (case ID), REASON_CODE, timestamp — closing the compliance gap from Artefact 2.
 
 **Escalation triggers:** (1) Credit amount is edge case (exactly £50 or within £5 of threshold) → escalate to manager for discretion; (2) Dispute is linked to reputational risk (VIP customer, social media, escalated complaint) → escalate to manager even if <£50; (3) Credit involves refund (customer overpaid) rather than account credit → escalate for finance processing (different workflow).
 
@@ -196,9 +202,11 @@
 | **Exception frequency** | **MEDIUM** | ~95% of approved credits are entered successfully on first attempt. ~5% fail due to schema changes (Aurum schema changes quarterly) or system issues (batch export delay). Escalation is infrequent. |
 | **TOTAL** | **2/6 HIGH** (High: Determinism, Exception freq.; VERY HIGH: Compliance risk; Low/MEDIUM: Reversibility-LOW, Time crit.-LOW, Data avail.-MEDIUM) | — |
 
-**Archetype: AGENT-LED WITH OVERSIGHT (Audit logging mandatory)**
+**Archetype: TRIGGERED WORKFLOW WITH HUMAN AUDIT CHECK — not an LLM agent**
 
-**Rationale:** Credit entry is deterministic and can be agent-executed, BUT audit logging is mandatory and must be enforced by design. Agent cannot skip AUDIT_REF logging (this is the compliance gap in Artefact 2). Oversight is required on the audit trail, not on the credit decision. Manager (or finance team) must spot-check audit logs weekly to ensure every credit has AUDIT_REF + APPROVER_ID + valid reason code. Agent execution is fast (~2 min); latency comes from Aurum batch (48h if manual ticket required, 24h if system accepts direct entry). Compliance review will scrutinize this step; audit logging is non-negotiable.
+**Rationale:** Credit entry is deterministic form-fill: `(credit_amount, reason_code, customer_id, invoice_no, approver_id, audit_ref)` → submit. Customer notification is template substitution. Case closure is a status update. None of these steps involve reasoning, ambiguity, or judgment — they are execution steps triggered by a prior approval event. A workflow triggered on approval handles this correctly. The "oversight" requirement is on the *audit trail*, not on any agent reasoning — a human (finance team) spot-checks that AUDIT_REF and APPROVER_ID are present on every credit weekly. Framing this as "agent-led" implies LLM involvement where there is none. The Aurum entry itself may require a human to click through a UI or raise a ticket (no API) — that step is human-executed within the workflow, not agent-executed.
+
+**Correct implementation:** Approval event (4c-i or manager sign-off) triggers a workflow that: (1) creates structured Aurum entry record with all required audit fields; (2) initiates Aurum UI entry or support ticket (human-assisted, no API); (3) sends customer notification from template; (4) closes CRM case; (5) writes structured log entry for weekly audit check. No LLM agent required.
 
 **Escalation triggers:** (1) Aurum schema change breaks credit entry form → escalate to IT/Aurum support (manually submit ticket); (2) Customer doesn't see credit on next statement (batch export failed) → investigate batch export logs and resubmit; (3) AUDIT_REF is missing → escalate to finance for audit recovery (compliance incident); (4) Credit amount doesn't match approved amount (data entry error) → reverse and re-enter.
 
@@ -206,38 +214,44 @@
 
 ## 3. DELEGATION MATRIX SUMMARY
 
-| Cluster | Archetype | Justification | Happy-path handling | Escalation rate | Anti-pattern check |
+| Cluster | Implementation | Justification | Happy-path handling | Escalation rate | Agent needed? |
 |---|---|---|---|---|---|
-| **2a: Lookup** | **Fully agentic** | Deterministic lookup, no reversibility risk, data available | Agent independently answers 95%+ of inquiries | <5% | ✅ Appropriate; lookup has no risk |
-| **2b: ETA + driver sync** | **Agent-led with escalation** | Driver latency is real (5+ min possible); agent must have fallback | Agent provides tight ETA for 80% of active deliveries; escalates to dispatcher or fallback for 20% | ~20% | ✅ Appropriate; escalation protocol prevents SLA miss |
-| **4a: Triage** | **Fully agentic** | Deterministic categorization, reversible, no compliance risk | Agent independently categorizes 95%+ of disputes | <5% | ✅ Appropriate; categorization is low-risk administrative task |
-| **4b: Validation** | **Human-led with agent support** | Investigation requires judgment + external confirmation; data has lags | Agent surfaces data + initiates external requests; human makes correctness judgment | ~100% (human always involved) | ✅ Appropriate; investigation is complex with multiple data sources |
-| **4c-i: Approval <£50** | **Fully agentic** (audit logging required) | Rule-based, low consequence, agent authority threshold | Agent independently approves <£50 credits; logs AUDIT_REF | 0% (deterministic) | ⚠️ **Only if audit logging is enforced.** Artefact 2 shows audit gap (no AUDIT_REF); agent design must eliminate this. |
-| **4c-ii: Approval ≥£50** | **Human-only** | Manager authority required; compliance control | Manager always involved; agent routes with summary | ~100% (manager always involved) | ✅ Appropriate; financial control threshold is standard |
-| **4d: Execution** | **Agent-led with oversight** (audit logging mandatory) | Deterministic entry, but reversibility risk + audit trail mandatory | Agent enters credit + logs AUDIT_REF; finance spot-checks audit trail weekly | ~5% (schema changes) | ⚠️ **Only if audit logging is non-negotiable.** Artefact 2 incident is a known gap; design must close it. |
+| **2a: Lookup** | **Workflow / API integration** | Deterministic CRM query + status enum → template response. No reasoning required. | Event-driven workflow handles 95%+ of inquiries | <5% (edges only) | ❌ No — LLM adds nothing to a database call |
+| **2b: ETA + driver sync** | **LLM Agent-led with escalation** | Async driver comms, ETA reasoning from variable inputs, escalation decisions under time pressure | Agent provides tight ETA for 80% of active deliveries; escalates or falls back for 20% | ~20% | ✅ Yes — async reasoning + fallback decision under time pressure |
+| **4a: Triage** | **Rule-based classifier + LLM fallback** | 95% of disputes are keyword-classifiable; LLM only needed for ambiguous cases | Keyword classifier handles ~95%; LLM invoked for <5% below confidence threshold | <5% | ⚠️ Partial — classifier primary, LLM only for ambiguous inputs |
+| **4b: Validation** | **Human-led with agent support** | Investigation requires judgment + external confirmation; data has lags | Agent surfaces data + initiates external requests; human makes correctness judgment | ~100% (human always involved) | ✅ Yes — multi-source synthesis and ambiguity flagging |
+| **4c-i: Approval <£50** | **Workflow rule evaluation** | `IF charge_is_incorrect AND amount < £50 THEN approve` is a conditional, not a reasoning task | Workflow rule fires on 4b completion; auto-routes to execution with AUDIT_REF | 0% (deterministic) | ❌ No — a rule engine is the right tool |
+| **4c-ii: Approval ≥£50** | **Human-only** | Manager authority required; compliance control | Manager always involved; workflow routes with investigation summary | ~100% (manager always involved) | ❌ No — financial control, not an automation problem |
+| **4d: Execution** | **Triggered workflow + human Aurum entry** | Deterministic form-fill + template notification triggered by approval event; Aurum has no API so entry is human-assisted | Workflow executes on approval trigger; human clicks through Aurum UI or raises ticket | ~5% (schema changes) | ❌ No — execution steps with human-assisted entry; no reasoning required |
 
 ---
 
-## 4. ANTI-PATTERN CHECK: "IS EVERYTHING FULLY AGENTIC?"
+## 4. ANTI-PATTERN CHECK: "IS EVERYTHING AGENTIC?"
 
 **Summary distribution:**
-- **Fully agentic:** 3 clusters (2a, 4a, 4c-i with audit)
-- **Agent-led with escalation/oversight:** 2 clusters (2b, 4d with audit)
-- **Human-led with agent support:** 1 cluster (4b)
-- **Human-only:** 1 cluster (4c-ii)
+- **LLM Agent required:** 2 clusters (2b, 4b) — async reasoning, multi-source synthesis, ambiguity resolution
+- **Workflow / rule engine:** 3 clusters (2a, 4c-i, 4d) — deterministic, no reasoning needed
+- **Classifier + LLM fallback:** 1 cluster (4a) — rule-based primary, LLM only for edge cases
+- **Human-only:** 1 cluster (4c-ii) — financial control, manager authority required
 
-**Verdict: ✅ NOT an anti-pattern. Delegation is honest.**
+**Verdict: ✅ NOT an anti-pattern — and not "everything is agentic" either.**
 
-**Rationale:**
-- W2 (ETA): Majority of inquiries can be agent-handled (fully agentic), but ~20% require real-time escalation due to driver latency. Escalation protocol is explicit.
-- W4 (Billing): Only 2/7 task clusters are fully agentic. Investigation (4b) is explicitly human-led (judgment + external confirmation). Manager approval (4c-ii) is human-only (authority threshold + compliance control). Execution (4d) is agent-led but audit logging is mandatory (oversight-required).
-- **Compliance gap is addressed, not hidden.** Artefact 2 shows manual credit audit trail missing. Agent design for 4c-i and 4d explicitly includes AUDIT_REF logging (mandatory, not optional). This closes a known compliance risk.
+**Key distinction applied:** Determinism is necessary but not sufficient to justify an LLM agent. Clusters 2a, 4c-i, and 4d are fully automatable — but the correct implementation is a workflow, rule engine, or triggered job, not an LLM. An agent adds value when there is ambiguity to resolve, async communication to manage, or multi-source data to synthesise under uncertainty. Where none of those apply, a workflow is cheaper, faster, and more reliable.
 
-**Matrix reflects real constraints:**
-- Aurum batch-only is a hard constraint (no real-time API) → acknowledged in 4b, 4d
-- Driver messaging latency is real (5+ min) → acknowledged in 2b with escalation protocol
-- Manager approval queue is real (2–4h) → acknowledged in 4c-ii as human-only
-- Audit trail gap is known risk → addressed by making audit logging non-negotiable in 4c-i, 4d
+**Rationale by cluster:**
+- **2a (Lookup):** CRM query + status enum = workflow. LLM is engineering overhead on a database call.
+- **2b (ETA + driver sync):** Async driver comms + ETA reasoning + escalation decisions under time pressure = LLM agent justified.
+- **4a (Triage):** 95% keyword classification = rule-based classifier. LLM fallback for the 5% that are ambiguous.
+- **4b (Investigation):** Cross-system data synthesis + judgment under uncertainty = LLM agent justified.
+- **4c-i (Approval <£50):** `IF x AND y THEN approve` = rule engine. Calling this "agent" is over-engineering a conditional.
+- **4c-ii (Approval ≥£50):** Financial control = human-only. Neither agent nor workflow.
+- **4d (Execution):** Deterministic form-fill + template notification + Aurum human entry = triggered workflow.
+
+**Constraints reflected:**
+- Aurum batch-only (no API) → 4d requires human-assisted entry; no agent can write to Aurum directly
+- Driver messaging latency → 2b requires async reasoning with explicit fallback
+- Manager approval queue → 4c-ii stays human-only regardless of automation potential
+- Audit trail gap (Artefact 2) → 4c-i and 4d must enforce AUDIT_REF in the workflow, not rely on human discipline
 
 **Comparison to Week 1 (HR Onboarding) anti-patterns:**
 - Week 1: Some clusters scored "fully agentic" on compliance risk even though auditable events were involved (minor gap).
@@ -247,17 +261,17 @@
 
 ## 5. SCORING SUMMARY TABLE
 
-| Cluster | Determinism | Reversibility | Time criticality | Data availability | Compliance risk | Exception frequency | **ARCHETYPE** |
+| Cluster | Determinism | Reversibility | Time criticality | Data availability | Compliance risk | Exception frequency | **IMPLEMENTATION** |
 |---|---|---|---|---|---|---|---|
-| 2a | HIGH | HIGH | MEDIUM | HIGH | HIGH | HIGH | **Fully agentic** |
-| 2b | MEDIUM | MEDIUM | HIGH | MEDIUM | HIGH | MEDIUM | **Agent-led + escalation** |
-| 4a | HIGH | HIGH | MEDIUM | HIGH | HIGH | HIGH | **Fully agentic** |
-| 4b | MEDIUM | MEDIUM | LOW | MEDIUM | MEDIUM | MEDIUM | **Human-led + support** |
-| 4c-i (<£50) | HIGH | MEDIUM | MEDIUM | HIGH | HIGH* | HIGH | **Fully agentic** (audit required) |
+| 2a | HIGH | HIGH | MEDIUM | HIGH | HIGH | HIGH | **Workflow / API integration** |
+| 2b | MEDIUM | MEDIUM | HIGH | MEDIUM | HIGH | MEDIUM | **LLM Agent-led + escalation** |
+| 4a | HIGH | HIGH | MEDIUM | HIGH | HIGH | HIGH | **Rule classifier + LLM fallback** |
+| 4b | MEDIUM | MEDIUM | LOW | MEDIUM | MEDIUM | MEDIUM | **Human-led + agent support** |
+| 4c-i (<£50) | HIGH | MEDIUM | MEDIUM | HIGH | HIGH* | HIGH | **Workflow rule evaluation** |
 | 4c-ii (≥£50) | LOW | MEDIUM | MEDIUM | HIGH | HIGH | MEDIUM | **Human-only** |
-| 4d | HIGH | LOW | LOW | MEDIUM | **VERY HIGH** | MEDIUM | **Agent-led + oversight** (audit required) |
+| 4d | HIGH | LOW | LOW | MEDIUM | **VERY HIGH** | MEDIUM | **Triggered workflow + human Aurum entry** |
 
-*Audit logging mandatory; if not enforced, compliance risk becomes HIGH (downgrade to Human-only).
+*Audit logging enforced by the workflow — AUDIT_REF + APPROVER_ID mandatory fields. Not optional.
 
 ---
 
