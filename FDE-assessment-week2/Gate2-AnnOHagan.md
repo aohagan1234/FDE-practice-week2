@@ -7,6 +7,34 @@
 
 ---
 
+## Scenario Summary
+
+**Client:** Apex Distribution Ltd — a Birmingham-based logistics company running a 35-person Customer Operations team that handles ~730 customer interactions per day across four work streams: delivery exceptions (W1), ETA inquiries (W2), dispatch adjustments (W3), and billing disputes (W4).
+
+**The problem:** Every work stream is manually coordinated across disconnected systems. The live SOP references DispatchHub, a system retired in October 2024. The billing system (Aurum) is an on-premise Oracle instance with no real-time API — it exports batch CSVs with a 24-hour lag and schema changes without notice. A prior RPA project broke when the schema changed. A prior customer chatbot was pulled due to poor uptake. Sarah (Operations Manager) is sceptical; she needs a visible win before committing to a larger programme.
+
+**Recommendation:** Build the ETA inquiry agent (W2) first. At 400 inquiries/day and 4 min avg handling time, W2 is the highest-volume, lowest-risk target — 2.8 FTE savings, 1–2 month payback, and no dependency on Aurum. W4 (billing disputes) has stronger compliance value but higher build complexity; it follows once W2 has demonstrated value and rebuilt stakeholder trust.
+
+**Primary agent:** Coordinator ETA — handles consignment lookup, ETA generation, driver contact protocol, and escalation routing for active deliveries. Phase 1 scope: W2 Clusters 2a + 2b.
+
+**Key constraint:** Aurum batch-only is a hard design boundary, not a workaround. Any agent touching billing data reads from exports, cannot write via API, and must validate schema at ingestion before producing output.
+
+---
+
+## Contents
+
+| Deliverable | What it covers |
+|---|---|
+| [D1 — Cognitive Load Map](#deliverable-1--cognitive-load-map) | W2 (ETA inquiries) + W4 (billing disputes) decomposed into cognitive zones, micro-tasks, and control handoffs |
+| [D2 — Delegation Suitability Matrix](#deliverable-2--delegation-suitability-matrix) | 7 task clusters scored across 6 dimensions; archetypes and boundary rationale |
+| [D3 — Volume × Value Analysis](#deliverable-3--volume--value-analysis) | Volume × Value matrix; W2 selected as Phase 1 target; W4 deferred with rationale |
+| [D4 — Agent Purpose Document](#deliverable-4--agent-purpose-document) | Full spec for Coordinator ETA: autonomy matrix, decision tree, escalation workflows, KPIs, failure modes |
+| [D5 — System/Data Inventory](#deliverable-5--systemdata-inventory) | System landscape, Aurum batch constraint analysis, integration risks, assumption register |
+| [D6 — Discovery Questions](#deliverable-6--discovery-questions) | 10 targeted questions for Sarah; grounded in artefact evidence; if/then design implications |
+| [D7 — CLAUDE.md](#deliverable-7--claudemd) | Workflow summary, anti-pattern avoidance, key decisions and rationale |
+
+---
+
 ## DELIVERABLE 1 — COGNITIVE LOAD MAP
 
 
