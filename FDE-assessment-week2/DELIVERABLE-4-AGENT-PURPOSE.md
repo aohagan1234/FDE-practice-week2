@@ -39,14 +39,16 @@
 | **Status = Pre-dispatch** | Consignment not yet left warehouse | Template: next-day window | Reply: "Departing tomorrow 08:00. Will arrive by [next-day window]" | <1 min |
 | **Status = Exception** | Delivery flagged as refused / damaged / on-hold | Template: exception reason + CRM escalation case creation | Reply with exception reason; route to dispatcher queue | <1 min (reply); dispatcher picks up case |
 | **Inquiry deduplication** | Same customer + consignment asked <1h ago | Cache lookup | Reply from cache (avoid duplicate driver query) | <30 sec |
+| **Detect explicit tight-ETA request** | Customer message contains intent signal | Keyword match: if message contains any of `["urgent", "exact time", "precise", "exactly when", "by [time]", "need to know"]` → set `explicit_tight_eta_requested = true`; all other phrasing → false. No LLM inference — keyword matching is sufficient and deterministic. | Set flag before entering decision tree; used at Step 5 (out-for-delivery path) to decide whether to escalate to dispatcher on driver non-response | <1 sec |
 
 ### 2.2 LLM Agent-handled (async reasoning, fallback decisions, escalation judgments)
 
 | Task | Condition | Happy path | Exception path | Escalation SLA |
 |---|---|---|---|---|
 | **ETA inquiry for active delivery** | Status = "out-for-delivery" | Query driver via Driver app for current location + next-stop ETA | Driver non-responsive >2 min | 2 min wait, then decide |
-| **Driver responds in time** | Driver replies within 2 min | Calculate ETA from driver location + stops remaining + travel time | — | <1 min (templated reply) |
-| **Driver doesn't respond in time** | No driver response within 2 min | Reply to customer with fallback "afternoon 13:00–17:00" window; log as escalation attempt | Escalate to dispatcher for manual driver contact (optional, if customer requests tighter ETA) | Reply sent <2.5 min total |
+| **Driver responds in time (GPS mode)** | Driver replies within 2 min; driver app exposes GPS coordinates | `ETA = now + routing_api(driver_location → delivery_address) + (stops_remaining × avg_stop_duration)`. ETA calculation depends on Q4 confirmation (routing API provider, avg stop duration, stops_remaining unit). Until confirmed, treat GPS mode as unavailable and use fallback. | — | <1 min (templated reply) |
+| **Driver responds in time (MSG mode)** | Driver replies within 2 min; driver app is message-only (no GPS endpoint) | Treat driver reply as confirmation delivery is proceeding normally. Reply with fallback window + "Driver has confirmed your delivery is on track." Do not attempt to parse ETA from free text — keyword extraction on driver messages is unreliable and deferred to Phase 2. | — | <1 min (templated reply) |
+| **Driver doesn't respond in time** | No driver response within 2 min | Reply to customer with fallback "afternoon 13:00–17:00" window; log as escalation attempt | Escalate to dispatcher for manual driver contact (optional, only if `explicit_tight_eta_requested = true` — see Section 2.1) | Reply sent <2.5 min total |
 
 ### 2.3 Human-led (Agent surfaces data, human decides)
 
@@ -83,16 +85,18 @@ T+120 sec: [No response from driver]
 T+121 sec: Agent decides: (a) Reply with fallback window (primary), or (b) Escalate to dispatcher (optional)
 
 Primary (90% of cases): 
-  → Reply to customer: "Your delivery is out for delivery. Best guess: 14:00–15:00 today. 
-     Driver is in [area]; will call you 30 min before arrival."
+  → Reply to customer: "Your delivery is out for delivery. Best estimate: afternoon 13:00–17:00 today.
+     Driver will call you 30 min before arrival."
   → Log as "driver non-responsive" for weekly metrics
   → Close case
+  → Note: "14:00–15:00" in earlier drafts was a worked example, not the template value. Template is 13:00–17:00 (4-hour window); this matches config and Section 3.1.
 
-Optional (10% of cases, if customer is VIP or explicitly requests tighter ETA):
+Optional (10% of cases, if customer explicitly requests tighter ETA — detected via keyword match, Section 2.1):
   → Escalate to dispatcher with comment: "Customer needs tighter ETA. Can you contact driver?"
   → Dispatcher calls/messages driver manually (adds 3–5 min to SLA)
   → Dispatcher replies to agent; agent forwards tight ETA to customer
-  → SLA: 7–10 min total (acceptable for VIP or urgent)
+  → SLA: 7–10 min total (acceptable for urgent requests)
+  → Note: VIP-tier escalation deferred to Phase 2 (requires CRM field confirmation, D6 Q3)
 ```
 
 **Scenario 2: Consignment not found**
@@ -256,6 +260,7 @@ END
 - **W1 (Delivery exceptions):** Defer to Phase 2. Complexity is higher; requires damage assessment rules + insurance lookup.
 - **W3 (Dispatch adjustments):** Defer indefinitely. Requires route optimizer API (not confirmed available).
 - **W4 (Billing disputes):** Defer to Phase 2. Lower volume; higher compliance complexity.
+- **VIP-tier dispatcher escalation:** Deferred to Phase 2. Phase 1 escalates to dispatcher only on explicit customer request (keyword-detected per Section 2.1). VIP tier lookup requires CRM field confirmation (D6 Q3); building on an unconfirmed field name introduces a build risk the pilot doesn't need.
 - **Proactive ETA notifications:** Out of scope. Agent handles reactive inquiries only (customer asks). Future: proactive alerts ("Your delivery will arrive by 3pm") from driver app.
 
 ---
