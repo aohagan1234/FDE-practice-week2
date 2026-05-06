@@ -45,6 +45,21 @@ These artefacts are teaching moments. They show that the real workflow is messie
 
 ---
 
+## The 6 Gaps — Quick Reference
+
+| Gap # | What | Which Files Need Updates | Where to Add | Fix Effort |
+|---|---|---|---|---|
+| 1 | Rule-Based vs Judgment-Based Work (hard boundaries override scoring) | PHASE-3-delegation-suitability.md | After "Scoring Rubric" section | 15 min |
+| 2 | Vendor-Controlled Systems & Batch-Only Interfaces | PHASE-7-system-data-inventory.md | After "System Inventory: Systems The Agent Touches" | 20 min |
+| 3 | Labor Arbitrage & Role Redesign (what happens to Tom?) | PHASE-1-discovery-questioning.md | New subsection in "Level 3: Probe Funnel" | 10 min |
+| 4 | Audit Trail & Decision Evidence Design | PHASE-5-agent-purpose-doc.md | In "Failure Modes" section + new "Audit Trail Design" section | 20 min |
+| 5 | Discovering the "Why" Behind Hard Boundaries | PHASE-1-discovery-questioning.md | Add new question to "Level 3: Probe Funnel" | 10 min |
+| 6 | Data Staleness & Source-of-Truth Quality (Data Debt) | PHASE-7-system-data-inventory.md | Revise "Data Dictionary: Entities & Fields" template | 15 min |
+
+**Total effort to close all gaps:** ~90 minutes
+
+---
+
 ## The 6 Gaps (Where Week2_Docs Needs Augmentation)
 
 ---
