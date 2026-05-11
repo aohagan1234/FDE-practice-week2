@@ -15,7 +15,11 @@ Using the problem framing and scope below, produce the following. Do not include
 | Workflow step | Current method | Delegation level | Reason |
 
 Delegation levels: Fully Agentic | Agent-led + human oversight | Human-led + automation support | Human only.
-At least one step must be Fully Agentic. For that step, the reason must explain why an agent — rather than a rule or deterministic function — is the right mechanism.
+
+For every step marked Fully Agentic or Agent-led, the reason column must answer this question:
+"Does this step require reasoning over context to reach an outcome that a fixed rule or scheduled job could not reach?"
+If the answer is no — if the step could be implemented as an if/else rule, a deterministic function, or a scheduled job — do not mark it as agentic. Mark it as Human-led + automation support and note the simpler implementation instead.
+A step is only agentic if the input conditions are too variable or ambiguous for a rule to handle reliably.
 
 **ADR 1 — [name the decision]**
 - Decision:

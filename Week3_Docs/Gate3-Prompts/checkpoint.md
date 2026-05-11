@@ -19,6 +19,15 @@ For each decision produce:
 **Confirm this with me:** one question I should be able to answer to verify this decision is correct
 
 Do not include minor or implementation-level decisions. Surface only decisions that affect scope, architecture, or agent behaviour.
+
+Then, for every workflow step marked as Fully Agentic or Agent-led, produce a separate validation:
+
+**Step:** [name of the step]
+**Marked as:** [Fully Agentic / Agent-led + human oversight]
+**The case for an agent:** what makes this step unsuitable for a fixed rule, deterministic function, or scheduled job?
+**Verdict:** Agent justified | Not justified — use a workflow or scheduled job instead
+
+A step is only justified as agentic if the inputs are too variable or context-dependent for a rule to handle reliably. If a rule or scheduled job would produce the same outcome more simply and cheaply, flag it as not justified.
 ```
 
 ---
