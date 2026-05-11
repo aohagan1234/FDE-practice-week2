@@ -164,3 +164,116 @@ The design is only as good as its assumptions. The ones below are rated LOW or M
 - **Enriched scenario brief:** `Week2_Docs/enriched_scenarios.md` (Scenario 1 — Aldridge & Sykes)
 - **ATX concepts:** `Resources/atx-concepts.md`
 - **Agent mapping reference:** `Resources/atx-agent-mapping.md`
+
+---
+
+# Week 3 — Build-Loop Diagnosis & Gate 3 Preparation
+
+## What was done in Week 3
+
+### Wednesday preparation
+
+- Read `Week3_Docs/spec-ambiguity-vs-builder-mistakes.md` end-to-end — the build-loop diagnostic taxonomy.
+- Audited DELIVERABLE-5 for spec ambiguity. Identified that Activity 5's `days_since == 2` condition is ambiguous between calendar days and elapsed hours — a builder implementing elapsed time could cause the I9_AT_RISK escalation to fire up to 16 hours late.
+- Submitted one-line classification prediction to the critique pool: `Week3_Docs/wk3-classification-prediction-Ann-OHagan.md`.
+
+### Wednesday afternoon build-loop exercise
+
+Diagnosed all 8 signals in the Cascade Public Libraries Hold Queue fixture against the spec. Submission: `Week3_Docs/W3D3-BuildLoop-Exercise-AnnOHagan.md`.
+
+| Signal | Classification |
+|---|---|
+| 1 — 72-hour notification window | Spec gap (calendar vs business hours unresolved) |
+| 2 — Accessibility priority as 0.25x weight | Builder misread (R4 says position jump, not weight) |
+| 3 — Return reminder at loan end -3 days | Unjustified implementation choice |
+| 4 — Test fails in 2026 | Test/environment issue (time-dependent fixture) |
+| 5 — Duplicate hold check blocks format-distinct holds | Builder misread (R11 permits ebook + audiobook) |
+| 6 — Email sent to paused patron when skipped | Unjustified implementation choice |
+| 7 — SMS-only for opted-in patrons | Spec gap (dual vs single channel unresolved in R12) |
+| 8 — Builder question on Academic + Accessibility intersection | Legitimate clarification request |
+
+### Gate 3 prompt system
+
+Created a reusable prompt library in `Week3_Docs/Gate3-Prompts/` covering all 9 Gate 3 deliverables plus a discovery preparation prompt and a decision checkpoint. See `Week3_Docs/Gate3-Prompts/README.md` for the full index and suggested gate-day order.
+
+---
+
+## Week 3 file structure
+
+```
+Week3_Docs/
+├── README.md                              # Week 3 calendar, gate overview, failure modes
+├── W3D3-BuildLoop-Exercise.md             # Cascade Public Libraries fixture (coach-released)
+├── W3D3-BuildLoop-Exercise-AnnOHagan.md  # Completed build-loop diagnosis submission
+├── spec-ambiguity-vs-builder-mistakes.md  # Build-loop diagnostic taxonomy (reference)
+├── wk3-classification-prediction-Ann-OHagan.md  # Wednesday pre-session submission
+│
+└── Gate3-Prompts/
+    ├── README.md                          # Index + suggested gate-day order
+    ├── 00-discovery-prep.md               # Discovery question generation
+    ├── D1-problem-framing.md              # Problem framing + success metrics
+    ├── D2-intake-scope.md                 # Engagement intake + scope
+    ├── D3-architecture-adrs.md            # Agentic architecture + 2 ADRs
+    ├── D4-capability-specs.md             # Production-grade capability spec (run twice)
+    ├── D5-build-loop-memo.md              # Build-loop response memo
+    ├── D6-client-feedback-response.md     # Client pushback response
+    ├── D7-validation-plan.md              # Validation plan
+    ├── D8-reflection.md                   # Reflection document
+    ├── D9-self-spec-build-loop.md         # Self-spec build-loop reflection
+    └── checkpoint.md                      # Decision checkpoint (run after D1, D3, D4)
+```
+
+---
+
+## Key decisions made in Week 3
+
+### How to use the Gate 3 prompt system
+
+To run the full workflow in a future session, paste this at the start:
+
+```
+Read Week3_Docs/Gate3-Prompts/README.md and follow the workflow defined there.
+Work through each prompt file in order. After D1, D3, and D4, run the checkpoint
+before proceeding. Do not move to the next step until I confirm I am happy with
+the checkpoint output.
+```
+
+The checkpoint pauses the workflow and asks for explicit confirmation before continuing. Each deliverable feeds into the next — do not skip ahead.
+
+### ADR trade-off analysis standard
+
+ADRs must include:
+1. Alternatives actually considered (not just the chosen option)
+2. Consequences of each alternative
+3. Conditions under which the decision should be revisited
+
+ADRs that only justify the chosen option without naming alternatives are treated as decision theatre and will be flagged.
+
+### Agent justification standard
+
+A task should only be marked as agentic if it requires reasoning over context to reach an outcome that a fixed rule, deterministic function, or scheduled job could not reach. If a task is fully rules-based or deterministic, a workflow or scheduled job is the correct implementation — simpler and cheaper.
+
+The D3 prompt enforces this at generation time. The checkpoint enforces it again with an explicit verdict (Agent justified / Not justified) for every step marked Fully Agentic or Agent-led.
+
+### Checkpoint placement
+
+The decision checkpoint (`checkpoint.md`) runs after D1, D3, and D4 only — the three deliverables whose decisions cascade into everything downstream. D2 and D5–D9 follow from those three; errors in them are corrected at the deliverable level, not via checkpoint.
+
+### Build-loop diagnostic taxonomy
+
+The four categories and their fixes:
+
+| Category | Signal | Fix |
+|---|---|---|
+| Spec gap | Implementation matches spec as written, not as intended — OR spec is silent on the scenario entirely | Rewrite or add to the spec |
+| Builder misread | Implementation contradicts an explicit spec statement | Re-prompt with the relevant statement highlighted |
+| Unjustified implementation choice | Builder added something the spec did not ask for | Collaborative removal request |
+| Test/environment issue | Spec and code agree; the test assertion is wrong | Fix the test only |
+
+A fifth outcome — legitimate clarification request — is not a failure. The builder surfaced a genuine gap and held for direction. Acknowledge, resolve, and confirm.
+
+The most common misdiagnosis: calling an unjustified implementation choice a spec gap. The distinction is directional — did the builder miss something (gap) or add something (unjustified choice)? The fix differs: update the spec vs. request removal.
+
+### Prompt design principles
+
+All Gate 3 prompts are scenario-neutral — no client names, no domain-specific references. To use them, paste the relevant scenario content into the `[PASTE X HERE]` placeholders. Every prompt ends with an explicit statement of expected output so Claude does not pad responses with explanation.
