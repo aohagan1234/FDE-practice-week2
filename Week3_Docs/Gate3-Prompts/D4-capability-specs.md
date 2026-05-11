@@ -1,17 +1,18 @@
-# D4 — Two Production-Grade Capability Specifications
-**Paste in:** D3 architecture. Run this prompt twice — once per capability.
+# D4 — Production-Grade Capability Specification
+**Run this prompt once per capability. You need two specs in total.**
+**Paste in:** Your D3 architecture output.
 
 ---
 
 ## Prompt
 
 ```
-Using the architecture below, produce a capability specification for [CAPABILITY NAME].
+Using the architecture below, produce a capability specification for [CAPABILITY NAME]. Do not include any explanation or preamble.
 
 [PASTE D3 HERE]
 
 **Capability name:**
-**What it does:** 1 sentence. No vague words (do not use: appropriate, valid, handle, manage).
+**What it does:** 1 sentence. Do not use vague words such as: appropriate, valid, handle, manage, ensure.
 
 **Inputs** — table:
 | Field | Type | Source system | Required? |
@@ -20,19 +21,19 @@ Using the architecture below, produce a capability specification for [CAPABILITY
 | Field | Type | Destination |
 
 **Decision rules** — numbered list.
-Each rule must be deterministic: if [condition] then [exact action].
-No judgment calls. No implied logic.
+Each rule must follow the format: if [condition] then [exact action].
+Do not include judgment calls or implied logic.
 
 **Error handling** — table:
 | Error condition | What the agent does |
 
-**Shared entities** — list any data entities this spec shares with the other capability spec.
+**Shared entities** — list any data entities this spec shares with the other capability specification.
 Field names and types must be identical across both specs.
 
 **Assumptions** — table:
-| Assumption | Confidence (H/M/L) | What changes if wrong |
+| Assumption | Confidence (H/M/L) | What changes if this assumption is wrong |
 ```
 
 ---
 
-**Output should be:** The 6 sections above, exactly. Run once per capability. Check shared entities are consistent between the two outputs before submitting.
+**Expected output:** The 6 sections above, exactly. Run once per capability. Before submitting, confirm that any shared entities are consistent between both specs.

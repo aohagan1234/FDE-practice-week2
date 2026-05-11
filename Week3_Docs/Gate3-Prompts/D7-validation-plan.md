@@ -1,28 +1,29 @@
 # D7 — Validation Plan
-**Paste in:** D4 capability specifications (both).
+**Paste in:** Both of your D4 capability specifications.
 
 ---
 
 ## Prompt
 
 ```
-Using the two capability specifications below, produce a validation plan.
+Using the two capability specifications below, produce a validation plan. Do not include any explanation or preamble.
 
-[PASTE D4 SPECS HERE]
+[PASTE BOTH D4 SPECS HERE]
 
 **Pre-production tests** — table:
 | Test | What it checks | Pass criteria | Who runs it |
 
 **Agent decision tests** — table:
 | Scenario | Input | Expected agent action | How to verify |
-Cover: happy path, edge case, error condition — at least one of each per capability.
+
+Cover at least one happy path, one edge case, and one error condition per capability.
 
 **Integration tests** — table:
 | System | What to test | Pass criteria |
 
-**What kills this in production** — 3 bullet points. The three most likely failure modes once live.
+**Most likely production failure modes** — 3 bullet points. The three scenarios most likely to cause the system to fail once live.
 ```
 
 ---
 
-**Output should be:** 3 tables + 3 bullets. Nothing else.
+**Expected output:** 3 tables and 3 bullet points. Nothing else.

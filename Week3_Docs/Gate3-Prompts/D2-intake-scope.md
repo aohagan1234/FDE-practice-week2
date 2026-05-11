@@ -1,19 +1,21 @@
 # D2 — Engagement Intake & Scope
-**Paste in:** MedFlex scenario + discovery call notes + D1 output.
+**Paste in:** The scenario pack, discovery call notes, and your D1 output.
 
 ---
 
 ## Prompt
 
 ```
-Using the MedFlex scenario, discovery notes, and problem framing below, produce:
+Using the scenario, discovery notes, and problem framing below, produce the following. Do not include any explanation or preamble.
 
-[PASTE SCENARIO + DISCOVERY NOTES + D1 HERE]
+[PASTE SCENARIO HERE]
+[PASTE DISCOVERY NOTES HERE]
+[PASTE D1 HERE]
 
-**Business context** — 2 sentences. What MedFlex does and why this engagement exists.
+**Business context** — 2 sentences. What the client does and why this engagement exists.
 
 **Stakeholder map** — table:
-| Name | Role | What they care about | Influence on project |
+| Name / Role | What they care about | Their influence on this project |
 
 **Constraints** — bullet list. Hard limits only (regulatory, technical, timeline, budget).
 
@@ -28,4 +30,4 @@ Using the MedFlex scenario, discovery notes, and problem framing below, produce:
 
 ---
 
-**Output should be:** 2 sentences + 4 tables/lists. Nothing else.
+**Expected output:** 2 sentences, 1 stakeholder table, 1 constraint list, 1 risk table, 1 in-scope list, 1 out-of-scope table. Nothing else.

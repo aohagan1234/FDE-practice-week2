@@ -1,27 +1,28 @@
 # D6 — Client Feedback Response
-**Paste in:** Marcus Reyes's pushback email (received Friday 09:00).
+**Paste in:** The client pushback communication received during the engagement.
 
 ---
 
 ## Prompt
 
 ```
-Using Marcus Reyes's pushback email below, produce a professional client response.
+Using the client pushback below, produce a professional response. Do not include any explanation or preamble.
 
-[PASTE MARCUS EMAIL HERE]
+[PASTE CLIENT PUSHBACK HERE]
 
-For each pushback point he raises, produce:
+For each point the client raises, produce:
 
-**Point:** [quote or paraphrase his exact concern]
+**Point:** [quote or paraphrase the client's concern]
 **Response:** 2–3 sentences.
 
-Rules for each response:
-- If conceding: name what you are changing and what the concrete alternative is.
-- If holding scope: state why, and what the consequence of changing it would be.
-- Never appease without a plan. Never refuse without a reason.
-- Do not use the words: "absolutely", "certainly", "of course", "we understand your concerns".
+Apply the following rules to every response:
+- If conceding a point: state specifically what is changing and what the concrete alternative is.
+- If holding the original position: state why, and explain what the consequence of changing it would be.
+- Do not agree to timelines or scope changes without a plan for how they will be met.
+- Do not refuse a request without giving a reason.
+- Do not use the following words or phrases: "absolutely", "certainly", "of course", "we understand your concerns", "great question".
 ```
 
 ---
 
-**Output should be:** One point/response block per pushback item. Nothing else.
+**Expected output:** One point/response block per pushback item. Nothing else.

@@ -1,26 +1,25 @@
 # D5 — Build-Loop Response Memo
-**Uses your Wednesday Cascade Public Libraries diagnosis.**
-**Paste in:** Your completed W3D3-BuildLoop-Exercise-AnnOHagan.md.
+**Paste in:** Your completed build-loop exercise diagnosis from earlier in the week.
 
 ---
 
 ## Prompt
 
 ```
-Using my Cascade Public Libraries build-loop diagnosis below, produce a build-loop response memo.
+Using my build-loop diagnosis below, produce a response memo. Do not include any explanation or preamble.
 
-[PASTE W3D3-BuildLoop-Exercise-AnnOHagan.md HERE]
+[PASTE YOUR COMPLETED BUILD-LOOP EXERCISE HERE]
 
-For each of the 8 signals, produce one row in this table:
-
+**Signal summary** — table with one row per signal:
 | Signal | Classification | What the spec failed to say (if applicable) | What must change |
 
-Then produce:
+Classifications: spec gap | builder misread | unjustified implementation choice | test/environment issue | legitimate clarification request.
 
-**Patterns I missed** — bullet list. Any signal I initially misclassified and why.
-**What this tells me about my own specs** — 2 sentences. What habit in my writing produced these gaps.
+**Patterns identified** — bullet list. Any signals that fall into the same category, and what that indicates about the spec.
+
+**Implications for my own specs** — 2 sentences. What this diagnosis reveals about habits or gaps in how I write requirements.
 ```
 
 ---
 
-**Output should be:** 1 table (8 rows) + 2 short sections. Nothing else.
+**Expected output:** 1 summary table, 1 bullet list, 2 sentences. Nothing else.

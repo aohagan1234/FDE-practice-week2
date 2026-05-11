@@ -1,44 +1,44 @@
 # D9 — Self-Spec Build-Loop Reflection
-**Pick ONE of your two D4 capability specs. Run it through Claude Code. Then use this prompt.**
-**Paste in:** The spec you chose + what Claude Code produced.
+**Select one of your two D4 capability specifications. Run it through Claude Code, then use this prompt.**
 
 ---
 
 ## Step 1 — Run your spec through Claude Code
 
-Paste this into Claude Code:
+Paste the following into Claude Code:
 
 ```
-Build this capability from the spec below. Do not infer intent where the spec is silent — ask me instead.
+Build this capability from the specification below. Where the specification is silent on a decision, ask me rather than inferring intent.
 
 [PASTE ONE D4 SPEC HERE]
 ```
 
-Note what it built, what it asked, and where it went in a direction you didn't intend.
+Note what was built, what questions were raised, and where the output diverged from your intent.
 
 ---
 
-## Step 2 — Write the reflection
+## Step 2 — Produce the reflection
 
 ```
-Using my capability spec and Claude Code's output below, produce a 1-page build-loop reflection.
+Using my capability specification and the Claude Code output below, produce a 1-page build-loop reflection. Do not include any explanation or preamble.
 
 [PASTE SPEC HERE]
 [PASTE CLAUDE CODE OUTPUT HERE]
 
-**What Claude Code built** — 3 bullet points describing what it produced.
+**What was built** — 3 bullet points describing the output produced.
 
-**What it asked about** — bullet list of any clarifying questions it raised. If none, note that and say what that implies.
+**What Claude Code asked about** — bullet list of clarifying questions it raised.
+If no questions were raised, note this and state what that implies about the spec.
 
 **Signals in the output** — table:
-| Signal | Classification | What my spec failed to say |
+| Signal | Classification | What the specification failed to say |
 
 Use these classifications: spec gap | builder misread | unjustified implementation choice | test/environment issue.
 
-**What I would change in the spec** — bullet list of specific rewrites.
-Each bullet names: the original requirement, what it should say instead, and why the original wording failed.
+**What I would change in the specification** — bullet list of specific rewrites.
+Each bullet must include: the original requirement, what it should say instead, and why the original wording produced the wrong result.
 ```
 
 ---
 
-**Output should be:** 4 sections as above. 1 page. Graded on diagnosis honesty — a broken build diagnosed accurately scores higher than working code with no reflection.
+**Expected output:** 4 sections as above. Maximum 1 page. This deliverable is assessed on the accuracy of the diagnosis, not on whether the build output was correct.

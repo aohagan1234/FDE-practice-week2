@@ -1,24 +1,24 @@
 # Discovery Prep Prompt
-**Use before Thursday's 60-minute discovery call.**
-**Paste in:** The Gate 3 scenario pack (Gate3-Participant-Pack.md) when released.
+**Use before the live discovery call.**
+**Paste in:** The scenario pack when released.
 
 ---
 
 ## Prompt
 
 ```
-Using the MedFlex scenario below, produce:
+Using the scenario below, produce the following. Do not include any explanation or preamble.
 
 [PASTE SCENARIO HERE]
 
-**10 discovery questions** — numbered, ordered by priority (most architecture-changing first).
-Each question must target one specific assumption that would change the agent design if answered differently.
-No generic questions. No "tell me about your process."
+**Discovery questions** — 10 questions, numbered and ordered by priority (most architecture-changing first).
+Each question must target a specific assumption that would change the agent design if answered differently.
+Do not include generic questions such as "can you walk me through your process?"
 
 **Assumptions to pressure-test** — table:
-| Assumption | What to listen for that confirms it | What to listen for that breaks it |
+| Assumption | What confirms it during the call | What breaks it during the call |
 ```
 
 ---
 
-**Output should be:** 10 questions + 1 table. Nothing else.
+**Expected output:** 10 questions and 1 table. Nothing else.

@@ -1,25 +1,26 @@
 # D1 — Problem Framing & Success Metrics
-**Paste in:** MedFlex scenario + your discovery call notes.
+**Paste in:** The scenario pack and your discovery call notes.
 
 ---
 
 ## Prompt
 
 ```
-Using the MedFlex scenario and discovery notes below, produce:
+Using the scenario and discovery notes below, produce the following. Do not include any explanation or preamble.
 
-[PASTE SCENARIO + DISCOVERY NOTES HERE]
+[PASTE SCENARIO HERE]
+[PASTE DISCOVERY NOTES HERE]
 
 **What is actually broken** — 3 bullet points maximum.
-State the real problem, not the stated request. "10x without 10x-ing" is not a problem statement.
+State the real underlying problem, not the client's stated request.
 
 **Success metrics** — table:
 | Stakeholder | What success looks like | Measurable target | How it is measured |
 
-Stakeholders: MedFlex (business), hospitals (clients), nurses (supply side).
-Every target must be a number or a verifiable condition. No vague outcomes.
+Include one row per key stakeholder group (e.g. the business, their clients, their end users).
+Every target must be a specific number or a verifiable condition. Do not include vague outcomes.
 ```
 
 ---
 
-**Output should be:** 3 bullets + 1 table. Nothing else.
+**Expected output:** 3 bullet points and 1 table. Nothing else.
