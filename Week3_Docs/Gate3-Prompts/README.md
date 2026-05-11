@@ -4,7 +4,8 @@ One prompt file per deliverable. Use them in order — earlier outputs feed into
 
 | File | Deliverable | When to use | Input required |
 |---|---|---|---|
-| `00-discovery-prep.md` | Discovery preparation | Before the live discovery call | Scenario pack |
+| `00-discovery-prep.md` | Discovery preparation (simple) | Before the live discovery call | Scenario pack |
+| `00-discovery-questions.md` | Discovery question generator (full) | Morning of the discovery call | Scenario pack |
 | `D1-problem-framing.md` | D1 — Problem framing & success metrics | After discovery call | Scenario + discovery notes |
 | `checkpoint.md` | Decision checkpoint | After D1, D3, and D4 | The deliverable output you just produced |
 | `D2-intake-scope.md` | D2 — Engagement intake & scope | After discovery call | Scenario + discovery notes + D1 |
