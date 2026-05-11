@@ -1,0 +1,1 @@
+The hardest part of build-loop diagnosis for me will be distinguishing spec ambiguity (Cat 1) from design gap (Cat 4) when the spec is silent — because both produce a 'technically correct but wrong' build, and applying the wrong fix wastes a full iteration.
