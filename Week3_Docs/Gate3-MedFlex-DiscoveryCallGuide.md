@@ -44,9 +44,11 @@ These are the three planted contradictions. They will not be flagged. Your job i
 **Goal:** get Marcus to quantify what unfilled and misfilled shifts actually cost. This anchors the ROI case before you have proposed anything.
 
 - *"Before we go into process — when a shift goes unfilled, or the wrong nurse shows up, what does that cost MedFlex concretely? Revenue lost, client relationship, regulatory exposure?"*
-- *"The two prior AI projects — before we talk about what we want to build, what specifically went wrong with each? Not at a high level — what did coordinators actually reject about the chatbot, and why did no one use the recommendation engine?"*
+- *"The chatbot and the recommendation engine — can you tell me specifically what went wrong with each? Not 'it didn't work' — what did the hospitals or coordinators actually say when they rejected them?"*
 
-**What to listen for:** his answer on the prior failures tells you the failure mode to avoid. If he says "coordinators didn't trust it" — trust is the design constraint. If he says "hospitals didn't adopt it" — you are building coordinator-facing, not hospital-facing.
+**Why this matters:** the architecture must avoid repeating those failure modes. If the chatbot failed because hospitals don't trust AI decisions, a fully agentic matching agent will fail the same way. If the recommendation engine failed because coordinators ignored its suggestions, then agent-led with oversight needs a different interface than a recommendation list — because coordinators already proved they will not use one.
+
+**What to listen for:** "coordinators didn't trust it" → trust is the design constraint, not capability. "Hospitals rejected it" → build coordinator-facing, not hospital-facing. Any answer that implies the problem was the output format rather than the underlying logic — that is the most actionable signal.
 
 ---
 
@@ -70,7 +72,12 @@ These are the three planted contradictions. They will not be flagged. Your job i
 **Goal:** understand how coordinators actually select a nurse — what criteria, in what order, from what systems.
 
 - *"Take me through a real shift request from this week. Not a textbook case — one that came through and had to be filled. What happened, step by step?"*
-- *"When you are looking at your candidate pool for a shift, how do you decide who to contact first? Is that documented anywhere, or does it live in the coordinator's head?"*
+- *"When a coordinator picks a nurse for a shift, walk me through the actual decision — not the process, the moment they decide. What are they weighing? What makes one nurse better than another for a specific shift?"*
+
+**Why this matters:** this is the core cognitive work. If the decision is codifiable — credentials plus proximity plus availability equals a score — the agent can lead the matching. If it is relationship knowledge — Dr Chen prefers nurses who have worked his floor before — it is harder to delegate and requires a different architecture. The answer determines whether Wave 1 can include matching or must start with something simpler.
+
+**What to listen for:** any mention of relationship knowledge, facility-specific preferences, or "you just know after a while" — these signal tacit judgment that a rule cannot encode. Any mention of a scoring system or checklist — these signal codifiability.
+
 - *"What information does a coordinator need before they feel confident placing someone? Where does each piece of that information come from?"*
 - *"[TRIGGER FOR C1] Where does a coordinator look right now to know which nurses are available? Is that always current?"*
 
@@ -84,8 +91,18 @@ These are the three planted contradictions. They will not be flagged. Your job i
 
 - *"Is there a standard process for how coordinators match nurses? How closely does what actually happens match it?"*
 - *"[TRIGGER FOR C1] When a nurse calls in sick or becomes unavailable last minute, what is the actual chain of events? Who calls whom, and what gets updated where?"*
-- *"[TRIGGER FOR C2] Credential verification — you said it is done before a nurse joins the roster. Once they are on the roster, how do you monitor whether their credentials stay current? What happens when something lapses?"*
-- *"The 7% mismatch rate — when a mismatch happens, at what point does someone find out? Before the shift, when the nurse arrives, or after?"*
+- *"[TRIGGER FOR C2] Credential verification — you said it is done before a nurse joins the roster. Walk me through a real verification — a coordinator gets a shift request, how do they actually check that the nurse is credentialed for that facility type?"*
+
+**Why this matters:** if verification is a database lookup — structured, deterministic — it is a scheduled job, not an agent. If it involves judgment — interpreting credential equivalencies across states, deciding whether an expired-but-renewable licence is acceptable — it is agent territory. The answer also tells you whether the 7% mismatch is a process gap or a data gap.
+
+- *"The 7% mismatch rate — is that the coordinator picking the wrong nurse, the credentials being out of date, or the hospital's requirements being unclear? Which is it, mostly?"*
+
+**Why this matters:** different root causes need different agent interventions. Wrong pick = better matching logic. Stale credentials = real-time verification pipeline. Unclear requirements = better job order intake. Building the wrong fix leaves the mismatch rate unchanged.
+
+- *"The 12% no-show rate — what is driving that? Is it nurses cancelling, nurses not confirming, scheduling conflicts, or something else?"*
+
+**Why this matters:** if no-shows are predictable — nurses with a history of no-shows, certain shift times, certain facilities — an agent can flag risk at placement time. If they are unpredictable — genuine emergencies — the agent needs rapid backfill capability instead. These require different architectures.
+
 - *"[TRIGGER FOR C3] How do you measure the quality of a placement today? Is there a score or rating system?"*
 
 **What to listen for:** any answer that contradicts something said in the first 15 minutes. Do not wait to call it out — do it in the moment.
