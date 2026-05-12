@@ -11,13 +11,13 @@
 
 **Engagement brief:** *"10x the business without 10x-ing the coordinators"* — in 8 weeks.
 
-| Metric | Current state | Target |
-|---|---|---|
-| Coordinators | 8, matching manually | Flat headcount |
-| Matching decisions per coordinator per day | ~120 | ~10x volume, same headcount |
-| Average time to fill a shift | 4.2 hours | <1 hour |
-| Mismatch rate (wrong credentials for facility) | 7% | <2% |
-| No-show rate | 12% | <7% |
+| Metric | Current state | Target | Timeframe |
+|---|---|---|---|
+| Coordinators | 8, matching manually | Flat headcount | Ongoing |
+| Matching decisions per coordinator per day | ~120 | ~10x volume, same headcount | Wave 2 (post-MVP) |
+| Average time to fill a shift | 4.2 hours | <1 hour | 8-week MVP pilot |
+| Mismatch rate (wrong credentials for facility) | 7% | <2% | Wave 2 (post-MVP) |
+| No-show rate | 12% | <7% | Wave 2 (post-MVP) |
 
 ---
 
