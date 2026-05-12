@@ -40,14 +40,14 @@ MedFlex is a 200-person healthcare staffing agency operating across 5 US states,
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| Availability data is stale at placement time (portal + manual phone updates create lag) | H | H | Agent treats portal availability as indicative; confirms via outreach before committing a placement |
-| Stale credential data (quarterly update cadence creates a window where lapsed credentials remain on the active roster) — unconfirmed as primary mismatch driver; Marcus could not confirm root-cause breakdown | M | H | Agent checks credential status at placement time; excludes candidates with credentials last verified >90 days; flags to compliance team. Likelihood downgraded from H to M until Linda confirms stale credential data is a material contributor to the 7% mismatch rate |
-| Coordinator distrust of agent recommendations (recommendation engine failed for same reason) | H | M | Agent must surface ranking rationale per candidate — not just a ranked list; coordinators must see why, not just who |
-| CRM / compliance system API access unavailable or restricted | M | H | Engage Aaron in week 1 to confirm; design agent with abstracted data layer so API stubs can be replaced without architecture change |
-| State-level credential variation causes incorrect eligibility decisions | M | H | Linda (compliance) provides credential-to-facility-type mapping per state before build; agent applies it but does not interpret it |
-| No pre-placement mismatch signal — mismatches currently only known post-shift | H | H | Add pre-placement credential validation step; flag best-fit matches as partial match with explicit reason shown to coordinator |
-| Agent accuracy insufficient for coordinator trust in first 8 weeks | M | M | Wave 1 targets measurable fill-time reduction, not full autonomy; coordinator remains in approval loop throughout |
-| Nurses double-booked with competitor apps (contributing to 12% no-show rate) | M | M | Parallel outreach gets confirmation faster; confirmed nurses are removed from the available pool immediately |
+| Availability data is stale at placement time (portal + manual phone updates create lag) | High | High | Agent treats portal availability as indicative; confirms via outreach before committing a placement |
+| Stale credential data (quarterly update cadence creates a window where lapsed credentials remain on the active roster) — unconfirmed as primary mismatch driver; Marcus could not confirm root-cause breakdown | Medium | High | Agent checks credential status at placement time; excludes candidates with credentials last verified >90 days; flags to compliance team. Likelihood downgraded from High to Medium until Linda confirms stale credential data is a material contributor to the 7% mismatch rate |
+| Coordinator distrust of agent recommendations (recommendation engine failed for same reason) | High | Medium | Agent must surface ranking rationale per candidate — not just a ranked list; coordinators must see why, not just who |
+| CRM / compliance system API access unavailable or restricted | Medium | High | Engage Aaron in week 1 to confirm; design agent with abstracted data layer so API stubs can be replaced without architecture change |
+| State-level credential variation causes incorrect eligibility decisions | Medium | High | Linda (compliance) provides credential-to-facility-type mapping per state before build; agent applies it but does not interpret it |
+| No pre-placement mismatch signal — mismatches currently only known post-shift | High | High | Add pre-placement credential validation step; flag best-fit matches as partial match with explicit reason shown to coordinator |
+| Agent accuracy insufficient for coordinator trust in first 8 weeks | Medium | Medium | Wave 1 targets measurable fill-time reduction, not full autonomy; coordinator remains in approval loop throughout |
+| Nurses double-booked with competitor apps (contributing to 12% no-show rate) | Medium | Medium | Parallel outreach gets confirmation faster; confirmed nurses are removed from the available pool immediately |
 
 ---
 
