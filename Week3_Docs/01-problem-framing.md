@@ -13,6 +13,27 @@
 
 ---
 
+## What "10x without 10x-ing" requires architecturally
+
+Current ceiling: 8 coordinators × 120 decisions/day = **960 shift-fill cycles/day**. 10x revenue without headcount growth cannot be achieved by making coordinators faster — the math does not work.
+
+| Scenario | Fill cycles/day | Coordinator active time/fill | Result |
+|---|---|---|---|
+| Current state | 960 | ~20 min (researching, calling sequentially, chasing) | Coordinator is the bottleneck |
+| Agent assists (coordinator still in loop per step) | 960 | ~10 min | ~2x capacity — not 10x |
+| Agent autonomous on clean cases (coordinator approves only final placement) | 9,600 | ~5 min per approval | 10x capacity with flat headcount — if ≥80% of fills are clean |
+
+For the 10x target to be architecturally achievable, the agent must satisfy four requirements:
+
+1. **Autonomous resolution rate ≥80%** — the agent resolves clean cases (exact credential match, portal availability confirmed, nurse responds within window) end-to-end, routing only exceptions and final approval to the coordinator.
+2. **Intake to first outreach in <15 minutes** — the coordinator cannot sit between request receipt and nurse contact. The agent must parse and initiate outreach without waiting for coordinator review of each job order.
+3. **Concurrent fill cycle capacity ≥9,600** — a synchronous, sequential agent (one fill at a time) cannot reach 10x volume. The agent must manage all active fill cycles in parallel, independently. Coordinators review a queue, not individual cycles.
+4. **Coordinator active time <5 minutes per fill** — releasing coordinator capacity for the higher volume requires removing them from all steps except the final approval gate.
+
+The 8-week MVP does not need to achieve 10x volume — it must demonstrate the architecture that enables it. A pilot demonstrating <1h fill time, ≥80% first-recommendation acceptance rate, and parallel outreach on 20–30 shifts is sufficient to validate the design.
+
+---
+
 ## Success metrics
 
 | Stakeholder | What success looks like | Measurable target | How it is measured |
