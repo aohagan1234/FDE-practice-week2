@@ -3,6 +3,24 @@
 
 ---
 
+## Scenario summary
+
+**Client:** MedFlex — healthcare staffing agency, 200 employees, 5-state US region. B2B with hospital systems; B2C with travel nurses.
+
+**Stakeholder:** Marcus Reyes, CEO. Series B closed. Board mandate: significant revenue growth within 24 months. Two prior AI projects failed (chatbot rejected by hospital staff; recommendation engine unused by coordinators).
+
+**Engagement brief:** *"10x the business without 10x-ing the coordinators"* — in 8 weeks.
+
+| Metric | Current state | Target |
+|---|---|---|
+| Coordinators | 8, matching manually | Flat headcount |
+| Matching decisions per coordinator per day | ~120 | ~10x volume, same headcount |
+| Average time to fill a shift | 4.2 hours | <1 hour |
+| Mismatch rate (wrong credentials for facility) | 7% | <2% |
+| No-show rate | 12% | <7% |
+
+---
+
 ## What is actually broken
 
 - The matching workflow is entirely manual and sequential. Coordinators receive unstructured shift requests across email, phone, and portal, then manually check credentials, availability, and proximity before contacting nurses one at a time. The 4.2-hour fill time is waiting time, not decision time — the bottleneck is sequential outreach, not coordinator judgment.
