@@ -30,6 +30,8 @@
 
 ---
 
+# D1 — Problem Framing & Success Metrics
+
 ## Scenario summary
 
 **Client:** MedFlex — healthcare staffing agency, 200 employees, 5-state US region. B2B with hospital systems; B2C with travel nurses. Of the 200 employees, 8 are coordinators responsible for manually matching nurses to hospital shift requests.
@@ -102,6 +104,8 @@ The 8-week MVP does not need to achieve 10x volume — it must demonstrate the a
 | Zero stale-credential placements | Credential recency check runs at placement time (after nurse confirms, before coordinator approves). Candidates with credentials last verified >90 days or with a lapsed status are excluded from confirmation and flagged to the compliance team. Other candidates in the pool are not blocked. | Credential validation step in workflow delegation map; ADR 2 | Requires compliance system API to support real-time per-nurse queries — Low confidence; to validate with Aaron. If API is unavailable, falls back to compliance team manual verification on a 2-hour SLA. |
 
 ---
+
+# D2 — Engagement Intake & Scope
 
 ## Business context
 
@@ -178,6 +182,8 @@ MedFlex is a 200-person healthcare staffing agency operating across 5 US states,
 | Multi-state regulatory interpretation | Agent applies compliance team's credential mapping per state; it does not interpret ambiguous regulatory requirements — those are escalated to Linda |
 
 ---
+
+# D3 — Agentic Architecture & ADRs
 
 ## Wave 1 vs. Wave 2 scope
 
