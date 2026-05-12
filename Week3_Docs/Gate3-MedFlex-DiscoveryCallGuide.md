@@ -47,99 +47,113 @@ These are the three planted contradictions. They will not be flagged. Your job i
 
 ## 60-minute call plan
 
+### Opening — before the questions start
+
+*Use this to set the tone in the first 60 seconds. Do not read it verbatim — adapt it.*
+
+> "Marcus, thanks for making time. I have read the brief, so I am not going to ask you to explain what MedFlex does. What I want to do today is understand how the coordination work actually runs — not the intended process, but what actually happens when your coordinators are filling 120 shifts a day. I want to understand where the time goes, where things break, and what the last two projects did wrong. That will tell me what to build and what to avoid. I will ask focused questions. If I am heading in the wrong direction, push back."
+
+---
+
 ### Minutes 0–5 — Establish the real cost of the problem
 
-**Goal:** get Marcus to quantify what unfilled and misfilled shifts actually cost. This anchors the ROI case before you have proposed anything.
+**Goal:** get Marcus to put a number on the cost of unfilled and misfilled shifts before anything else. This anchors the ROI case before you have proposed anything.
 
-- *"Before we go into process — when a shift goes unfilled, or the wrong nurse shows up, what does that cost MedFlex concretely? Revenue lost, client relationship, regulatory exposure?"*
-- *"The chatbot and the recommendation engine — can you tell me specifically what went wrong with each? Not 'it didn't work' — what did the hospitals or coordinators actually say when they rejected them?"*
+> **"Before we go into how the process works — when a shift goes unfilled, or the wrong nurse shows up, what does that actually cost MedFlex? I mean concretely: revenue lost, client relationship damage, regulatory exposure."**
 
-**Why this matters:** the architecture must avoid repeating those failure modes. If the chatbot failed because hospitals don't trust AI decisions, a fully agentic matching agent will fail the same way. If the recommendation engine failed because coordinators ignored its suggestions, then agent-led with oversight needs a different interface than a recommendation list — because coordinators already proved they will not use one.
+> **"The chatbot and the recommendation engine — what specifically went wrong with each? Not 'it didn't work' — what did the hospitals or coordinators actually say when they rejected them?"** ⭐ Priority question
 
-**What to listen for:** "coordinators didn't trust it" → trust is the design constraint, not capability. "Hospitals rejected it" → build coordinator-facing, not hospital-facing. Any answer that implies the problem was the output format rather than the underlying logic — that is the most actionable signal.
-
----
-
-### Minutes 5–15 — Broad funnel: where does coordinator time actually go?
-
-**Goal:** confirm or challenge the assumption that matching is the bottleneck, not something else.
-
-- *"Walk me through what happens between a hospital submitting a shift request and a nurse showing up. Not the ideal version — what actually happens today."*
-- *"Of the 4.2 hours average fill time, where does the time go? Is the delay in identifying candidates, reaching them, verifying credentials, getting hospital sign-off, or something else?"*
-- *"When a coordinator has 120 decisions in a day, what does one decision actually look like? Is it a 2-minute task or a 20-minute task?"*
-- *"What work do coordinators do that they feel only they can do — versus what feels like it could be done by anyone or anything?"*
-
-**What to listen for:** if the 4.2 hours is mostly waiting for nurse responses, the fix is parallel outreach — the agent contacts multiple candidates simultaneously. If it is mostly compliance verification, the fix is pre-verified compliance status. The answer changes the architecture.
-
-**When Marcus defers to Kim:** note the specific question he deferred. Ask: *"Can you give me your best read on it, and flag it as something to confirm with Kim?"* This keeps the session moving and signals which gaps need follow-up.
+*Listen for:* "coordinators didn't trust it" → trust is the design constraint, not capability. "Hospitals rejected it" → build coordinator-facing, not hospital-facing. If the failure was about output format rather than logic, that is the most actionable signal.
 
 ---
 
-### Minutes 15–30 — Narrow funnel: the matching process in detail
+### Minutes 5–15 — Where does coordinator time actually go?
 
-**Goal:** understand how coordinators actually select a nurse — what criteria, in what order, from what systems.
+**Goal:** confirm whether matching is the actual bottleneck or whether something else is eating the time.
 
-- *"Take me through a real shift request from this week. Not a textbook case — one that came through and had to be filled. What happened, step by step?"*
-- *"When a coordinator picks a nurse for a shift, walk me through the actual decision — not the process, the moment they decide. What are they weighing? What makes one nurse better than another for a specific shift?"*
+> "Walk me through what happens between a hospital submitting a shift request and a nurse showing up. Not the ideal version — what actually happens today."
 
-**Why this matters:** this is the core cognitive work. If the decision is codifiable — credentials plus proximity plus availability equals a score — the agent can lead the matching. If it is relationship knowledge — Dr Chen prefers nurses who have worked his floor before — it is harder to delegate and requires a different architecture. The answer determines whether Wave 1 can include matching or must start with something simpler.
+> "Of the 4.2 hours average fill time, where does the time go? Is the hold-up in finding candidates, reaching them, verifying credentials, getting hospital sign-off, or something else?"
 
-**What to listen for:** any mention of relationship knowledge, facility-specific preferences, or "you just know after a while" — these signal tacit judgment that a rule cannot encode. Any mention of a scoring system or checklist — these signal codifiability.
+> "When a coordinator has 120 decisions to make in a day, what does one decision actually look like? Is it a 2-minute task or a 20-minute task?"
 
-- *"What information does a coordinator need before they feel confident placing someone? Where does each piece of that information come from?"*
-- *"[TRIGGER FOR C1] Where does a coordinator look right now to know which nurses are available? Is that always current?"*
+> "What work do coordinators do that they feel only they can do — versus what feels like it could be done by anyone or anything?"
 
-**What to listen for:** any mention of the app being the source of truth — this sets up C1. Listen for "it depends on the coordinator" — that signals inconsistency in the matching process that an agent must account for.
+*Listen for:* if the 4.2 hours is mostly waiting for nurse responses, the fix is parallel outreach. If it is mostly compliance verification, the fix is pre-verified compliance status. The answer changes the architecture.
 
----
-
-### Minutes 30–45 — Lived vs documented: where the real process differs from the stated one
-
-**Goal:** surface the gaps between how the process is supposed to work and how it actually works. This is where the contradictions are most likely to appear.
-
-- *"Is there a standard process for how coordinators match nurses? How closely does what actually happens match it?"*
-- *"[TRIGGER FOR C1] When a nurse calls in sick or becomes unavailable last minute, what is the actual chain of events? Who calls whom, and what gets updated where?"*
-- *"[TRIGGER FOR C2] Credential verification — you said it is done before a nurse joins the roster. Walk me through a real verification — a coordinator gets a shift request, how do they actually check that the nurse is credentialed for that facility type?"*
-
-**Why this matters:** if verification is a database lookup — structured, deterministic — it is a scheduled job, not an agent. If it involves judgment — interpreting credential equivalencies across states, deciding whether an expired-but-renewable licence is acceptable — it is agent territory. The answer also tells you whether the 7% mismatch is a process gap or a data gap.
-
-- *"The 7% mismatch rate — is that the coordinator picking the wrong nurse, the credentials being out of date, or the hospital's requirements being unclear? Which is it, mostly?"*
-
-**Why this matters:** different root causes need different agent interventions. Wrong pick = better matching logic. Stale credentials = real-time verification pipeline. Unclear requirements = better job order intake. Building the wrong fix leaves the mismatch rate unchanged.
-
-- *"The 12% no-show rate — what is driving that? Is it nurses cancelling, nurses not confirming, scheduling conflicts, or something else?"*
-
-**Why this matters:** if no-shows are predictable — nurses with a history of no-shows, certain shift times, certain facilities — an agent can flag risk at placement time. If they are unpredictable — genuine emergencies — the agent needs rapid backfill capability instead. These require different architectures.
-
-- *"[TRIGGER FOR C3] How do you measure the quality of a placement today? Is there a score or rating system?"*
-
-**What to listen for:** any answer that contradicts something said in the first 15 minutes. Do not wait to call it out — do it in the moment.
+*When Marcus defers to Kim:* note what he deferred. Ask: *"Can you give me your best read on it, and flag it as something to confirm with Kim?"*
 
 ---
 
-### Minutes 45–55 — Delegation signals: what the agent can and cannot own
+### Minutes 15–30 — The matching process in detail
 
-**Goal:** understand how much autonomy coordinators would accept from an agent, and what the consequences of an agent error look like.
+**Goal:** understand how coordinators actually pick a nurse — what they weigh, in what order, and where judgment lives.
 
-- *"If an agent surfaced the top three candidates for a shift, ranked with a reason for each — would a coordinator act on that, or verify independently before contacting anyone?"*
-- *"What percentage of shift requests fill cleanly — no judgment required — versus need a coordinator's intervention?"*
-- *"When something goes wrong — wrong nurse placed, no-show, last-minute cancellation — who is accountable? Is it the coordinator, MedFlex as a business, or shared with the hospital?"*
-- *"If the agent makes the wrong call on a placement and the wrong nurse shows up — what actually happens? To the hospital relationship, to MedFlex, to the nurse?"*
-- *"What would the agent have to get right consistently before a coordinator would stop double-checking its recommendations?"*
+> "Take me through a real shift request from this week. Not a textbook example — one that came through and had to be filled. What happened, step by step?"
 
-**What to listen for:** the answer to the accountability question tells you where the human must stay in the loop. The answer to the trust question tells you what Wave 1 must demonstrate before Wave 2 is viable.
+> **"When a coordinator picks a nurse for a shift, what is the actual moment of decision? What are they weighing? What makes one nurse the right call over another for a specific shift?"** ⭐ Priority question
+
+*Listen for:* if the answer is codifiable — credentials plus proximity plus availability — the agent can lead the matching. If the answer is relationship knowledge — "Dr Chen prefers nurses who have worked his floor before" — it requires a different architecture. This determines whether Wave 1 can include matching or must start with something simpler.
+
+> "What does a coordinator need to know before they feel confident placing someone? And where does each piece of that come from?"
+
+> **[Trigger for C1]** *"Where does a coordinator look right now to know which nurses are available? Is that always current?"*
+
+---
+
+### Minutes 30–45 — Where the real process differs from the stated one
+
+**Goal:** surface the gap between how the process is supposed to work and how it actually works. This is where the contradictions are most likely to appear.
+
+> "Is there a standard process for how coordinators match nurses? How closely does what actually happens match it?"
+
+> **[Trigger for C1]** *"When a nurse calls in sick or goes unavailable last minute, what is the actual chain of events? Who calls whom, and what gets updated where?"*
+
+> **[Trigger for C2]** *"On credential verification — you said it is done before a nurse joins the roster. Walk me through a real verification. A coordinator gets a shift request — how do they actually check that nurse is credentialed for that facility type?"* ⭐ Priority question
+
+> **"The 7% mismatch rate — is that the coordinator picking the wrong nurse, credentials being out of date, or the hospital's requirements being unclear? Which is it, mostly?"** ⭐ Priority question
+
+*Listen for:* different root causes need different fixes. Wrong pick = better matching logic. Stale credentials = real-time verification pipeline. Unclear requirements = better job order intake. Building the wrong fix leaves the mismatch rate unchanged.
+
+> **"The 12% no-show rate — what is driving that? Is it nurses cancelling, nurses not confirming, double-booking, or something else?"** ⭐ Priority question
+
+*Listen for:* if no-shows are predictable — nurses with a history of no-shows, certain shift types — an agent can flag risk at placement time. If they are unpredictable, the agent needs rapid backfill capability instead. These require different architectures.
+
+> **[Trigger for C3]** *"How do you measure the quality of a placement today? Is there a score or rating system?"*
+
+*Do not wait until the end to call out contradictions — do it in the moment.*
+
+---
+
+### Minutes 45–55 — What the agent can and cannot own
+
+**Goal:** understand how much autonomy coordinators would accept from an agent, and what happens when the agent gets it wrong.
+
+> "If an agent surfaced the top three candidates for a shift, ranked with a reason for each — would a coordinator act on that, or verify independently before contacting anyone?"
+
+> "What percentage of shift requests fill cleanly — no judgment required — versus need a coordinator's intervention?"
+
+> "When something goes wrong — wrong nurse placed, no-show, last-minute cancellation — who is accountable? Is it the coordinator, MedFlex as a business, or shared with the hospital?"
+
+> "If the agent makes the wrong call on a placement and the wrong nurse shows up — what actually happens? To the hospital, to MedFlex, to the nurse?"
+
+> "What would the agent have to get right consistently before a coordinator would stop double-checking its recommendations?"
+
+*Listen for:* the accountability question tells you where the human must stay in the loop. The trust question tells you what Wave 1 must demonstrate before Wave 2 is viable.
 
 ---
 
 ### Minutes 55–60 — Close and confirm
 
-**Goal:** validate your understanding, surface any gaps, and agree on how to access Kim, Aaron, and Linda before Friday.
+**Goal:** validate your understanding, surface any gaps, and agree on how to reach Kim, Aaron, and Linda before Friday.
 
-- *"Based on what you have told me, the biggest constraint on fill time seems to be [waiting for nurse responses / compliance verification / X]. Is that accurate, or is there something more significant I have missed?"*
-- *"You mentioned Kim, Aaron, and Linda handle the operational, IT, and compliance detail. What is the best way to get specific questions to them before Friday? Even written answers would help."*
-- *"One direct question before we close: when you say results in 8 weeks — is that a live agent in production, or a demonstrated reduction in fill time on a pilot cohort? The answer changes what we design."*
+> "Based on what you have told me, the biggest constraint on fill time seems to be [waiting for nurse responses / compliance verification / X]. Is that accurate, or is there something more significant I have missed?"
 
-**The last question is the most important one in the call.** His answer tells you whether the 8-week scope is a hard deployment deadline or a proof-of-value milestone.
+> "You mentioned Kim, Aaron, and Linda handle the operational, IT, and compliance detail. What is the best way to get specific questions to them before Friday? Even written answers would help."
+
+> **"One direct question before we close: when you say results in 8 weeks — is that a live agent in production, or a demonstrated reduction in fill time on a pilot cohort? The answer changes what we design."** ⭐ Priority question
+
+*This is the most important question in the call.* His answer tells you whether the 8-week scope is a hard deployment deadline or a proof-of-value milestone.
 
 ---
 
