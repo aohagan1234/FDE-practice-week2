@@ -1,167 +1,200 @@
 # Gate 3 — MedFlex Scenario Preparation
-**Status:** Pre-release preparation. Based on partial scenario brief only.
-**Do not treat this as the authoritative scenario. Verify every assumption against the released Gate3-Participant-Pack.md.**
+**Updated with full scenario brief. Verified against Gate3-Participant-Pack.**
 
 ---
 
-## What we know
+## Confirmed facts
 
-- Healthcare staffing agency, 200 employees
-- CEO goal: "10x the business without 10x-ing the coordinators"
-- Two prior failed AI projects: a chatbot and a recommendation engine that nobody used
-- CEO timeline demand: results in 8 weeks
-
----
-
-## What the full scenario likely looks like
-
-Healthcare staffing agencies place temporary and permanent clinical staff — nurses, allied health professionals, locum doctors — into hospitals, clinics, and care homes. The core operational loop is:
-
-1. A facility sends a job order (shift or placement need)
-2. A coordinator identifies a suitable candidate from the agency's pool
-3. The coordinator checks compliance (credentials, licences, background clearance)
-4. The candidate is contacted, confirms availability, and is placed
-5. The shift happens; timesheet is submitted and approved
-6. Invoice raised; payment processed
-
-At scale, coordinators run this loop dozens of times per day across multiple facilities and candidates simultaneously. The bottlenecks are almost always in steps 2–4: finding the right candidate fast, verifying they are compliant, and confirming them before the facility calls a competitor.
-
-**What "10x without 10x-ing" actually means:**
-This is not a technical requirement. It means the coordinator headcount cannot scale linearly with revenue. Currently, each coordinator likely manages a fixed book of facilities and candidates. To grow 10x, either coordinators handle 10x more cases (impossible without AI), or the work that consumes coordinator time is reduced dramatically. The real question is: which parts of the coordination loop consume skilled time that could be handled differently?
-
-**Why the two prior projects failed:**
-The chatbot tried to automate communication without solving the underlying matching and compliance problems — coordinators still had to do the hard work; the chatbot just added a layer on top. The recommendation engine surfaced matches but coordinators didn't trust it, probably because it didn't account for relationship history, client-specific preferences, or compliance edge cases. Both projects automated the wrong thing or at the wrong layer.
-
-The CEO's impatience and the 8-week demand are signals: any solution must produce a visible, measurable result quickly. This rules out foundational infrastructure work (data pipelines, CRM replacement, compliance platform rebuild). The target is something that demonstrably reduces coordinator time on a specific, high-frequency task within 8 weeks.
-
----
-
-## Likely coordinator pain points
-
-These are hypotheses — confirm or refute each during the discovery call.
-
-| Pain point | Why likely | Discovery question to validate |
-|---|---|---|
-| Manually searching for available, compliant candidates when a job order arrives | High frequency, time-sensitive, requires checking multiple systems | "Walk me through what happens the moment a job order lands. What do you do first?" |
-| Compliance document expiry — chasing workers to renew licences, certifications | Ongoing admin burden; consequences of missing it are severe | "How do you know when a worker's credentials are about to expire? What do you do?" |
-| Last-minute cancellations triggering a scramble to find a replacement | Urgent, stressful, high-consequence | "Tell me about the last time a worker cancelled a shift last-minute. What happened?" |
-| High volume of routine confirmations, reminders, and status updates | Repetitive; consumes time that could be used for matching | "What percentage of your messages are chasing confirmations or reminders vs actual decisions?" |
-| Job order intake from facilities arriving inconsistently (email, phone, portal) | Creates manual triage before matching even begins | "How do job orders come in? Do they always arrive in the same format?" |
-
----
-
-## Discovery questions for the call
-
-Organised by the 60-minute call structure.
-
-### Minutes 0–5 — Context setting
-
-- "Before we go into process detail — in a typical week, where does your team's time actually go? Not what the system tracks, but where you feel the effort is."
-- "You mentioned wanting to grow without growing the team. If I asked a coordinator right now what takes up most of their day, what would they say?"
-
-### Minutes 5–15 — Broad funnel
-
-- "Walk me through a coordinator's day. What is the first thing they do when they arrive, and how does it unfold from there?"
-- "What are the tasks that feel repetitive — where you know what to do before you even start?"
-- "When a coordinator is under pressure, what's the work that gets dropped or delayed first?"
-- "How many job orders does a coordinator handle in a typical day, and how many of those fill cleanly vs. cause problems?"
-
-### Minutes 15–30 — Narrow funnel (matching process)
-
-- "Take me through a real job order from this week. Not how it's supposed to work — what actually happened, step by step."
-- "When you're looking for the right candidate for a shift, how do you decide who to contact first?"
-- "At what point in the process do you stop and have to think, rather than just execute?"
-- "What information do you need before you feel confident placing someone, and where does that information come from?"
-- "Are there candidates you would always call first for certain facilities? Why? Is that written down anywhere?"
-
-### Minutes 30–45 — Lived vs documented
-
-- "Is there a standard process for filling a job order? How closely does what actually happens match that process?"
-- "What are the most common reasons a straightforward job order becomes complicated?"
-- "When you check a candidate's compliance status, where do you look? Is it always in the same system, or do you check multiple places?"
-- "Are there decisions that two coordinators might make differently for the same job order? What causes that?"
-
-### Minutes 45–55 — Delegation signals
-
-- "If you had to write down the rules you follow when choosing a candidate — the factors you weigh — could you do it? What would be on the list?"
-- "What percentage of job orders fit a clear pattern versus require a judgment call?"
-- "If an AI system surfaced the top three candidates for a job order with reasons, and you could override it at any point — would that be useful, or would you not trust it?"
-- "What would have to be true about a system's output for you to use it without double-checking every time?"
-- "What's the worst thing that could happen if the system made the wrong call? How would you detect it?"
-
-### Minutes 55–60 — Close
-
-- "Based on what you've told me, the heaviest coordinator burden seems to be [X]. Is that accurate, or is there something more significant I've missed?"
-- "Is there anything about how MedFlex operates that would make a standard staffing automation approach not work here?"
-
----
-
-## Assumptions to test during the call
-
-| Assumption | What breaks if wrong |
+| Fact | Value |
 |---|---|
-| Coordinators are the main bottleneck, not the candidate or facility side | The agent targets the wrong part of the workflow |
-| Job orders arrive in a consistent enough format to be processed systematically | Intake cannot be automated; structured data is unavailable |
-| Candidate compliance data is centralised and accessible in one system | Compliance checks remain manual regardless of automation |
-| The matching criteria are partially codifiable (even if not fully) | Full agentic matching is not feasible; recommendation engine failure repeats |
-| Coordinators are willing to act on agent-surfaced candidates without full re-verification | Trust gap prevents adoption; same failure mode as prior recommendation engine |
-| 8 weeks is a constraint on showing early value, not on full deployment | Timeline is unachievable if interpreted as full production deployment |
+| Company | MedFlex, healthcare staffing agency |
+| Size | 200 employees, 5-state US region |
+| Model | B2B (hospital systems) + B2C (travel nurses) |
+| Coordinators | 8, matching nurses to shifts manually |
+| Decisions per coordinator per day | ~120 |
+| Average time to fill a shift | 4.2 hours |
+| Target fill time | Under 1 hour |
+| Mismatch rate (wrong credentials for facility) | 7% |
+| No-show rate | 12% |
+| Stakeholder | Marcus Reyes, CEO. Series B closed. Board wants significant growth in 24 months. |
+| Prior AI failures | Chatbot (hospital staff rejected it) + recommendation engine (nobody used it) |
+| Engagement goal | "10x the business without 10x-ing the coordinators" — in 8 weeks |
+
+**Out of scope (named explicitly — do not drift into these):**
+- Hospital-facing portal for shift submission
+- Nurse-facing mobile app
+- Pricing engine / margin optimisation
+- Continuing-education renewal automation
+
+---
+
+## What the numbers actually tell us
+
+**120 decisions per coordinator per day** means roughly one decision every 4 minutes across an 8-hour day. At 4.2-hour average fill time, the bottleneck is not the decision itself — it is the waiting. Coordinators are likely spending time identifying candidates, then waiting for responses sequentially, then re-checking compliance, then confirming with the hospital. Each handoff adds delay.
+
+**The 4.2 → 1 hour target is a 76% reduction in fill time.** This is not achievable by making coordinators faster. It requires eliminating the waiting from the critical path — which means parallel outreach to multiple candidates simultaneously, compliance pre-verified before the shift request arrives, and hospital confirmation automated where possible.
+
+**7% mismatch rate** — wrong credentials for the facility type. With 8 coordinators each making 120 decisions per day, that is roughly 67 mismatches per day. Each mismatch is a placed nurse who cannot legally or contractually work that shift. This is a compliance risk, a client relationship risk, and a revenue risk. It suggests the matching step is either not checking facility-specific credential requirements reliably, or those requirements are not codified clearly enough to check.
+
+**12% no-show rate** is very high. Not all of this is solvable by an agent — some no-shows are personal emergencies. But a portion are preventable: nurses who accepted but weren't properly confirmed, double-booked nurses, or commitments made without a formal acknowledgement. Better confirmation workflows with hard deadlines can reduce this. The remainder is a behavioural/supply problem, not a coordination problem.
+
+---
+
+## What "10x without 10x-ing" actually requires
+
+The coordination bottleneck is the constraint on growth. More hospital contracts = more shift requests = more matching decisions. At 120/coordinator/day with 8 coordinators, the ceiling is approximately 960 decisions/day. To 10x, you would need either 80 coordinators or you need coordinators to handle 10x the volume each. Neither is realistic without fundamentally changing what coordinators do.
+
+The question the architecture must answer is: which of the 120 daily decisions require a coordinator, and which can the agent handle end-to-end?
 
 ---
 
 ## Agentic vs deterministic analysis
 
-This is the most important output of this section. The prior recommendation engine failed partly because it tried to do agentic work (reasoning about fit) with deterministic methods (a scoring algorithm coordinators didn't trust). The distinction below should drive what goes into a capability spec vs. what gets built as a scheduled job or rule-based workflow.
+### Deterministic — scheduled job or rule-based workflow, not an agent
 
-### Deterministic — use a scheduled job or workflow, not an agent
-
-These tasks follow fixed rules with no context-dependent judgment. Building an agent for them adds cost and complexity with no additional value.
-
-| Task | Why deterministic | Correct implementation |
+| Task | Why deterministic | Implementation |
 |---|---|---|
-| Licence and certification expiry alerts | Check expiry date against today + threshold. No reasoning required. | Scheduled job: runs daily, sends alert when days_until_expiry < 30 |
-| Shift confirmation reminders | Send reminder N hours before shift if status = unconfirmed. No reasoning required. | Scheduled job: time-triggered message |
-| Timesheet submission reminders | Send reminder if timesheet not submitted by deadline. No reasoning. | Scheduled job |
-| Compliance document collection follow-up | If document X not received by date Y, send chase. No reasoning. | Scheduled workflow with escalation after N days |
-| Basic candidate availability check | Is candidate marked available for this date/time? Binary lookup. | Rule-based filter, not an agent |
-| Invoice generation | Hours × rate = amount. No reasoning. | Automated calculation triggered by approved timesheet |
+| Credential / licence expiry alert | Check expiry date vs today + threshold. No judgment. | Scheduled job: daily check, alert at 30 / 14 / 7 days |
+| Basic availability filter | Is the nurse marked available for this date and time? Binary lookup. | Rule-based filter at job order intake |
+| Proximity filter | Is the nurse within acceptable distance of the facility? Distance calculation. | Rule-based filter |
+| Shift confirmation reminder | Send reminder N hours before shift if not confirmed. No judgment. | Scheduled job: time-triggered |
+| No-show flag and escalation | If nurse has not confirmed by T-4h, flag to coordinator. | Scheduled job with threshold |
+| Hospital notification on fill | When shift is confirmed, notify the hospital. No judgment. | Triggered workflow on status change |
+| Compliance status lookup | Query state regulatory database for licence status. Return current / lapsed / expired. | API call, deterministic output |
 
 ### Genuinely agentic — requires reasoning over context
 
-These tasks cannot be solved reliably by a fixed rule because the right answer depends on context that varies per case.
-
 | Task | Why agentic | What the agent reasons over |
 |---|---|---|
-| Prioritising which unfilled job orders to pursue first | Depends on client relationship value, margin, time pressure, candidate pool depth, facility tolerance — not reducible to a single rule | Order urgency + client tier + fill probability + coordinator capacity |
-| Candidate outreach sequencing | Who to contact first for a given shift depends on past performance at that facility, relationship, recent availability pattern, channel preference — not just a ranked list by score | Candidate history, facility fit, channel effectiveness, recency |
-| Last-minute cancellation recovery | Finding a replacement in hours requires reasoning about who is available, compliant, experienced with that facility, and reachable — with escalation logic if no match found | Urgency + compliance + facility familiarity + contact probability |
-| Job order interpretation | Facilities often send vague or non-standard requests; determining what they actually need before searching requires reading intent | Request text + facility history + common patterns for that client |
-
-### The boundary question — where coordinators push back hardest
-
-The prior recommendation engine failed because coordinators didn't trust it. The agent design must account for this. Recommendations must be:
-- Explainable (why this candidate for this role)
-- Overridable (coordinator always has final say)
-- Fast to act on (one click to confirm, not a form)
-- Accurate enough that overriding becomes the exception, not the norm
-
-The agent earns trust incrementally. Start with lower-stakes use cases (outreach sequencing, cancellation recovery) before attempting full match recommendation.
+| Candidate ranking for a job order | The right candidate depends on credential match, proximity, nurse preference, hospital preference, past performance at that facility, response rate, and current workload — not reducible to a single rule | All of the above, simultaneously, per job order |
+| Parallel outreach sequencing | Which candidates to contact, in what order, via what channel, with what timing — given urgency and the nurse pool's known response patterns | Urgency of fill, channel preference, expected response latency, pool depth |
+| Mismatch prevention on ambiguous requirements | Hospital says "ICU-certified preferred." Nurse has step-down ICU experience. Does that qualify? Requires reading the facility's actual requirement and the nurse's credential detail, not just checking a boolean | Facility requirement text + nurse credential detail + precedent from prior placements at that facility |
+| Cancellation recovery | Last-minute cancellation — who to contact first, given time pressure, that this is a specific facility with specific requirements, and that the standard pool may already be partially committed | Same as candidate ranking but with time constraint and reduced pool |
+| Job order triage and interpretation | Job orders arrive by email, portal, and phone. Inconsistent format. Agent must extract the structured data — shift date, time, facility, specialism, credential requirements — from unstructured input before matching can begin | Natural language understanding of job order text |
 
 ---
 
-## What the 8-week constraint actually means
+## The prior failure modes — do not repeat these
 
-8 weeks to full production is not realistic for a complex matching agent. 8 weeks to a demonstrable result is.
+**The chatbot** — hospital staff rejected it. Hospital-facing. Likely tried to replace the relationship layer (how hospitals communicate with MedFlex) without solving the operational problem underneath. Hospitals did not want a chatbot; they wanted their shifts filled quickly.
 
-Realistic 8-week target: a working agent that handles one high-frequency, high-pain task end-to-end — most likely either cancellation recovery (urgent, high-stress, clear value) or compliance expiry tracking with automated outreach (deterministic but visible and immediate). Neither requires the full matching engine.
+**The recommendation engine** — nobody used it. Coordinator-facing. Most likely ranked candidates by a scoring algorithm that coordinators did not trust, because the score did not account for the things coordinators actually care about (relationship history with specific facilities, recent nurse behaviour, edge-case credential nuances). No explanation of why the candidate was recommended = no trust.
 
-Frame this to the CEO as: the first agent proves the infrastructure and trust model. The matching capability is Wave 2, built on the proof of Wave 1. This addresses his two prior failures — both tried to skip to the complex capability without building coordinator trust first.
+**The common failure pattern:** both projects automated at the interface layer without fixing the operational layer underneath. The agent design must work from the inside out — fix the matching and compliance verification first, then surface it to coordinators in a way they will actually use.
 
 ---
 
-## What to watch for in the discovery call
+## Discovery questions for the call
 
-- **Evasion:** "We have a process for that" — push for the lived version, not the documented one
-- **Contradiction:** "Matching is straightforward" followed by descriptions of frequent overrides and exceptions — this is where the agent value lives
-- **Scope inflation:** the CEO saying "and it should also do X" — each addition adds risk to the 8-week target; note it, do not commit
-- **Trust signals:** listen for how coordinators talk about the failed recommendation engine — their specific objections tell you what the new design must address
+### Minutes 0–5 — Context setting
+
+- "Before we go into the detail — when a shift goes unfilled or misfilled, what does that actually cost MedFlex? I want to understand what we are solving against."
+- "You mentioned two prior AI projects. Before we talk about what we want to build, can you tell me what those projects were supposed to do and why they did not work?"
+
+### Minutes 5–15 — Broad funnel
+
+- "Walk me through what happens in your operations between the moment a hospital submits a shift request and the moment a nurse shows up. Not the ideal version — what actually happens today."
+- "Of the 4.2 hours average fill time, where does the time go? Is the delay in finding a candidate, reaching them, verifying credentials, or something else?"
+- "When a coordinator has 120 decisions to make in a day, what does 'making a decision' actually look like? Is it a 2-minute task or a 20-minute task?"
+
+### Minutes 15–30 — Narrow funnel (the matching process)
+
+- "Take me through a real shift request from this week. Not a textbook case — one that actually came through. What happened?"
+- "When you identify potential nurses for a shift, how do you decide who to contact first? Is that written down, or is it in the coordinator's head?"
+- "You said the mismatch rate is 7%. When a mismatch happens, at what point does someone find out — before the shift, when the nurse arrives, or after?"
+- "What does it mean for a nurse to be 'available'? How does your system know? Who updates that?"
+
+### Minutes 30–45 — Lived vs documented
+
+- "Is there a standard process document for how coordinators match nurses to shifts? How closely does what actually happens match that process?"
+- "When a nurse calls in sick or cancels, what is the actual chain of events? Who calls whom, and what gets updated where?"
+- "Credential verification — you said it is done manually against state databases. Walk me through that. Which database, how often, who does it?"
+- "You mentioned a quality score. What does that score measure, and is it used in the matching decision today?"
+
+### Minutes 45–55 — Delegation signals
+
+- "If an agent surfaced the top three nurses for a shift with a reason for each recommendation — would a coordinator act on that, or would they verify independently before contacting anyone?"
+- "What percentage of shift requests fill cleanly versus require coordinator judgment or intervention?"
+- "When something goes wrong — wrong nurse placed, no-show, last-minute cancellation — who is accountable? How is that tracked?"
+- "If the agent makes the wrong call on a placement and the wrong nurse shows up, what happens? To MedFlex, to the hospital, to the nurse?"
+
+### Minutes 55–60 — Close
+
+- "Based on what you have told me, the biggest lever seems to be the time from shift request to first nurse contact. Is that where you would focus, or is there something more important I have missed?"
+- "You mentioned Kim, Aaron, and Linda handle the operational, IT, and compliance detail. Before Friday, what is the best way to get the specific questions I have in front of them?"
+
+---
+
+## The three planted contradictions — catch these
+
+These are the specific contradictions signalled in the brief. The actual session may use different wording but the same underlying gaps. Flag each directly when you hear it — do not wait until the end.
+
+### Contradiction 1 — Nurse availability data
+
+**What Marcus will likely say early:** "Our app is the source of truth for nurse availability."
+
+**What he will likely say later:** "When a nurse calls in sick they call Kim, and Kim updates the schedule by hand."
+
+**Why it matters:** If Kim is updating manually by phone call, the app is not the source of truth — Kim's notes are. If the agent reads from the app, it will see stale data and make matches against nurses who are no longer available. The agent's data foundation is broken before it starts.
+
+**How to call it out:** "You said the app is the source of truth for availability, but it sounds like changes come in through Kim by phone and get updated manually. Is there a lag between a nurse calling in and the app reflecting that? How long?"
+
+---
+
+### Contradiction 2 — Credential verification completeness
+
+**What Marcus will likely say early:** "All credentials are verified before a nurse joins our roster."
+
+**What he will likely say later:** "When a credential lapses we get a state regulatory ping and we re-verify within a week."
+
+**Why it matters:** Initial verification is done once at onboarding. But credentials lapse. If the re-verification happens within a week of a state ping, there is a window — potentially days — where a nurse is on the active roster with a lapsed credential and could be placed. The 7% mismatch rate may partly live in this gap.
+
+**How to call it out:** "You said credentials are verified before a nurse joins the roster. But if a licence lapses mid-engagement, it sounds like you might not know for up to a week. Could a nurse with a lapsed credential be matched and placed during that window?"
+
+---
+
+### Contradiction 3 — The quality score vs the mismatch rate
+
+**What Marcus will likely say:** "The 7% mismatch rate is hospital-flagged dissatisfaction." And later: "We have a quality score. Trust me, it's reliable."
+
+**Why it matters:** If the quality score is reliable and coordinators have access to it, why is the mismatch rate 7%? Either the quality score does not capture the credential dimension (it measures satisfaction, not compliance fit), or it is not being used in the matching decision, or it is not as reliable as stated. The prior recommendation engine may have been built on this score — which would explain why coordinators did not trust it.
+
+**How to call it out:** "You mentioned a quality score and you described a 7% mismatch rate. If the quality score is reliable and coordinators use it, what is causing the 7%? Is the score measuring the same thing as the mismatch — credential fit — or something different, like satisfaction?"
+
+---
+
+## Engaging Marcus Reyes
+
+**What works with Marcus:**
+- Lead with numbers and outcomes, not system descriptions
+- Challenge framing directly when it does not add up — he respects it
+- Short questions. He cuts off rambling.
+- Acknowledge the prior failures without apologising for them — treat them as useful information, not embarrassing history
+
+**What will get you pushed back:**
+- Proposing a solution before you have diagnosed the problem ("That sounds like a chatbot. We tried that.")
+- Asking generic questions that could have been written without reading the brief
+- Accepting surface answers on the contradictions
+- Committing to the 8-week scope without interrogating what "results" means to him
+
+**The 8-week question to ask Marcus directly:**
+"When you say results in 8 weeks — what does a result look like to you specifically? A live agent in production, or a demonstrated reduction in fill time on a pilot cohort?"
+
+The answer will tell you whether the 8 weeks is a hard deployment deadline or a proof-of-value milestone. The architecture changes depending on which it is.
+
+---
+
+## Likely architecture based on confirmed facts
+
+**The real problem is fill time, not coordinator headcount.**
+
+4.2 hours to fill a shift is predominantly waiting time — waiting for nurse responses, waiting for compliance checks, waiting for hospital confirmation. An agent that runs these in parallel rather than sequentially collapses the fill time without replacing the coordinator's judgment.
+
+**The agent's primary job:** take a job order, pre-filter on deterministic criteria (available, compliant, proximity), rank the remaining candidates using context-dependent reasoning (facility fit, preference history, response rate), contact the top candidates in parallel, track responses, and surface the first confirmed match to the coordinator for final approval.
+
+**What remains human:** the final placement decision. The coordinator reviews the agent's recommended match with reasons, approves or overrides, and the hospital is notified. The agent executes; the coordinator controls.
+
+**Wave 1 scope (8 weeks):**
+The tightest path to a demonstrable result in 8 weeks is an agent that handles job order intake through to first-contact confirmation — the first half of the fill cycle. Deterministic compliance filtering, agentic outreach sequencing, parallel contact, response tracking, escalation to coordinator if no fill within a target window. This alone should reduce fill time from 4.2 hours to under 2 hours and demonstrate the infrastructure for Wave 2.
+
+**Wave 2:** full candidate ranking with facility-specific credential reasoning, mismatch prevention on ambiguous requirements, no-show prediction and mitigation.
