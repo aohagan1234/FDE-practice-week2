@@ -17,17 +17,42 @@ The prior recommendation engine failed by treating the context-dependent reasoni
 
 ---
 
-## Shift request lifecycle
+## Shift request lifecycle — current state vs. proposed state
+
+### Current state (today)
+
+Everything runs sequentially. The coordinator is the only actor. The 4.2-hour fill time is almost entirely waiting — waiting for nurses to respond, one at a time.
 
 ```mermaid
 flowchart TD
-    A["Hospital shift request\nemail / phone / portal"] --> B
+    A["Hospital shift request\nemail / phone / portal"] --> B["Coordinator reads request\nmanually enters into CRM"]
+    B --> C["Coordinator checks credentials\nagainst compliance spreadsheet"]
+    C --> D["Coordinator checks availability\nportal + calls Kim if needed"]
+    D --> E["Coordinator contacts Nurse 1\nphone / SMS / email"]
+    E --> F{"Nurse 1 responds?"}
+    F -- "No — wait and retry" --> G["Coordinator contacts Nurse 2"]
+    G --> H{"Nurse 2 responds?"}
+    H -- "No — wait and retry" --> I["Coordinator contacts Nurse 3\n...repeat until confirmed"]
+    F -- Yes --> J["Coordinator sends confirmation\nemail to hospital"]
+    H -- Yes --> J
+    I --> J
+```
 
-    B["Agent: parse job order\nAgent-led + coordinator review"]
+**Where the 4.2 hours goes:** sequential outreach with waiting between each contact attempt. The coordinator cannot move on to the next candidate until the previous one has been given time to respond. With 120 decisions per coordinator per day, this creates a backlog where new requests queue behind active fill cycles.
+
+---
+
+### Proposed state (with agent)
+
+The coordinator is removed from the sequential outreach loop. The agent contacts multiple candidates simultaneously and brings the coordinator in only at the final approval gate.
+
+```mermaid
+flowchart TD
+    A["Hospital shift request\nemail / phone / portal"] --> B["Agent: parse job order\nAgent-led + coordinator review"]
     B --> C["Coordinator reviews\nparsed job order"]
     C --> D["Rule-based eligibility filter\ncredentials / availability / proximity"]
     D --> E["Agent: rank candidates\nFully Agentic — reasons stated per candidate"]
-    E --> F["Agent: parallel outreach\nAgent-led — contacts top candidates simultaneously"]
+    E --> F["Agent: parallel outreach\nContacts top candidates simultaneously"]
     F --> G{"Nurse confirms\nwithin window?"}
     G -- No --> H["Escalate to coordinator\nfor manual intervention"]
     G -- Yes --> I["Agent: credential validation\nDeterministic check first;\nagent reasons over ambiguous cases"]
@@ -35,6 +60,8 @@ flowchart TD
     H --> J
     J --> K["Automated: hospital notification\nTriggered on coordinator approval"]
 ```
+
+**What changes:** parallel outreach collapses the waiting time. Pre-placement credential validation catches mismatches before confirmation. The coordinator touches the fill cycle twice (intake review, final approval) instead of owning every step.
 
 ---
 
