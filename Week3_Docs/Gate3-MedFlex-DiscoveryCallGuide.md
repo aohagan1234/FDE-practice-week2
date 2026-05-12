@@ -3,13 +3,21 @@
 
 ---
 
-## Marcus — what to expect
+## Who is Marcus Reyes
 
-- Answers executive-layer facts precisely: numbers, board pressure, prior failures
-- Defers operational detail to Kim (senior coordinator), Aaron (IT), Linda (compliance) — none of whom are in the session
-- Pushes back hard on premature solutioning: "That sounds like a chatbot. We tried that."
+Marcus Reyes is the CEO of MedFlex. He has a background in operations and growth — not engineering. He just closed a Series B and has board pressure to deliver significant growth within 24 months. He has seen two AI projects fail already and is impatient for something that actually works. He is confident, direct, and time-pressured. He will cut off questions that ramble or that could have been asked without reading the brief. He respects people who challenge his framing with substance and who demonstrate they have done their homework before walking in.
+
+He is your primary point of contact through this engagement. He is not a technical stakeholder — he thinks in revenue, risk, and operational capacity. Frame everything in those terms.
+
+---
+
+## What to expect in the session
+
+- Answers executive-layer facts precisely: numbers, board pressure, prior AI failures
+- Defers operational detail to Kim (senior coordinator), Aaron (IT), Linda (compliance) — none of whom are available in the session
+- Pushes back hard on premature solutioning: *"That sounds like a chatbot. We tried that."*
 - Respects directness. Cuts off rambling. Ask one question at a time.
-- When you catch a contradiction: call it out directly, no grandstanding. One sentence. He will acknowledge and defer resolution.
+- When you catch a contradiction: call it out directly, no grandstanding. One sentence. He will acknowledge and defer resolution to the engagement.
 
 ---
 
