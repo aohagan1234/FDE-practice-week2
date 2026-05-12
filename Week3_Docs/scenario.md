@@ -3,33 +3,6 @@
 
 ---
 
-## Contents
-
-1. [Scenario summary](#scenario-summary)
-2. [What is actually broken](#what-is-actually-broken)
-3. [What "10x without 10x-ing" requires architecturally](#what-10x-without-10x-ing-requires-architecturally)
-4. [Success metrics](#success-metrics)
-5. [How each metric is achieved](#how-each-metric-is-achieved)
-6. [Business context](#business-context)
-7. [Stakeholder map](#stakeholder-map)
-8. [Constraints](#constraints)
-9. [Risks](#risks)
-10. [MVP scope — IN](#mvp-scope--in)
-11. [MVP scope — OUT](#mvp-scope--out)
-12. [Wave 1 vs. Wave 2 scope](#wave-1-vs-wave-2-scope)
-13. [Assumptions](#assumptions)
-14. [Cognitive load split](#cognitive-load-split)
-15. [Shift request lifecycle — current state vs. proposed state](#shift-request-lifecycle--current-state-vs-proposed-state)
-16. [Agent boundary](#agent-boundary)
-17. [Data sources per workflow step](#data-sources-per-workflow-step)
-18. [Workflow delegation map](#workflow-delegation-map)
-19. [Escalation triggers](#escalation-triggers)
-20. [Control handoffs](#control-handoffs)
-21. [ADR 1 — Coordinator approval gate at final placement](#adr-1--coordinator-approval-gate-at-final-placement)
-22. [ADR 2 — Real-time credential validation at placement vs. reliance on compliance batch state](#adr-2--real-time-credential-validation-at-placement-vs-reliance-on-compliance-batch-state)
-
----
-
 # D1 — Problem Framing & Success Metrics
 
 ## Scenario summary
