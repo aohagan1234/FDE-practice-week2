@@ -1,8 +1,8 @@
 # D6 — Client Feedback Response
-**To:** Marcus Reyes, CEO, MedFlex
-**From:** Ann OHagan
-**Date:** 2026-05-15
-**Re:** Revised plan — 6-week timeline, credential scope, and failure path
+**To:** Marcus Reyes, CEO, MedFlex  
+**From:** Ann OHagan  
+**Date:** 2026-05-15  
+**Re:** Revised plan, 6-week timeline, credential scope, and failure path
 
 ---
 
@@ -32,5 +32,5 @@ Kim's question was the right one to ask and it exposed a real gap. A failure pat
 
 The revised timeline, scope table, and failure path are in the updated documents. I am available to walk through any of this before Monday if that would be helpful.
 
-Best regards,
+Best regards,  
 Ann
