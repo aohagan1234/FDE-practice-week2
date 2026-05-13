@@ -24,7 +24,7 @@ One thing worth being clear about before Monday: the week 6 board deliverable wi
 
 Credential verification has been removed from Wave 1. The compliance team will continue under its current quarterly cadence during the pilot, and the known exposure window is accepted as a condition of the 6-week timeline.
 
-It is worth noting that the original design already flagged this as conditional on Linda's confirmation. The issue was not that credential verification was included without caveats; it was that it had not yet been validated as the root cause of the 7% mismatch rate before being built into the architecture. Removing it from Wave 1 is consistent with the logic we set out, not a correction to it. It stays on the roadmap and moves forward as soon as Linda confirms the root cause.
+Just to give you some context on this one: we had already flagged in the original design that credential verification was conditional on Linda confirming the root cause of the 7% mismatch rate. So removing it from Wave 1 is very much in line with our own thinking, and we are happy to take it out now. It is not going away permanently; it moves forward as soon as Linda gives us the confirmation we need.
 
 ---
 
