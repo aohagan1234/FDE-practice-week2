@@ -8,7 +8,7 @@
 
 Marcus,
 
-All three points are addressed below. The revised documents are attached.
+Thank you for the detailed feedback — it was useful and the points you raised were the right ones. All three are addressed below, with the revised documents attached.
 
 ---
 
@@ -20,7 +20,7 @@ You're right — 8 weeks doesn't work for a board update in 6. The plan has been
 
 **On credential verification**
 
-Removed from Wave 1. The compliance team continues under its current quarterly cadence during the pilot; the known exposure window is accepted as a condition of the 6-week timeline. We have not confirmed with Linda that stale credentials are driving the 7% mismatch rate, and you're right that building against an unconfirmed root cause is the wrong call. I have also replaced the credential-scoping ADR — which was duplicating the Wave 1/Wave 2 table rather than making a genuinely architectural decision — with a contested design decision that directly affects build outcomes: whether candidate ranking should use agentic reasoning with stated rationale per candidate, or a deterministic sort with fixed weights. That is the decision that addresses coordinator trust and fill volume in Wave 1, and it is the one that needs to be in the architecture record.
+Credential verification has been removed from Wave 1. The compliance team will continue under its current quarterly cadence during the pilot, and the known exposure window is accepted as a condition of the 6-week timeline. We have not confirmed with Linda that stale credentials are driving the 7% mismatch rate, and you're right that building against an unconfirmed root cause is the wrong call. I have also replaced the credential-scoping ADR — which was duplicating the Wave 1/Wave 2 table rather than making a genuinely architectural decision — with a contested design decision that directly affects build outcomes: whether candidate ranking should use agentic reasoning with stated rationale per candidate, or a deterministic sort with fixed weights. That is the decision that addresses coordinator trust and fill volume in Wave 1, and it is the one that needs to be in the architecture record.
 
 ---
 
@@ -30,6 +30,7 @@ Kim's question was the right one to ask and it exposed a real gap. A failure pat
 
 ---
 
-The revised timeline, scope table, and failure path are in the updated documents. Let me know if you want to walk through any of this before Monday.
+The revised timeline, scope table, and failure path are in the updated documents. I am available to walk through any of this before Monday if that would be helpful.
 
+Best regards,
 Ann
