@@ -32,7 +32,7 @@ Just to give you some context on this one: we had already flagged in the origina
 
 Kim was right to raise this, and it was a genuine gap in the document. A failure path section is now in the architecture covering four specific scenarios: no confirmation within the outreach window, pool exhausted, parsing error caught at the coordinator approval gate, and no-show detected post-placement. The coordinator owns the hospital relationship in all failure cases. The agent pre-drafts the status message and surfaces the remaining pool state so the coordinator has everything they need to make that call within 15–30 minutes of escalation. The agent does not contact the hospital directly under any circumstances; that call belongs to Kim's team.
 
-Kim's instinct to ask who manages the hospital conversation when things go wrong is exactly the right question for someone in her role, and the design is stronger for it.
+Please pass on our thanks to Kim; that was a useful catch and the design is better for it.
 
 ---
 
