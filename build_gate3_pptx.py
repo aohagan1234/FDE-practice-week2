@@ -1,4 +1,4 @@
-"""Gate 3 presentation — MedFlex. Clean, readable, 10-minute coach call."""
+"""Gate 3 presentation — MedFlex. Defense-focused, 10-minute coach call."""
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -12,8 +12,13 @@ LGREY  = RGBColor(0xF5, 0xF6, 0xF8)
 ORANGE = RGBColor(0xE3, 0x6B, 0x2A)
 GREEN  = RGBColor(0x1A, 0x7A, 0x3C)
 RED    = RGBColor(0xBF, 0x35, 0x2A)
+AMBER  = RGBColor(0xCC, 0x84, 0x00)
 LBLUE  = RGBColor(0xBB, 0xCC, 0xEE)
+DBLUE  = RGBColor(0x23, 0x52, 0x96)
 RULE   = RGBColor(0xDD, 0xDD, 0xDD)
+LGREEN = RGBColor(0xE8, 0xF5, 0xEC)
+LRED   = RGBColor(0xFB, 0xEB, 0xEA)
+LAMBER = RGBColor(0xFD, 0xF5, 0xE0)
 
 prs = Presentation()
 prs.slide_width  = Inches(13.33)
@@ -32,8 +37,8 @@ def box(s, x, y, w, h, color):
     sh.line.fill.background()
     return sh
 
-def label(s, text, x, y, w, h, size=16, bold=False, color=DARK,
-          align=PP_ALIGN.LEFT, italic=False):
+def t(s, text, x, y, w, h, size=15, bold=False, color=DARK,
+      align=PP_ALIGN.LEFT, italic=False):
     tb = s.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = tb.text_frame
     tf.word_wrap = True
@@ -47,36 +52,21 @@ def label(s, text, x, y, w, h, size=16, bold=False, color=DARK,
     r.font.italic = italic
     return tb
 
-def bullets(s, items, x, y, w, h, size=16, color=DARK, gap=0.0, bold_first=False):
-    """items = list of strings; each gets its own paragraph."""
-    tb = s.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
-    tf = tb.text_frame
-    tf.word_wrap = True
-    for i, text in enumerate(items):
-        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        if gap and i > 0:
-            sp = tf.add_paragraph()
-            sp.space_before = Pt(gap)
-        r = p.add_run()
-        r.text = text
-        r.font.size = Pt(size)
-        r.font.color.rgb = color
-        r.font.bold = (bold_first and i == 0)
-
 def header(s, title, subtitle=None):
-    box(s, 0, 0, 13.33, 1.1, NAVY)
-    label(s, title, 0.45, 0.1, 12.4, 0.65, size=28, bold=True, color=WHITE)
+    box(s, 0, 0, 13.33, 1.05, NAVY)
+    t(s, title, 0.45, 0.08, 12.4, 0.62, size=26, bold=True, color=WHITE)
     if subtitle:
-        label(s, subtitle, 0.45, 0.72, 12.4, 0.34, size=13, color=LBLUE, italic=True)
+        t(s, subtitle, 0.45, 0.70, 12.4, 0.32, size=12, color=LBLUE, italic=True)
 
 def slide_num(s, n):
-    label(s, f"{n} / {TOTAL}", 12.5, 7.15, 0.75, 0.28, size=10, color=MID, align=PP_ALIGN.RIGHT)
+    t(s, f"{n} / {TOTAL}", 12.5, 7.18, 0.75, 0.26, size=10, color=MID, align=PP_ALIGN.RIGHT)
 
-def rule_line(s, y):
+def hline(s, y):
     box(s, 0.45, y, 12.43, 0.02, RULE)
 
-def dot(s, x, y, color=NAVY):
-    box(s, x, y, 0.13, 0.13, color)
+def pill(s, text, x, y, w, h, bg, fg=WHITE):
+    box(s, x, y, w, h, bg)
+    t(s, text, x, y + 0.04, w, h - 0.04, size=11, bold=True, color=fg, align=PP_ALIGN.CENTER)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -84,246 +74,289 @@ def dot(s, x, y, color=NAVY):
 # ═══════════════════════════════════════════════════════════
 s = slide()
 box(s, 0, 0, 13.33, 7.5, NAVY)
-box(s, 0, 5.8, 13.33, 0.06, ORANGE)
+box(s, 0, 5.6, 13.33, 0.06, ORANGE)
 
-label(s, "MEDFLEX  ·  GATE 3", 0.55, 0.4, 12.0, 0.5,
-      size=13, bold=True, color=LBLUE)
-label(s, "Candidate Ranking\n& Parallel Outreach",
-      0.55, 1.0, 11.5, 2.2, size=44, bold=True, color=WHITE)
-label(s, "From brief to specification to build to reflection.",
-      0.55, 3.25, 10.0, 0.5, size=16, color=LBLUE, italic=True)
+t(s, "MEDFLEX  ·  GATE 3  ·  DEFENSE", 0.55, 0.38, 12.0, 0.45,
+  size=12, bold=True, color=LBLUE)
+t(s, "Candidate Ranking\n& Parallel Outreach",
+  0.55, 0.9, 11.5, 2.1, size=42, bold=True, color=WHITE)
+t(s, "Built, tested, and ready to defend.", 0.55, 3.1, 9.0, 0.45,
+  size=16, color=LBLUE, italic=True)
 
-box(s, 0.55, 4.15, 3.0, 1.4, ORANGE)
-label(s, "9 deliverables\n18 passing tests",
-      0.72, 4.28, 2.7, 1.1, size=18, bold=True, color=WHITE)
+# Three probe questions as callout boxes
+probes = [
+    (ORANGE, "Is this agentic — or just a\nmechanistic app with AI on top?"),
+    (DBLUE,  "The CEO's two failed AI projects.\nHow is yours different?"),
+    (RED,    "What kills this\nin production?"),
+]
+for i, (color, text) in enumerate(probes):
+    bx = 0.55 + i * 4.28
+    box(s, bx, 3.85, 4.0, 1.55, color)
+    t(s, text, bx + 0.18, 3.98, 3.65, 1.28, size=14, bold=True, color=WHITE)
 
-box(s, 3.85, 4.15, 9.0, 1.4, RGBColor(0x23, 0x52, 0x96))
-bullets(s,
-    ["Candidate ranking  —  6-factor urgency-weighted scoring",
-     "Parallel outreach  —  simultaneous contact, adaptive response windows"],
-    4.05, 4.3, 8.7, 1.1, size=14, color=WHITE)
-
-label(s, "Ann O'Hagan  ·  2026-05-13",
-      0.55, 6.2, 5.0, 0.4, size=11, color=LBLUE)
+t(s, "Ann O'Hagan  ·  2026-05-13", 0.55, 5.78, 5.0, 0.38, size=11, color=LBLUE)
 
 
 # ═══════════════════════════════════════════════════════════
-# SLIDE 2 — THE SCENARIO
+# SLIDE 2 — WHAT WAS BUILT (SETUP)
 # ═══════════════════════════════════════════════════════════
 s = slide()
 box(s, 0, 0, 13.33, 7.5, WHITE)
-header(s, "The Scenario", "MedFlex — healthcare staffing, nurse shifts, manual coordination")
+header(s, "What Was Built",
+       "The brief, the two capabilities, and the wave structure.")
 slide_num(s, 2)
 
-# Problem
-label(s, "The problem", 0.45, 1.3, 4.0, 0.38, size=13, bold=True, color=NAVY)
-rule_line(s, 1.68)
-bullets(s, [
-    "MedFlex places nurses into hospital shifts",
-    "When a shift needs filling, coordinators contact nurses one at a time",
-    "For urgent fills (≤4 hours), this is too slow — the window can expire before anyone confirms",
-    "Kim's team owns the hospital relationship; the agent must never contact the hospital directly",
-], 0.45, 1.75, 5.8, 2.8, size=15, color=DARK)
+# Left — the problem
+t(s, "The problem", 0.45, 1.18, 5.8, 0.36, size=13, bold=True, color=NAVY)
+hline(s, 1.54)
 
-# Vertical divider
-box(s, 6.6, 1.25, 0.04, 5.5, RULE)
-
-# Constraints
-label(s, "Key constraints going in", 6.85, 1.3, 6.0, 0.38, size=13, bold=True, color=NAVY)
-rule_line(s, 1.68)
-
-constraints = [
-    (ORANGE, "6-week board deadline",
-     "Marcus moved it from 8 weeks mid-engagement. Plan restructured before the first draft was finished."),
-    (NAVY,   "Credential verification: Wave 2 only",
-     "Removed from Wave 1 at Marcus's request — consistent with the original conditional design."),
-    (GREEN,  "Pilot criteria",
-     "Standard fills >24h only. 2–3 coordinators. Established hospitals. Coordinator approves all placements."),
+problem_lines = [
+    "MedFlex places nurses into hospital shifts.",
+    "When a shift needs filling, coordinators contact nurses one at a time.",
+    "For urgent fills (≤4h), the window can expire before anyone confirms.",
+    "Kim's team owns the hospital relationship — the agent never contacts\nthe hospital directly.",
 ]
-for i, (color, title, body) in enumerate(constraints):
-    by = 1.8 + i * 1.65
-    box(s, 6.85, by, 0.1, 1.3, color)
-    label(s, title, 7.1, by + 0.08, 5.9, 0.4, size=14, bold=True, color=DARK)
-    label(s, body,  7.1, by + 0.52, 5.9, 0.72, size=13, color=MID, italic=True)
+for i, line in enumerate(problem_lines):
+    by = 1.62 + i * 0.78
+    box(s, 0.45, by + 0.18, 0.1, 0.1, NAVY)
+    t(s, line, 0.68, by + 0.12, 5.55, 0.62, size=14, color=DARK)
+
+box(s, 6.6, 1.12, 0.04, 5.9, RULE)
+
+# Right — what was built
+t(s, "What was built", 6.85, 1.18, 5.95, 0.36, size=13, bold=True, color=NAVY)
+hline(s, 1.54)
+
+capabilities = [
+    (ORANGE, "Candidate ranking",
+     "Ranks eligible nurses across 6 factors simultaneously.\n"
+     "Returns up to 5 ranked candidates with a written rationale each."),
+    (DBLUE,  "Parallel outreach",
+     "Contacts top-ranked nurses simultaneously.\n"
+     "Adapts strategy in real time based on urgency, pool size, and concurrent fills."),
+]
+for i, (color, title, body) in enumerate(capabilities):
+    by = 1.62 + i * 1.75
+    box(s, 6.85, by, 0.1, 1.45, color)
+    t(s, title, 7.1, by + 0.1, 5.65, 0.42, size=14, bold=True, color=DARK)
+    t(s, body,  7.1, by + 0.58, 5.65, 0.82, size=13, color=MID)
+
+# Wave structure
+by = 5.22
+box(s, 0.45, by, 12.43, 0.36, NAVY)
+t(s, "Wave structure", 0.65, by + 0.06, 12.0, 0.26, size=12, bold=True, color=WHITE)
+box(s, 0.45, by + 0.36, 6.0, 1.55, LGREY)
+t(s, "Wave 1 — 6-week pilot", 0.65, by + 0.44, 5.7, 0.36, size=13, bold=True, color=NAVY)
+t(s, "Candidate ranking + parallel outreach.\nStandard fills >24h. 2–3 coordinators. Established hospitals.\nCoordinator approves every placement.",
+  0.65, by + 0.82, 5.7, 0.98, size=12, color=DARK)
+box(s, 6.45, by + 0.36, 6.43, 1.55, LGREY)
+t(s, "Wave 2 — condition-triggered at month 5", 6.65, by + 0.44, 6.1, 0.36, size=13, bold=True, color=NAVY)
+t(s, "Credential recency, no-show backfill, pre-shift mismatch detection.\nStarts only if first-recommendation acceptance rate ≥90% over 60 days.",
+  6.65, by + 0.82, 6.1, 0.98, size=12, color=DARK)
 
 
 # ═══════════════════════════════════════════════════════════
-# SLIDE 3 — WHAT WAS DELIVERED
+# SLIDE 3 — IS THIS AGENTIC?
 # ═══════════════════════════════════════════════════════════
 s = slide()
 box(s, 0, 0, 13.33, 7.5, WHITE)
-header(s, "What Was Delivered", "Nine deliverables across the full ATX engagement")
+header(s, "Is This Agentic — or Just a Fancy App?",
+       "Honest answer: some parts are deterministic. Here is where the agent earns its place.")
 slide_num(s, 3)
 
-col1 = [
-    ("D1", NAVY,   "Problem framing",          "Success metrics + 6-week delivery timeline + pilot criteria"),
-    ("D2", NAVY,   "Engagement intake",         "Scope, Wave 1 vs Wave 2 boundary, stakeholders"),
-    ("D3", NAVY,   "Architecture + ADRs",       "Agent design with 2 ADRs — alternatives, consequences, revisit conditions"),
-    ("D4a", ORANGE, "Candidate ranking spec",    "Production-grade: scoring formula, delegation boundaries, governance"),
-    ("D4b", ORANGE, "Parallel outreach spec",    "Production-grade: channel retry order, escalation SLAs, integration contracts"),
-]
-col2 = [
-    ("D5", RGBColor(0x0E,0x7C,0x7B), "Build-loop memo",           "5 signals: 4 spec gaps, 1 unjustified implementation choice"),
-    ("D6", RGBColor(0x0E,0x7C,0x7B), "Client feedback response",  "Email to Marcus: timeline, credential verification, failure path"),
-    ("D7", GREEN,  "Validation plan",           "10 pre-production tests + 6 agent scenarios + 8 integration tests"),
-    ("D8", GREEN,  "Reflection",                "Honest account: timeline, Kim, error handling rules"),
-    ("D9", GREEN,  "Self-spec build loop",       "What the build revealed about gaps I did not notice when writing the spec"),
+# Honest concession box
+box(s, 0.45, 1.12, 12.43, 0.72, LGREY)
+box(s, 0.45, 1.12, 0.12, 0.72, AMBER)
+t(s, "The honest concession: urgency tier calculation, factor weights, no-show lookback, and response rate imputation "
+     "are all deterministic — they are if/else rules and arithmetic. A script could run them.",
+  0.72, 1.2, 12.0, 0.56, size=13, color=DARK, italic=True)
+
+# Three columns: deterministic / where agent adds value / the test
+cols = [
+    (RULE, DARK, "What a standard app does",
+     [
+         "Contact nurses sequentially —\none at a time",
+         "Apply a fixed contact order\n(e.g. alphabetical or seniority)",
+         "Stop when someone confirms\nor all are exhausted",
+         "No explanation of why\na nurse was ranked where they were",
+         "Fail silently when data\nis missing or a system is down",
+     ]),
+    (NAVY, WHITE, "What the agent does differently",
+     [
+         "Contacts multiple nurses simultaneously,\nadapting N to urgency and pool size",
+         "Ranks by 6 factors with different\nweights depending on urgency context",
+         "Coordinates across concurrent fills —\nexcludes nurses already in active outreach",
+         "Generates a specific written rationale\nper candidate that the coordinator reads",
+         "Degrades gracefully with imputed data\nand flags what changed in the rationale",
+     ]),
+    (GREEN, WHITE, "The test: could a fixed rule do it?",
+     [
+         "No — N changes based on live\npool state + urgency at ranking time",
+         "No — weight combination varies\nby urgency tier AND specialist flag",
+         "No — requires real-time shared\nstate across concurrent fill cycles",
+         "No — rationale is specific to\nthis candidate in this context",
+         "No — a script errors or silently\nwrong; agent explains and escalates",
+     ]),
 ]
 
-for col_items, cx in [(col1, 0.45), (col2, 6.9)]:
-    for i, (num, color, title, body) in enumerate(col_items):
-        by = 1.28 + i * 1.18
-        box(s, cx, by, 0.62, 1.0, color)
-        label(s, num, cx, by + 0.28, 0.62, 0.45,
-              size=13, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
-        label(s, title, cx + 0.72, by + 0.08, 5.7, 0.38, size=13, bold=True, color=DARK)
-        label(s, body,  cx + 0.72, by + 0.52, 5.7, 0.42, size=11, color=MID, italic=True)
+for i, (hdr_color, hdr_text_color, title, items) in enumerate(cols):
+    cx = 0.45 + i * 4.3
+    cw = 4.1
+    box(s, cx, 1.95, cw, 0.38, hdr_color if hdr_color != RULE else DBLUE)
+    t(s, title, cx + 0.1, 1.99, cw - 0.15, 0.3,
+      size=11, bold=True, color=hdr_text_color if hdr_color != RULE else WHITE)
+    for j, item in enumerate(items):
+        by = 2.38 + j * 0.94
+        box(s, cx, by, cw, 0.9, LGREY if j % 2 == 0 else WHITE)
+        t(s, item, cx + 0.15, by + 0.08, cw - 0.25, 0.76, size=11, color=DARK)
 
-box(s, 0, 7.18, 13.33, 0.32, NAVY)
-label(s, "Python build: candidate_ranking.py  ·  18 passing tests  ·  pytest medflex_agent/tests/",
-      0.45, 7.21, 12.4, 0.26, size=11, bold=True, color=LBLUE)
+box(s, 0.45, 7.08, 12.43, 0.36, GREEN)
+t(s, "The agent value is the COMBINATION: simultaneous outreach + contextual ranking + real-time state awareness + explainable output. "
+     "No single rule handles all four.",
+  0.65, 7.13, 12.0, 0.26, size=11, bold=True, color=WHITE)
 
 
 # ═══════════════════════════════════════════════════════════
-# SLIDE 4 — KEY DESIGN DECISIONS
+# SLIDE 4 — HOW IS THIS DIFFERENT FROM FAILED AI PROJECTS?
 # ═══════════════════════════════════════════════════════════
 s = slide()
 box(s, 0, 0, 13.33, 7.5, WHITE)
-header(s, "Four Design Decisions", "Each one was deliberate. Here is the rationale.")
+header(s, "The CEO's Two Failed AI Projects — How Is This Different?",
+       "AI projects fail in predictable ways. Here is how each one was addressed.")
 slide_num(s, 4)
 
-decisions = [
-    (ORANGE, "Specialist credential config owned by Linda — not hardcoded",
-     "My original spec listed specialist credentials. That list came from me, not the compliance team. "
-     "If it was wrong, every specialist shift ranking was wrong. Now Linda owns the config; the agent reads it."),
-    (NAVY,   "Wave 1 scope: candidate ranking + parallel outreach only",
-     "6 weeks produces credible fill time and acceptance rate data. "
-     "Adding more capabilities adds integration risk without adding more useful evidence for the board."),
-    (GREEN,  "Agent never contacts the hospital directly — always through the coordinator",
-     "Kim's team owns that relationship. An agent contacting the hospital independently "
-     "can contradict what a coordinator was already managing."),
-    (RGBColor(0x0E,0x7C,0x7B), "Pilot limited to standard fills >24h only",
-     "A ranking failure on a 2-hour urgent fill has more consequences than on a 48-hour fill. "
-     "Start where mistakes are cheapest to recover from. Expanding to urgent fills is a config change, not a rebuild."),
+t(s, "Common failure", 0.45, 1.12, 5.8, 0.32, size=12, bold=True, color=RED)
+t(s, "What MedFlex does instead", 7.1, 1.12, 5.95, 0.32, size=12, bold=True, color=GREEN)
+hline(s, 1.44)
+
+failures = [
+    ("Automated the wrong thing — solved a problem nobody had",
+     "The bottleneck is real and measured: coordinators spend fill windows on sequential manual contact. "
+     "The two capabilities target fill time directly."),
+
+    ("Black box — nobody could see why it made decisions",
+     "Every ranked candidate has a written rationale the coordinator reads before approving. "
+     "The coordinator sees why, can override, and that override is logged."),
+
+    ("Removed humans from decisions they needed to own",
+     "The coordinator approves every placement. The agent never contacts the hospital. "
+     "Kim's team owns the hospital relationship — the agent does not touch it."),
+
+    ("Launched too big — no recovery when it went wrong",
+     "Wave 1 is 2–3 coordinators, standard fills only, established accounts. "
+     "It is small enough to stop and reverse without damaging live operations."),
+
+    ("No success criteria — nobody knew if it was working",
+     "First-recommendation acceptance rate ≥90% over 60 days triggers Wave 2. "
+     "If that threshold is not hit, Wave 2 does not start. The test is defined before build."),
 ]
 
-for i, (color, title, body) in enumerate(decisions):
-    by = 1.25 + i * 1.5
-    box(s, 0.45, by, 0.12, 1.25, color)
-    label(s, title, 0.75, by + 0.08, 12.1, 0.42, size=15, bold=True, color=DARK)
-    label(s, body,  0.75, by + 0.55, 12.1, 0.62, size=13, color=MID, italic=False)
-    if i < 3:
-        rule_line(s, by + 1.28)
+for i, (fail, fix) in enumerate(failures):
+    by = 1.52 + i * 1.14
+    bg = LGREY if i % 2 == 0 else WHITE
+    box(s, 0.45, by, 12.43, 1.1, bg)
+    box(s, 0.45, by, 0.12, 1.1, RED)
+    box(s, 6.82, by, 0.04, 1.1, RULE)
+    box(s, 6.86, by, 0.12, 1.1, GREEN)
+    t(s, fail, 0.72, by + 0.12, 5.9, 0.86, size=12, bold=True, color=DARK)
+    t(s, fix,  7.14, by + 0.12, 5.9, 0.86, size=12, color=MID)
 
 
 # ═══════════════════════════════════════════════════════════
-# SLIDE 5 — BUILD LOOP
+# SLIDE 5 — WHAT KILLS THIS IN PRODUCTION?
 # ═══════════════════════════════════════════════════════════
 s = slide()
 box(s, 0, 0, 13.33, 7.5, WHITE)
-header(s, "The Build Loop — What It Revealed",
-       "Five signals from building the candidate ranking implementation against my own spec.")
+header(s, "What Kills This in Production?",
+       "Three honest failure modes — identified before build, not after.")
 slide_num(s, 5)
 
-# Key observation
-box(s, 0.45, 1.25, 12.43, 0.78, LGREY)
-box(s, 0.45, 1.25, 0.12, 0.78, ORANGE)
-label(s, "No clarifying questions were asked during the build. "
-         "Wherever my spec was unclear, the builder made a decision and moved on. "
-         "I only found out what those decisions were by reading the output.",
-      0.75, 1.35, 11.95, 0.58, size=14, color=DARK, italic=True)
+t(s, "These were identified in the validation plan. Two have designed mitigations. One is the real risk.",
+  0.45, 1.14, 12.43, 0.36, size=13, color=DARK, italic=True)
 
-# Table header
-by = 2.2
-box(s, 0.45, by, 12.43, 0.4, NAVY)
-label(s, "What the builder did",         0.65, by + 0.07, 6.2, 0.28, size=12, bold=True, color=WHITE)
-label(s, "Classification",               7.05, by + 0.07, 2.8, 0.28, size=12, bold=True, color=WHITE)
-label(s, "What my spec failed to say",   10.0, by + 0.07, 2.8, 0.28, size=12, bold=True, color=WHITE)
+risks = [
+    (AMBER, "MEDIUM", "Concurrent fill state inconsistency",
+     "If two fills run simultaneously and shared state has a stale read, a nurse already committed to one fill "
+     "gets contacted for a second. The outreach window for the second fill is wasted.",
+     "Designed for: fallback to database flag per nurse if shared state unavailable. "
+     "Coordinator is notified when state could not be confirmed. Not fully testable before live volume."),
 
-rows = [
-    (RED,    "Invented a formula for scoring proximity — using a reference distance I never specified",
-             "Unjustified\nimplementation choice", "I listed proximity as a factor but never said how to turn distance into a score"),
-    (ORANGE, '"Within 10%" applied to overall score, not to each individual factor',
-             "Spec gap",                           "My wording sounded specific but did not say what was being compared"),
-    (ORANGE, "CRM unavailable and missing data treated identically",
-             "Spec gap",                           "No way to distinguish system down from data simply not existing for that nurse"),
-    (ORANGE, "System unavailability rules could not be followed as written",
-             "Spec gap",                           "The tool had no way of being told whether a system was available or not"),
-    (ORANGE, "Escalation payload had no space for excluded candidates list",
-             "Spec gap",                           "I said include it; the output I designed had no field for it"),
+    (AMBER, "MEDIUM", "Nurse confirms via a different channel than contacted",
+     "Nurse is contacted by SMS and calls the coordinator directly. The system does not detect the confirmation. "
+     "Outreach window expires. Next candidate is contacted. If the first nurse shows up, the shift may be double-placed.",
+     "Designed for: noted as a known production failure mode in the validation plan. "
+     "Cannot be tested before live operation — depends on nurse behaviour patterns."),
+
+    (RED, "HIGH", "CRM data sparsity — the silent killer",
+     "If coordinators have not consistently logged response rates and no-show history, "
+     "the ranking agent operates on credentials and proximity only. "
+     "The rationale thins. Coordinators increasingly override. Acceptance rate never reaches 90%. Wave 2 never starts.",
+     "This is the most likely real failure. The system works correctly by its own logic "
+     "while producing rankings coordinators do not trust. It fails silently."),
 ]
 
-bgcolors = [WHITE, LGREY, WHITE, LGREY, WHITE]
-for i, (sig_color, signal, classification, failure) in enumerate(rows):
-    ry = 2.6 + i * 0.84
-    box(s, 0.45, ry, 12.43, 0.84, bgcolors[i])
-    box(s, 0.45, ry, 0.12,  0.84, sig_color)
-    label(s, signal,         0.68, ry + 0.14, 6.2,  0.56, size=12, color=DARK)
-    label(s, classification, 7.05, ry + 0.14, 2.75, 0.56, size=12, color=DARK, bold=True)
-    label(s, failure,        10.0, ry + 0.14, 2.75, 0.56, size=11, color=MID, italic=True)
-
-box(s, 0.45, 6.82, 12.43, 0.4, GREEN)
-label(s, "All five gaps fixed in the updated D4a spec — scoring formula, rule 7 threshold, "
-         "system availability inputs, excluded_candidates field.",
-      0.65, 6.88, 12.1, 0.3, size=12, bold=True, color=WHITE)
+for i, (color, level, title, problem, mitigation) in enumerate(risks):
+    by = 1.60 + i * 1.85
+    box(s, 0.45, by, 12.43, 1.78, LGREY if i % 2 == 0 else WHITE)
+    box(s, 0.45, by, 0.12, 1.78, color)
+    pill(s, level, 0.7, by + 0.12, 1.1, 0.38, color)
+    t(s, title, 1.95, by + 0.12, 10.75, 0.38, size=14, bold=True, color=DARK)
+    t(s, problem, 0.72, by + 0.58, 6.1, 1.1, size=12, color=DARK)
+    box(s, 6.88, by + 0.5, 0.04, 1.2, RULE)
+    t(s, mitigation, 7.08, by + 0.58, 5.65, 1.1, size=11, color=MID, italic=True)
 
 
 # ═══════════════════════════════════════════════════════════
-# SLIDE 6 — WHAT I'D DO DIFFERENTLY
+# SLIDE 6 — SUMMARY: THE HONEST TRADE-OFFS
 # ═══════════════════════════════════════════════════════════
 s = slide()
 box(s, 0, 0, 13.33, 7.5, WHITE)
-header(s, "What I Would Do Differently",
-       "Four things from the spec. Two things from how I ran the engagement.")
+header(s, "The Honest Trade-offs",
+       "What we are confident about. What we are not. What would change the design.")
 slide_num(s, 6)
 
-label(s, "Spec writing", 0.45, 1.25, 6.0, 0.35, size=13, bold=True, color=ORANGE)
-rule_line(s, 1.6)
-
-spec_items = [
-    ("Define the output type before writing the error handling rule",
-     "If the output has no field for something, the rule can't be delivered. I required excluded candidates "
-     "in the escalation payload — but the output I designed had nowhere to put them."),
-    ("For every 'if X is unavailable' rule, ask: how does the tool actually find out?",
-     "I wrote rules about what to do when systems were down. The tool had no signal telling it a system was down. "
-     "The rule existed; the mechanism did not."),
-    ("Every ranking factor needs a formula, not just a name",
-     "I listed proximity as a factor and did not say how to convert distance into a score. "
-     "The builder made a choice I would not have made if I had been asked."),
-    ("'Within 10%' is not specific — define what is being compared",
-     "It sounds precise. It is not. I needed to say: compare the overall scores, "
-     "and boost only if the gap between them is 10% or less."),
+# Three columns
+cols_data = [
+    (GREEN, LGREEN, "Confident",
+     [
+         "Fill time reduction is measurable — first-recommendation acceptance rate is a real metric",
+         "Coordinator trust is built incrementally — rationale + approval gate + override logging",
+         "Agent never touches the hospital relationship",
+         "Wave 2 is gated — does not start unless the pilot data supports it",
+         "Production failure modes are identified and designed for before build",
+     ]),
+    (AMBER, LAMBER, "Uncertain",
+     [
+         "CRM data quality — if response rates and no-show history are sparse, ranking quality is low",
+         "Urgency tier thresholds — the 4h/24h boundaries are configurable defaults, not validated against MedFlex data",
+         "in_active_outreach state consistency at concurrent fill volume not testable before live operation",
+         "Nurse confirmation via different channel — a known gap with no technical fix",
+     ]),
+    (RED, LRED, "What changes the design",
+     [
+         "If CRM data is too sparse: Wave 1 starts with credential + proximity ranking only — rationale flags this explicitly",
+         "If shared state infrastructure doesn't exist: database flag per nurse (slower, same outcome)",
+         "If urgency thresholds don't match MedFlex patterns: reconfigure after weeks 2–5 pilot data",
+         "If acceptance rate stays below 90%: investigate — ranking or outreach, not both at once",
+     ]),
 ]
-for i, (title, body) in enumerate(spec_items):
-    by = 1.65 + i * 1.12
-    dot(s, 0.45, by + 0.1, ORANGE)
-    label(s, title, 0.72, by,       5.95, 0.38, size=13, bold=True, color=DARK)
-    label(s, body,  0.72, by + 0.42, 5.95, 0.62, size=11, color=MID)
 
-# Vertical divider
-box(s, 6.88, 1.2, 0.04, 5.9, RULE)
-
-label(s, "Engagement management", 7.1, 1.25, 5.8, 0.35, size=13, bold=True, color=NAVY)
-rule_line(s, 1.6)
-
-eng_items = [
-    ("Confirm the board timeline in the first conversation",
-     "Marcus told me the meeting was in 6 weeks — not 8 — after the plan was already written. "
-     "A basic question I should have asked before putting anything on paper."),
-    ("Involve Kim's team in discovery, not just leadership",
-     "Kim was not in the discovery session. The failure path gap she spotted would have been caught "
-     "in a 30-minute conversation that I simply did not have."),
-]
-for i, (title, body) in enumerate(eng_items):
-    by = 1.65 + i * 2.3
-    dot(s, 7.1, by + 0.1, NAVY)
-    label(s, title, 7.38, by,        5.6, 0.38, size=13, bold=True, color=DARK)
-    label(s, body,  7.38, by + 0.42, 5.6, 1.75, size=11, color=MID)
+for i, (hdr_color, bg_color, title, items) in enumerate(cols_data):
+    cx = 0.45 + i * 4.3
+    cw = 4.08
+    box(s, cx, 1.12, cw, 0.42, hdr_color)
+    t(s, title, cx + 0.15, 1.16, cw - 0.2, 0.34,
+      size=14, bold=True, color=WHITE)
+    box(s, cx, 1.54, cw, 5.6, bg_color)
+    for j, item in enumerate(items):
+        box(s, cx + 0.15, 1.68 + j * 1.32, 0.1, 0.1, hdr_color)
+        t(s, item, cx + 0.38, 1.62 + j * 1.32, cw - 0.48, 1.2,
+          size=11, color=DARK)
 
 
 # ── Save ──────────────────────────────────────────────────
 OUT = (r"C:\Users\AnnOHagan\OneDrive - EPAM\FDE AI Program"
        r"\FDE-practice-week2\FDE-practice-week2"
-       r"\Week3_Docs\Gate3-MedFlex-Presentation-v2.pptx")
+       r"\Week3_Docs\Gate3-MedFlex-Defense.pptx")
 prs.save(OUT)
 print(f"Saved: {OUT}")
