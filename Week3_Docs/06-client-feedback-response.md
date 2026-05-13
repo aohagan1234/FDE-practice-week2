@@ -6,7 +6,7 @@
 
 ---
 
-Marcus,
+Hi Marcus,
 
 Thank you for the detailed feedback — it was useful and the points you raised were the right ones. All three are addressed below, with the revised documents attached.
 
@@ -32,5 +32,5 @@ Kim's question was the right one to ask and it exposed a real gap. A failure pat
 
 The revised timeline, scope table, and failure path are in the updated documents. I am available to walk through any of this before Monday if that would be helpful.
 
-Best regards,  
+Best Regards,  
 Ann
