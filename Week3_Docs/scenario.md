@@ -151,6 +151,9 @@ MedFlex is a 200-person healthcare staffing agency operating across 5 US states,
 | Credential renewal reminders to nurses | Compliance team's responsibility; agent reads credential state but does not manage the renewal lifecycle |
 | Hospital sales and business development | Marcus confirmed this is the growth team's scope; operational efficiency is the agent's scope |
 | Post-shift mismatch analysis and root-cause attribution | Requires historical data pipeline separate from the real-time matching workflow; deferred to Wave 2 |
+| Credential recency check at placement time | Root cause of 7% mismatch rate unconfirmed — to be validated with Linda before build. Compliance team continues handling credentials under current process during pilot. Known risk: small compliance exposure accepted for the 6-week pilot; hard dependency for production deployment. Deferred to Wave 2. |
+| No-show backfill agent | Reactive exception path not needed to demonstrate core fill-time architecture in Wave 1; coordinator handles backfill manually as today |
+| Pre-shift mismatch check | Depends on credential validation infrastructure deferred to Wave 2 |
 | Coordinator NPS / internal satisfaction tracking | Discovery confirmed pain point is fill time; coordinator experience improvement is a downstream effect, not a primary agent goal |
 | Multi-state regulatory interpretation | Agent applies compliance team's credential mapping per state; it does not interpret ambiguous regulatory requirements — those are escalated to Linda |
 
@@ -162,13 +165,15 @@ MedFlex is a 200-person healthcare staffing agency operating across 5 US states,
 
 The architecture is designed across two waves. Wave 1 demonstrates the design works and builds coordinator trust. Wave 2 removes the remaining human bottleneck for the high-volume clean cases.
 
-| | Wave 1 (8-week pilot) | Wave 2 |
+| | Wave 1 (6-week pilot) | Wave 2 |
 |---|---|---|
 | **Goal** | Demonstrate measurable fill-time reduction; validate the architecture | Achieve 10x capacity with flat coordinator headcount |
 | **Coordinator role** | Approves every final placement — in the critical path for 100% of fills | Approves exceptions only; agent confirms clean cases autonomously |
 | **Autonomous resolution rate** | Low — agent handles matching and outreach; human handles every approval | ≥80% — required to unlock 10x capacity (see architectural requirements above) |
 | **Agent confirmation of placement** | Never — coordinator confirms with hospital | For clean cases only: exact credential match, availability confirmed within 2h, nurse with zero no-show history at this facility |
+| **In scope** | Intake parsing, eligibility pre-filter, agentic candidate ranking with rationale, parallel outreach, response tracking, coordinator confirmation gate, hospital notification | Credential recency check at placement, no-show backfill agent, pre-shift mismatch check, ≥80% autonomous resolution |
 | **Trigger to move to Wave 2** | Coordinator approval adds <30 min to fill time consistently AND agent first-recommendation acceptance rate ≥90% over 60 operational days | |
+| **Timeline dependency** | Aaron confirms CRM and nurse portal API access in week 1. If APIs are unavailable, timeline does not compress. | |
 
 **Why Wave 1 keeps the coordinator in the approval loop for all placements:** two prior AI projects failed and coordinator trust in machine outputs is low. An autonomous system that makes visible errors in the first weeks will be rejected faster than the recommendation engine was. Wave 1 proves accuracy; Wave 2 delegates on the back of that proof.
 
@@ -332,12 +337,24 @@ flowchart LR
 |---|---|---|---|---|
 | No nurse confirmed within fill window | No nurse response received within 2 hours of outreach for a shift starting within 24h | Coordinator on duty | HIGH | 15 minutes |
 | No nurse confirmed within fill window | No nurse response within 4 hours for a shift starting >24h away | Coordinator queue | MEDIUM | 1 hour |
-| Credential ambiguity at placement | Agent cannot determine whether nurse meets facility requirement; no precedent in placement history | Coordinator + Linda (compliance) | HIGH | 30 minutes |
-| Credential lapsed or stale | Nurse credential last verified >90 days ago or status flagged as lapsed | Compliance team (Linda) | MEDIUM | 2 hours (does not block other candidates) |
-| No-show detected | Nurse has not arrived within 30 minutes of shift start | Coordinator on duty | HIGH | Immediate — backfill agent initiates in parallel |
+| Credential ambiguity at eligibility filter | Agent cannot determine whether nurse holds the required credential type from available records | Coordinator | HIGH | 30 minutes |
+| No-show detected | Nurse has not arrived within 30 minutes of shift start | Coordinator on duty | HIGH | Immediate — coordinator initiates backfill manually; see failure path below |
 | Pool exhausted | All eligible candidates contacted; no confirmations; pool empty | Coordinator on duty | HIGH | 15 minutes |
 | Intake parsing ambiguity | Agent cannot extract complete structured job order from request | Coordinator | MEDIUM | 30 minutes |
-| Data source unavailable | Compliance system or CRM unavailable at placement time | IT (Aaron) + coordinator | MEDIUM | 1 hour; agent holds fill cycle pending |
+| Data source unavailable | CRM or nurse portal unavailable at placement time | IT (Aaron) + coordinator | MEDIUM | 1 hour; agent holds fill cycle pending |
+
+---
+
+## Failure path — hospital communication
+
+When a fill cycle fails or is delayed, the coordinator owns the hospital relationship. The agent's role in failure is to give the coordinator everything they need to have that conversation quickly. The agent does not contact the hospital directly under any circumstances.
+
+| Failure mode | Agent action | Coordinator action | Hospital notification SLA |
+|---|---|---|---|
+| No nurse confirmed within fill window | Escalate to coordinator; surface remaining pool state, time to shift start, and pre-drafted status message | Expand pool, relax a requirement, or contact hospital directly using existing relationship | Coordinator notifies hospital within 30 minutes of escalation if no fill is imminent; agent pre-drafts message for coordinator review |
+| Pool exhausted | Escalate immediately with shift details, gap summary, and list of options (defer shift, relax requirement, source externally) | Contact hospital directly; discuss options | Coordinator calls hospital within 15 minutes of pool-exhausted escalation |
+| Agent parsing error or wrong match caught at coordinator approval gate | Surface discrepancy to coordinator with original request text and parsed record side by side; flag specific field(s) in conflict | Correct the record and rerun, or take over the fill manually | No hospital notification — hospital is not informed of internal errors; coordinator continues fill cycle without disclosing the parsing failure |
+| No-show post-placement | Escalate to coordinator immediately with shift details and time elapsed since shift start | Contact hospital to set expectation; initiate manual backfill search | Coordinator notifies hospital within 15 minutes of no-show detection, before a replacement is confirmed |
 
 ---
 
@@ -398,16 +415,18 @@ A control handoff is the moment where responsibility for a fill cycle transfers 
 
 ---
 
-## ADR 2 — Real-time credential validation at placement vs. reliance on compliance batch state
+## ADR 2 — Credential validation scope: basic eligibility check only (Wave 1) vs. real-time recency check at placement
 
-**Decision:** The agent runs two credential checks at different points in the fill cycle. First, a basic deterministic eligibility check before ranking: does the nurse hold the required credential type? Second, a real-time credential recency check at placement time — after a nurse has confirmed via outreach but before the coordinator approves: is that credential still current (last verified within 90 days and not lapsed)? Candidates who fail the recency check at placement are excluded from confirmation and flagged to the compliance team; other candidates in the outreach pool are not blocked.
+**Decision (Wave 1):** The agent runs one credential check in Wave 1 — a basic deterministic eligibility check before ranking: does the nurse hold the required credential type? The credential recency check (is that credential still current — last verified within 90 days and not lapsed?) is deferred to Wave 2 pending Linda's validation that stale credentials are a material driver of the 7% mismatch rate.
 
-**Alternative A: Trust the compliance system's quarterly-updated credential state without additional checks.**
-- Consequences: Simpler implementation. But the discovery call confirmed that credential re-verification happens within a week of a state regulatory ping — there is a window of up to 7 days where a nurse with a lapsed credential remains on the active roster. The agent would confirm a placement for a nurse whose credential lapsed after the last quarterly update, with no check at the moment of confirmation. This builds the same failure mode the current process already has into the architecture. *Note: stale credential data is a plausible but unconfirmed driver of the 7% mismatch rate — to be validated with Linda before this ADR is treated as the primary mismatch fix.*
+**Known risk accepted:** Deferring the recency check means the pilot could place a nurse whose credential has lapsed since the last quarterly update. For a 20–30 shift pilot the probability is low, but it is not zero. This compliance exposure is accepted as a known risk for the Wave 1 pilot. The compliance team continues operating under its current process during Wave 1. This risk must be resolved before production deployment.
+
+**Alternative A: Include real-time credential recency check at placement in Wave 1.**
+- Consequences: Requires Aaron to confirm a queryable compliance system API — currently unconfirmed (Low confidence). If the API is unavailable, the architecture cannot deliver real-time recency checks and falls back to quarterly batch state. Adding this to Wave 1 introduces the hardest unconfirmed technical dependency into the critical path, risking the 6-week timeline. The mismatch driver it addresses is also unconfirmed — building it before Linda validates the root cause may address the wrong problem.
 
 **Alternative B: Route every placement through the compliance team for credential verification before proceeding.**
-- Consequences: Eliminates credential lag at the cost of adding the compliance team to the critical path for every placement. If compliance team turnaround is not measured in minutes, the <1h fill time target is unachievable for any shift requiring verification. Also increases compliance team workload proportionally to shift volume — the opposite of the engagement mandate.
+- Consequences: Eliminates credential lag at the cost of adding the compliance team to the critical path for every placement. If compliance team turnaround is not measured in minutes, the <1h fill time target is unachievable for any shift requiring verification. Increases compliance team workload proportionally to shift volume — the opposite of the engagement mandate.
 
-**Why the chosen option was selected:** A recency check at placement time (is this credential still current?) is deterministic and fast — it does not require compliance team involvement for the common case where credentials are current. It runs after the nurse has confirmed via outreach, so it does not slow down the outreach phase. It only routes the exception (lapsed or stale credential) to the compliance team, without blocking other candidates from proceeding.
+**Why the chosen option was selected:** Stale credential data is rated Low confidence as a mismatch driver — Marcus could not confirm root-cause attribution and Linda has not been consulted. Building real-time recency checks before confirming the problem justification risks building the right mechanism for the wrong root cause. Removing it from Wave 1 also eliminates the unconfirmed compliance API dependency, which is the primary technical risk to the 6-week timeline. Coordinators gain trust through visible fill-time reduction, not through credential logic they cannot observe.
 
-**Conditions that would require this decision to be revisited:** If Aaron confirms the compliance system cannot support real-time API queries, the agent falls back to a soft-SLA model: flag placement as pending compliance confirmation, route to Linda's team with a 2-hour SLA. If Linda confirms that stale credentials are not a material driver of the 7% mismatch rate, the placement-time recency check may be deprioritised in favour of better intake parsing of hospital requirements.
+**Conditions that would require this decision to be revisited:** Linda confirms stale credential data is a material contributor to the 7% mismatch rate — at which point the recency check moves into Wave 2 scope. Aaron confirms a real-time queryable compliance API exists — prerequisite for implementation regardless of Linda's finding.

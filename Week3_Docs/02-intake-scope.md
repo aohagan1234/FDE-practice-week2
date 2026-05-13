@@ -74,5 +74,8 @@ MedFlex is a 200-person healthcare staffing agency operating across 5 US states,
 | Credential renewal reminders to nurses | Compliance team's responsibility; agent reads credential state but does not manage the renewal lifecycle |
 | Hospital sales and business development | Marcus confirmed this is the growth team's scope; operational efficiency is the agent's scope |
 | Post-shift mismatch analysis and root-cause attribution | Requires historical data pipeline separate from the real-time matching workflow; deferred to Wave 2 |
+| Credential recency check at placement time | Root cause of 7% mismatch rate unconfirmed — to be validated with Linda before build. Compliance team continues handling credentials under current process during pilot. Known risk: small compliance exposure accepted for the 6-week pilot; hard dependency for production deployment. Deferred to Wave 2. |
+| No-show backfill agent | Reactive exception path not needed to demonstrate core fill-time architecture in Wave 1; coordinator handles backfill manually as today |
+| Pre-shift mismatch check | Depends on credential validation infrastructure deferred to Wave 2 |
 | Coordinator NPS / internal satisfaction tracking | Discovery confirmed pain point is fill time; coordinator experience improvement is a downstream effect, not a primary agent goal |
 | Multi-state regulatory interpretation | Agent applies compliance team's credential mapping per state; it does not interpret ambiguous regulatory requirements — those are escalated to Linda |
