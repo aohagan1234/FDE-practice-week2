@@ -24,7 +24,7 @@ prs = Presentation()
 prs.slide_width  = Inches(13.33)
 prs.slide_height = Inches(7.5)
 BLANK = prs.slide_layouts[6]
-TOTAL = 6
+TOTAL = 9
 
 
 def slide():
@@ -307,13 +307,163 @@ for i, (color, level, title, problem, mitigation) in enumerate(risks):
 
 
 # ═══════════════════════════════════════════════════════════
-# SLIDE 6 — SUMMARY: THE HONEST TRADE-OFFS
+# SLIDE 6 — MARCUS'S FEEDBACK AND WHAT CHANGED
+# ═══════════════════════════════════════════════════════════
+s = slide()
+box(s, 0, 0, 13.33, 7.5, WHITE)
+header(s, "Client Feedback — What Marcus Raised and What Changed",
+       "Three pushbacks. Each one addressed. One was already in the original design.")
+slide_num(s, 6)
+
+t(s, "Feedback", 0.45, 1.12, 5.8, 0.32, size=12, bold=True, color=ORANGE)
+t(s, "What changed", 7.1, 1.12, 5.95, 0.32, size=12, bold=True, color=GREEN)
+hline(s, 1.44)
+
+feedback_rows = [
+    ("Board meeting is in 6 weeks, not 8 — restructure the plan",
+     "Plan restructured to 6 weeks. Wave 1 — parallel outreach + coordinator approval gate — running on 20–30 live shifts "
+     "by week 6. Board deliverable is fill time and first-recommendation acceptance rate data. "
+     "Not proof of 10x capacity — that is the honest version of what 6 weeks can demonstrate."),
+
+    ("Remove credential verification from Wave 1",
+     "Credential verification moved to Wave 2. Compliance team continues quarterly cadence during the pilot. "
+     "Worth noting: the original design already flagged credential verification as conditional on Linda confirming "
+     "the root cause of the 7% mismatch rate. Removing it from Wave 1 is consistent with that — not a concession."),
+
+    ("Kim flagged: who manages the hospital when things go wrong? The spec did not say.",
+     "Failure path section added to the architecture. Four scenarios covered: no confirmation within the outreach window, "
+     "pool exhausted, parsing error at coordinator approval gate, no-show detected post-placement. "
+     "Coordinator owns the hospital relationship in all four cases. Agent pre-drafts the status message "
+     "and surfaces the remaining pool state — coordinator makes the call within 15–30 minutes of escalation."),
+]
+
+for i, (feedback, change) in enumerate(feedback_rows):
+    by = 1.52 + i * 1.9
+    bg = LGREY if i % 2 == 0 else WHITE
+    box(s, 0.45, by, 12.43, 1.82, bg)
+    box(s, 0.45, by, 0.12, 1.82, ORANGE)
+    box(s, 6.82, by, 0.04, 1.82, RULE)
+    box(s, 6.86, by, 0.12, 1.82, GREEN)
+    t(s, feedback, 0.72, by + 0.16, 5.9, 1.5, size=12, bold=True, color=DARK)
+    t(s, change,   7.14, by + 0.16, 5.9, 1.5, size=12, color=MID)
+
+
+# ═══════════════════════════════════════════════════════════
+# SLIDE 7 — BUILD LOOP LEARNINGS
+# ═══════════════════════════════════════════════════════════
+s = slide()
+box(s, 0, 0, 13.33, 7.5, WHITE)
+header(s, "Build Loop — What Building Against My Own Spec Revealed",
+       "Five signals. Four were gaps in my spec. One was a decision the builder made that I never asked for.")
+slide_num(s, 7)
+
+# Key observation
+box(s, 0.45, 1.12, 12.43, 0.72, LGREY)
+box(s, 0.45, 1.12, 0.12, 0.72, AMBER)
+t(s, "No clarifying questions were asked during the build. Wherever my spec was unclear, the builder resolved it silently. "
+     "I only found out what decisions had been made by reading the output. "
+     "A builder who asks nothing either has a perfect spec or has made undocumented assumptions.",
+  0.72, 1.18, 12.0, 0.58, size=13, color=DARK, italic=True)
+
+# Table
+box(s, 0.45, 1.94, 12.43, 0.38, NAVY)
+t(s, "What happened",             0.65, 2.00, 5.9,  0.26, size=11, bold=True, color=WHITE)
+t(s, "Classification",            6.72, 2.00, 2.65, 0.26, size=11, bold=True, color=WHITE)
+t(s, "What my spec failed to say",9.52, 2.00, 3.2,  0.26, size=11, bold=True, color=WHITE)
+
+signal_rows = [
+    (RED,   "Builder invented a proximity formula using a reference distance I never specified",
+             "Unjustified\nimplementation choice",
+             "I listed proximity as a factor. I did not say how to turn distance into a number."),
+    (AMBER, '"Within 10%" applied to the overall composite score, not to each factor individually',
+             "Spec gap",
+             "My wording sounded specific. It did not say what was being compared."),
+    (AMBER, "CRM unavailable treated the same as data simply missing for a nurse",
+             "Spec gap",
+             "No mechanism to distinguish system down from data not existing for that nurse."),
+    (AMBER, "System unavailability rules could not be implemented as written",
+             "Spec gap",
+             "The tool had no way of being told a system was unavailable. The rule had no mechanism."),
+    (AMBER, "pool_exhausted escalation had no field for the excluded candidates list",
+             "Spec gap",
+             "I said include it. The output type I designed had nowhere to put it."),
+]
+
+row_bgs = [WHITE, LGREY, WHITE, LGREY, WHITE]
+for i, (color, signal, classification, failure) in enumerate(signal_rows):
+    ry = 2.32 + i * 0.94
+    box(s, 0.45, ry, 12.43, 0.9, row_bgs[i])
+    box(s, 0.45, ry, 0.12,  0.9, color)
+    t(s, signal,         0.68, ry + 0.12, 5.85, 0.66, size=12, color=DARK)
+    t(s, classification, 6.72, ry + 0.12, 2.6,  0.66, size=12, color=DARK, bold=True)
+    t(s, failure,        9.52, ry + 0.12, 3.15, 0.66, size=11, color=MID, italic=True)
+
+box(s, 0.45, 7.04, 12.43, 0.38, GREEN)
+t(s, "All five addressed in the updated D4a spec: scoring formula, rule 7 threshold defined, "
+     "system availability inputs added, excluded_candidates field defined.",
+  0.65, 7.08, 12.0, 0.28, size=11, bold=True, color=WHITE)
+
+
+# ═══════════════════════════════════════════════════════════
+# SLIDE 8 — REFLECTION AND LEARNINGS
+# ═══════════════════════════════════════════════════════════
+s = slide()
+box(s, 0, 0, 13.33, 7.5, WHITE)
+header(s, "Reflection — What I Would Do Differently",
+       "Two from how I ran the engagement. Four from how I wrote the spec.")
+slide_num(s, 8)
+
+box(s, 0.45, 1.12, 5.95, 0.36, NAVY)
+t(s, "Engagement", 0.65, 1.16, 5.65, 0.28, size=12, bold=True, color=WHITE)
+
+eng = [
+    ("Confirm the timeline in the first conversation",
+     "Marcus told me the board meeting was in 6 weeks, not 8, after I had already structured the plan. "
+     "That is a basic question I should have asked before writing anything."),
+    ("Involve operations (Kim) in discovery — not just leadership",
+     "Kim was not in the discovery session. The failure path gap she spotted would have been caught "
+     "in a 30-minute conversation I simply did not have."),
+]
+for i, (title, body) in enumerate(eng):
+    by = 1.52 + i * 1.55
+    box(s, 0.45, by, 0.12, 1.38, NAVY)
+    t(s, title, 0.72, by + 0.08, 5.55, 0.38, size=13, bold=True, color=DARK)
+    t(s, body,  0.72, by + 0.52, 5.55, 0.78, size=12, color=MID)
+
+box(s, 6.6, 1.08, 0.04, 5.9, RULE)
+
+box(s, 6.86, 1.12, 5.92, 0.36, ORANGE)
+t(s, "Spec writing", 7.06, 1.16, 5.62, 0.28, size=12, bold=True, color=WHITE)
+
+spec = [
+    ("Define the output before writing the error handling rule",
+     "If the output has no field for something the rule requires, the rule cannot be delivered. "
+     "I wrote 'include excluded candidates in the escalation' — the output had nowhere to put them."),
+    ("For every 'if X is unavailable' rule — ask how the tool finds out",
+     "I wrote rules for system unavailability without thinking about what signal the tool would receive. "
+     "A rule that depends on information never passed in is not a rule."),
+    ("Every ranking factor needs a formula, not just a name",
+     "I listed proximity as a factor. The builder invented the formula. "
+     "Different formulas produce different rankings from the same pool."),
+    ("'Within 10%' sounds specific — it is not",
+     "I needed to say: compare the overall scores, and boost only if the gap is 10% or less. "
+     "The builder had to guess what was being compared."),
+]
+for i, (title, body) in enumerate(spec):
+    by = 1.52 + i * 1.45
+    box(s, 6.86, by, 0.12, 1.28, ORANGE)
+    t(s, title, 7.14, by + 0.08, 5.5, 0.38, size=13, bold=True, color=DARK)
+    t(s, body,  7.14, by + 0.52, 5.5, 0.7,  size=12, color=MID)
+
+
+# ═══════════════════════════════════════════════════════════
+# SLIDE 9 — SUMMARY: THE HONEST TRADE-OFFS
 # ═══════════════════════════════════════════════════════════
 s = slide()
 box(s, 0, 0, 13.33, 7.5, WHITE)
 header(s, "The Honest Trade-offs",
        "What we are confident about. What we are not. What would change the design.")
-slide_num(s, 6)
+slide_num(s, 9)
 
 # Three columns
 cols_data = [
@@ -357,6 +507,6 @@ for i, (hdr_color, bg_color, title, items) in enumerate(cols_data):
 # ── Save ──────────────────────────────────────────────────
 OUT = (r"C:\Users\AnnOHagan\OneDrive - EPAM\FDE AI Program"
        r"\FDE-practice-week2\FDE-practice-week2"
-       r"\Week3_Docs\Gate3-MedFlex-Defense.pptx")
+       r"\Week3_Docs\Gate3-MedFlex-Defense-v2.pptx")
 prs.save(OUT)
 print(f"Saved: {OUT}")
