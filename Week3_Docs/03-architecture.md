@@ -243,7 +243,9 @@ A control handoff is the moment where responsibility for a fill cycle transfers 
 
 ## ADR 1 — Coordinator approval gate at final placement
 
-**Decision:** The agent handles intake parsing, eligibility filtering, candidate ranking, parallel outreach, and credential validation autonomously. The coordinator retains the final placement confirmation decision before the hospital is notified.
+**Type:** Governance — determines where human accountability sits in the workflow, not whether to use an agent or a deterministic rule.
+
+**Decision:** The agent handles intake parsing, eligibility filtering, candidate ranking, and parallel outreach autonomously. The coordinator retains the final placement confirmation decision before the hospital is notified.
 
 **Alternative A: Fully autonomous placement** — agent confirms placement with hospital directly without coordinator review.
 - Consequences: Eliminates the human bottleneck entirely; fastest theoretical path to <1h fill time. However, if the agent makes a credential or judgment error, there is no human catch before a nurse is confirmed and the hospital is notified. Two prior AI projects eroded coordinator and management trust in machine outputs. A fully autonomous system that makes even occasional visible errors will be rejected faster than the previous recommendation engine was. Not viable in Wave 1.
@@ -258,6 +260,8 @@ A control handoff is the moment where responsibility for a fill cycle transfers 
 ---
 
 ## ADR 2 — Credential validation scope: basic eligibility check only (Wave 1) vs. real-time recency check at placement
+
+**Type:** Scope and risk — determines what is built in Wave 1 vs. deferred to Wave 2, with an explicit known compliance risk accepted. The eligibility check itself is deterministic; this ADR is not a choice between agent and rule.
 
 **Decision (Wave 1):** The agent runs one credential check in Wave 1 — a basic deterministic eligibility check before ranking: does the nurse hold the required credential type? The credential recency check (is that credential still current — last verified within 90 days and not lapsed?) is deferred to Wave 2 pending Linda's validation that stale credentials are a material driver of the 7% mismatch rate.
 
