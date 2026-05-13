@@ -5,36 +5,34 @@
 
 ## What was built
 
-- A Python implementation of candidate ranking covering all 11 decision rules: urgency tier classification, weighted composite scoring, specialist credential hard-split, preference boost, no-show demotion, response rate imputation, and pool exhausted escalation, with 18 passing tests
-- A scoring function that applies different factor weights by urgency tier (HIGH/MEDIUM/LOW) and a hard group split for specialist credentials that overrides raw scores regardless of urgency
-- A rationale builder that generates a natural language explanation per candidate referencing the specific factors and urgency tier applied, matching the example format in rule 11
+A working tool that ranks nurse candidates for a shift. It looks at how urgent the fill is, what credentials each nurse has, how far away they are, and how often they respond to outreach, and uses those factors to put candidates in order. The tool also handles situations where no candidates are available, or where a system it relies on is down, and it produces a short written explanation for each candidate explaining why they were ranked where they were.
 
 ---
 
 ## What Claude Code asked about
 
-No clarifying questions were raised. Implementation decisions were made without surfacing ambiguity back to the spec author. This is significant: it means gaps in the spec were resolved silently by the builder rather than flagged for confirmation. A builder who asks no questions either has a perfectly complete spec or has made undocumented assumptions, and in this case it was the latter. The proximity normalization formula, the interpretation of "within 10%", and the handling of system unavailability were all decided without consultation.
+Nothing. No questions were asked during the build. At first that seemed fine, but it is actually a warning sign. It means that wherever my spec was unclear, the builder made a decision and moved on without flagging it. I only found out what those decisions were by reading the output afterwards. For several of them, I would have wanted to be asked before the decision was made.
 
 ---
 
 ## Signals in the output
 
-| Signal | Classification | What the specification failed to say |
+| Signal | Classification | What my specification failed to say |
 |---|---|---|
-| Proximity scored as `1/(1 + miles/10)` — 10-mile reference unit is an undocumented builder choice | Unjustified implementation choice | Spec names proximity as a factor but defines no scoring formula; different normalization choices produce materially different rankings for the same pool |
-| Rule 7 "within 10%" implemented as composite raw_score comparison | Spec gap | "All other ranking factors within 10%" is ambiguous between checking composite score vs. each individual factor; these produce different outcomes |
-| CRM unavailability and absent response_rate data collapse to the same code path (median imputation) | Spec gap | Error handling table requires `data_source_unavailable` escalation for CRM down and median imputation for missing data, but spec provides no input mechanism to distinguish the two conditions |
-| Compliance system unavailability is unimplementable | Spec gap | "Hold ranking; trigger data_source_unavailable escalation" requires the function to know the system is unavailable, but the function signature accepts no availability state parameter |
-| `pool_exhausted` escalation payload contains no excluded_candidates list | Spec gap | Error handling requires "include list of excluded candidates and exclusion reasons in escalation payload" but RankingResult has no field for this data |
+| The builder invented a formula for turning distance into a score, using a reference distance I never mentioned | Unjustified implementation choice | I listed proximity as a ranking factor but never said how it should be converted into a number. Two different builders would come up with two different approaches, and the candidate rankings would differ as a result |
+| The "within 10%" rule was applied to an overall score, not to each individual factor | Spec gap | My wording sounded precise but did not actually say what was being compared. It was ambiguous in a way I did not notice when I wrote it |
+| When a system was unavailable, the builder handled it the same way as when data was simply missing for a candidate | Spec gap | I wrote a rule for what to do when a system was down, but never said how the tool would know the difference between a system being down and that system just returning no data |
+| The rule about holding ranking when a system was unavailable could not actually be followed as written | Spec gap | I wrote "if the system is unavailable, hold ranking" but the tool had no way of being told whether a system was available or not. It was a rule that depended on information that was never passed to it |
+| The escalation message when no candidates were available did not include the list of excluded candidates I said it should | Spec gap | I said the message should include a list of who was excluded and why, but I never defined where in the output that information would go. There was no space for it in the output I had designed |
 
 ---
 
 ## What I would change in the specification
 
-- **Proximity scoring:** Original: "proximity (primary/secondary/tertiary)." Should say: "proximity scored as 1/(1 + miles/R) where R is a reference unit set in configuration; default R = 10 miles. Validate R against MedFlex's actual geographic footprint before build." Why: without a defined formula, every builder chooses their own, and different choices make the spec untestable.
+- **How proximity is scored:** I said proximity should be a factor but did not say how it should be turned into a number. I should have given a simple formula and defined what the reference point is, for example, a nurse at the exact location scores the highest and the score drops off at a defined rate with distance. Without that, whoever builds it has to guess, and different guesses produce different rankings.
 
-- **Rule 7 threshold:** Original: "all other ranking factors for that nurse are within 10% of the next-ranked candidate." Should say: "the candidate's composite raw_score is within 10% of the next-ranked candidate's composite raw_score, calculated as (score_above - score_below) / score_above ≤ 0.10." Why: "all other ranking factors" sounds precise but requires a comparison method that the spec does not define.
+- **What "within 10%" actually means:** I thought writing "within 10%" was specific enough. It was not. I should have said: compare the overall score of the preferred nurse to the overall score of the nurse ranked immediately above them, and only apply the boost if the gap between those two overall scores is 10% or less. "Within 10%" on its own does not say what is being compared or how the comparison is made.
 
-- **Error handling — system availability:** Original: "CRM unavailable — apply rule 8 for all candidates; log data_source_unavailable; proceed." Should say: the same, plus: "Function signature must include `crm_available: bool` and `compliance_system_available: bool` parameters. When False, apply the specified fallback. Without these parameters, error paths cannot be implemented." Why: error handling rules that depend on runtime system state are unimplementable without a corresponding input.
+- **How the tool finds out a system is down:** For every rule I wrote about what should happen when a system is unavailable, I should have stopped and asked myself how the tool would actually receive that information. If there is no mechanism for the tool to be told a system is down, the rule cannot be acted on. I needed to say that the tool should be given a clear signal for each system it depends on, telling it whether that system is currently available.
 
-- **pool_exhausted escalation payload:** Original: "include list of excluded candidates and exclusion reasons in escalation payload." Should say: "RankingResult must include an `excluded_candidates: list[ExcludedCandidate]` field populated when escalation_type is POOL_EXHAUSTED. Each ExcludedCandidate includes nurse_id and exclusion_reason (enum: IN_ACTIVE_OUTREACH, RECENT_NO_SHOW)." Why: the spec requires data in the payload that the output type does not define, making the requirement undeliverable as written.
+- **What the escalation message should contain:** I wrote that the escalation should include a list of excluded candidates and the reasons they were excluded. But the output I had designed had no field to hold that information. The rule and the output were not aligned. I should have designed the output first and then written the rules around it, rather than adding detail to a rule without checking whether the output could actually support it.
