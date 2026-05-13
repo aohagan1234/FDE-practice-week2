@@ -313,7 +313,7 @@ flowchart LR
 
 | Workflow step | Current method | Delegation level | Reason |
 |---|---|---|---|
-| Shift request intake — receive and parse unstructured request into structured job order | Coordinator reads email/phone/portal manually and enters into CRM | **Agent-led + human oversight** | Email and phone requests arrive in arbitrary natural language. A rule cannot reliably extract facility type, shift time, specialism, and credential requirements from variable-format input. Note: portal-sourced requests with structured form fields should use a deterministic extractor — the agent is only justified for unstructured channels. |
+| Shift request intake — receive and parse unstructured request into structured job order | Coordinator reads email/phone/portal manually and enters into CRM | **Agent-led + human oversight** | Email and phone requests arrive in arbitrary natural language. A rule cannot reliably extract facility type, shift time, specialism, and credential requirements from variable-format input. Note: portal-sourced requests with structured form fields should use a deterministic extractor — the agent is only justified for unstructured channels. High-confidence parses (all required fields extracted above threshold) auto-proceed to eligibility filtering without coordinator review. Low-confidence or ambiguous parses route to the coordinator before filtering begins (Handoff 2). |
 | Candidate eligibility pre-filter — credential match, portal availability, proximity | Coordinator checks each criterion manually per candidate | **Human-led + automation support** | The three filter criteria are deterministic: credential X required / nurse has credential X (Y/N); nurse availability status (Y/N); nurse within N miles (distance calc). These are rule-based lookups. The unreliability of availability data is a data quality problem, not a reason to make the filter agentic. Implement as a deterministic filter function. |
 | Candidate ranking — order eligible candidates for coordinator review | No ranking system; coordinator decides based on experience | **Fully Agentic** | The right ranking depends on at least six context-dependent factors simultaneously: credential specificity for this facility type, proximity, hospital's preference history, nurse's response rate, nurse's no-show history at this facility, and current workload. No fixed rule can weight these correctly across all shift types and hospital relationships. Agent outputs a ranked shortlist with a stated reason per candidate — the reason is what the prior recommendation engine lacked. |
 | Parallel outreach — contact top-ranked candidates simultaneously | Coordinator contacts one candidate at a time sequentially | **Agent-led + human oversight** | The outreach execution (sending message via SMS/email) is a deterministic automated action. The strategy — how many to contact, in what order, via which channel — is partially rule-based (contact top 3 by default) and partially agentic (adapt N upward when urgency is high or pool is shallow). The spec must distinguish the configurable rule from the urgency-adaptive reasoning. |
@@ -350,10 +350,10 @@ A control handoff is the moment where responsibility for a fill cycle transfers 
 - What triggers it: Email webhook, phone note entry into CRM, or portal form submission
 - Agent action: Parse and structure the job order; flag any fields it cannot extract
 
-**Handoff 2: Agent → Coordinator (Intake review)**
-- Signal: Job order parsed; agent returns structured record with confidence level
-- Why: High-risk fields (facility type, required credentials, shift time) must be verified before filtering begins — a parsing error here propagates through the entire fill cycle
-- Coordinator action: Confirm or correct the structured job order; approve to proceed
+**Handoff 2: Agent → Coordinator (Intake review — low-confidence parses only)**
+- Signal: Job order parsed; one or more required fields (facility type, required credentials, shift time) extracted below confidence threshold or flagged as ambiguous
+- Why: A parsing error in a high-risk field propagates through the entire fill cycle — wrong candidates ranked, wrong nurses contacted. Coordinator review is only warranted when the agent is uncertain; high-confidence parses auto-proceed to eligibility filtering without this handoff
+- Coordinator action: Confirm or correct the flagged fields; approve to proceed. Agent continues autonomously once corrected record is confirmed
 
 **Handoff 3: Agent → Coordinator (No fill within window)**
 - Signal: Response tracking window expires; no nurse confirmed
