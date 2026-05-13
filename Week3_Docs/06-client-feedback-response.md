@@ -14,7 +14,7 @@ Thank you for the detailed feedback — it was useful and the points you raised 
 
 **On the 6-week timeline**
 
-You're right — 8 weeks doesn't work for a board update in 6. The plan has been restructured accordingly. Parallel outreach and the coordinator approval gate, the two things you said you need to see working, are the core of Wave 1 and will be live on 20–30 shifts by week 6. What moves out is credential recency checking, no-show backfill, and pre-shift mismatch detection; all three are now Wave 2, with a condition-triggered start at month 5 once the pilot data meets the readiness thresholds. The board deliverable at week 6 is directional data from live shifts, specifically fill time and first-recommendation acceptance rate, not proof of 10x capacity, which Wave 1 was never designed to deliver.
+You're right — an 8 week timeline doesn't work for a board update in 6 weeks. The plan has been restructured accordingly. Parallel outreach and the coordinator approval gate, the two things you said you need to see working, are the core of Wave 1 and will be live on 20–30 shifts by week 6. What moves out is credential recency checking, no-show backfill, and pre-shift mismatch detection; all three are now Wave 2, with a condition-triggered start at month 5 once the pilot data meets the readiness thresholds. The board deliverable at week 6 is directional data from live shifts, specifically fill time and first-recommendation acceptance rate, not proof of 10x capacity, which Wave 1 was never designed to deliver.
 
 ---
 
