@@ -1,6 +1,6 @@
 # D6 — Client Feedback Response
 **To:** Marcus Reyes, CEO, MedFlex  
-**From:** Ann OHagan  
+**From:** Ann O'Hagan  
 **Date:** 2026-05-15  
 **Re:** Revised plan, 6-week timeline, credential scope, and failure path
 
