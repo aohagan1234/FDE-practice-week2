@@ -73,3 +73,49 @@ The 6-week MVP does not need to achieve 10x volume — it must demonstrate the a
 | Mismatch rate 7% → <2% | Wave 1 mechanism: structured job order intake parsing captures hospital requirements more precisely, reducing ambiguous matches that become mismatches. Wave 2 mechanism (pending Linda validation): credential recency check at placement catches nurses with lapsed or stale credentials before confirmation. | D3 intake parsing step (LLM-assisted extraction, not agentic reasoning — handles input variability a deterministic parser cannot); D3 Wave 1/Wave 2 scope | **Wave 2 target.** Root cause of the 7% is unconfirmed — Marcus could not identify the breakdown. Credential recency check deferred pending Linda confirming stale credentials are a material driver. Wave 1 intake parsing alone is unlikely to move the mismatch rate to <2%; the target is achievable only when both mechanisms are in place. |
 | No-show rate 12% → <7% | Wave 1 mechanism: parallel outreach secures nurse confirmation faster, closing the window in which a nurse can be double-booked by a competitor before MedFlex confirms — Marcus confirmed that some no-shows are nurses who accepted a competitor's booking first. Wave 2 mechanism (deferred): credential validation prevents placements where the nurse cannot legally fulfil the shift, removing a subset of no-shows caused by nurses declining on arrival. | D3 parallel outreach step; D3 Wave 1/Wave 2 scope | **Wave 2 target.** Wave 1 parallel outreach alone addresses the competitor double-booking subset; the credential-related subset is not addressed until Wave 2. The specific 5pp reduction to reach <7% assumes both mechanisms; Wave 1 data will establish how much faster confirmation alone moves the rate. |
 | Zero stale-credential placements | **Wave 2 only.** Credential recency check at placement time deferred pending Linda's confirmation that stale credentials are a material driver of the 7% mismatch rate and Aaron's confirmation of a queryable compliance system API. During Wave 1, the compliance team continues operating under its current quarterly cadence. Known risk: a small compliance exposure exists during the pilot — accepted as a condition of the 6-week timeline. | D3 Wave 1/Wave 2 scope | Hard dependencies before Wave 2 build: (1) Linda validates stale credentials as mismatch driver; (2) Aaron confirms real-time compliance API. Neither confirmed at discovery. |
+
+---
+
+## Delivery timeline
+
+### Wave 1 — 6-week pilot
+
+| Weeks | Activity | Gate |
+|---|---|---|
+| Week 1 | Aaron confirms CRM and nurse portal APIs; Kim validates fill time breakdown and availability data reliability; Linda consulted on credential mismatch root cause | If APIs unconfirmed by end of week 1, timeline slips — this is the hard dependency |
+| Weeks 2–5 | Build: LLM-assisted intake parser, deterministic eligibility filter, candidate ranking agent, parallel outreach automation, response tracking scheduler, coordinator approval interface, hospital notification | Integration with CRM and outreach channels (SMS, email, phone) |
+| Week 6 | Pilot on 20–30 live shifts; fill time and coordinator acceptance rate tracked | Board presentation: early directional data, not statistically significant proof |
+
+**Realistic results at week 6:**
+
+| Outcome | Realistic range | What determines it |
+|---|---|---|
+| Fill time | 40 min–2 hours | Nurse response time (dominant factor) and coordinator queue monitoring; <1h if both assumptions hold |
+| Fill volume per coordinator | ≥3x | Achievable if coordinators are genuinely released from the outreach loop |
+| Coordinator acceptance rate | Unknown until pilot | First-recommendation acceptance rate is the leading indicator for Wave 2 readiness |
+| Board deliverable | Architecture demonstrated on live shifts | 20–30 shifts shows the design works; not enough to prove 10x capacity |
+
+---
+
+### Wave 2 — condition-triggered, estimated months 5–8
+
+Wave 2 has no fixed start date. It is triggered when Wave 1 data meets both conditions: coordinator approval adds <30 minutes to fill time consistently **and** agent first-recommendation acceptance rate ≥90% over 60 operational days.
+
+| Phase | Timing | Activity |
+|---|---|---|
+| Wave 1 operational | Months 2–5 | Run live; collect 60 operational days of acceptance rate and approval time data |
+| Wave 2 trigger assessment | Month 5 | Review data against both trigger conditions; if not met, Wave 2 is delayed until conditions are satisfied |
+| Wave 2 build | Months 5–7 | Credential recency check (requires Aaron's compliance API confirmation); no-show backfill agent; pre-shift mismatch check; ≥80% autonomous resolution path for clean cases |
+| Wave 2 live | Month 7–8 | Full autonomous resolution for clean cases; coordinator approves exceptions only |
+
+**Realistic results at Wave 2:**
+
+| Outcome | Target | Dependency |
+|---|---|---|
+| Autonomous resolution rate | ≥80% of fills | Clean case definition must hold in production: exact credential match + availability confirmed + zero no-show history |
+| Fill time | <1 hour (maintained) | Nurse response time and coordinator queue assumptions carry forward |
+| Mismatch rate | 7% → <2% | Only if Linda confirms stale credentials are a material driver and recency check is built |
+| No-show rate | 12% → <7% | Both mechanisms in place: faster confirmation (Wave 1) + credential validation (Wave 2) |
+| Coordinator headcount | Flat | 10x capacity with same headcount — achievable only if ≥80% autonomous resolution holds |
+
+**Risk to board mandate:** Wave 2 going live at month 7–8 leaves 16–17 months of operation within the 24-month revenue growth window — sufficient if Wave 1 trigger conditions are met at month 5. If Wave 1 data does not meet trigger conditions, Wave 2 is delayed and the operational window before the board's deadline compresses.

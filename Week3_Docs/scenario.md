@@ -181,6 +181,52 @@ The architecture is designed across two waves. Wave 1 demonstrates the design wo
 
 ---
 
+## Delivery timeline
+
+### Wave 1 — 6-week pilot
+
+| Weeks | Activity | Gate |
+|---|---|---|
+| Week 1 | Aaron confirms CRM and nurse portal APIs; Kim validates fill time breakdown and availability data reliability; Linda consulted on credential mismatch root cause | If APIs unconfirmed by end of week 1, timeline slips — this is the hard dependency |
+| Weeks 2–5 | Build: LLM-assisted intake parser, deterministic eligibility filter, candidate ranking agent, parallel outreach automation, response tracking scheduler, coordinator approval interface, hospital notification | Integration with CRM and outreach channels (SMS, email, phone) |
+| Week 6 | Pilot on 20–30 live shifts; fill time and coordinator acceptance rate tracked | Board presentation: early directional data, not statistically significant proof |
+
+**Realistic results at week 6:**
+
+| Outcome | Realistic range | What determines it |
+|---|---|---|
+| Fill time | 40 min–2 hours | Nurse response time (dominant factor) and coordinator queue monitoring; <1h if both assumptions hold |
+| Fill volume per coordinator | ≥3x | Achievable if coordinators are genuinely released from the outreach loop |
+| Coordinator acceptance rate | Unknown until pilot | First-recommendation acceptance rate is the leading indicator for Wave 2 readiness |
+| Board deliverable | Architecture demonstrated on live shifts | 20–30 shifts shows the design works; not enough to prove 10x capacity |
+
+---
+
+### Wave 2 — condition-triggered, estimated months 5–8
+
+Wave 2 has no fixed start date. It is triggered when Wave 1 data meets both conditions: coordinator approval adds <30 minutes to fill time consistently **and** agent first-recommendation acceptance rate ≥90% over 60 operational days.
+
+| Phase | Timing | Activity |
+|---|---|---|
+| Wave 1 operational | Months 2–5 | Run live; collect 60 operational days of acceptance rate and approval time data |
+| Wave 2 trigger assessment | Month 5 | Review data against both trigger conditions; if not met, Wave 2 is delayed until conditions are satisfied |
+| Wave 2 build | Months 5–7 | Credential recency check (requires Aaron's compliance API confirmation); no-show backfill agent; pre-shift mismatch check; ≥80% autonomous resolution path for clean cases |
+| Wave 2 live | Month 7–8 | Full autonomous resolution for clean cases; coordinator approves exceptions only |
+
+**Realistic results at Wave 2:**
+
+| Outcome | Target | Dependency |
+|---|---|---|
+| Autonomous resolution rate | ≥80% of fills | Clean case definition must hold in production: exact credential match + availability confirmed + zero no-show history |
+| Fill time | <1 hour (maintained) | Nurse response time and coordinator queue assumptions carry forward |
+| Mismatch rate | 7% → <2% | Only if Linda confirms stale credentials are a material driver and recency check is built |
+| No-show rate | 12% → <7% | Both mechanisms in place: faster confirmation (Wave 1) + credential validation (Wave 2) |
+| Coordinator headcount | Flat | 10x capacity with same headcount — achievable only if ≥80% autonomous resolution holds |
+
+**Risk to board mandate:** Wave 2 going live at month 7–8 leaves 16–17 months of operation within the 24-month revenue growth window — sufficient if Wave 1 trigger conditions are met at month 5. If Wave 1 data does not meet trigger conditions, Wave 2 is delayed and the operational window before the board's deadline compresses.
+
+---
+
 ## Assumptions
 
 The architecture below rests on assumptions that were not confirmed during the discovery call. Each is rated by confidence level. Where confidence is Low, the assumption must be validated before the relevant design decision is treated as final.
