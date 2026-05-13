@@ -14,7 +14,7 @@ Thank you for the detailed feedback — it was useful and the points you raised 
 
 **On the 6-week timeline**
 
-You're right — 8 weeks doesn't work for a board update in 6. The plan has been restructured accordingly. Parallel outreach and the coordinator approval gate — the two things you said you need to see working — are the core of Wave 1 and will be live on 20–30 shifts by week 6. What moves out is credential recency checking, no-show backfill, and pre-shift mismatch detection; all three are now Wave 2, with a condition-triggered start at month 5 once the pilot data meets the readiness thresholds. The board deliverable at week 6 is directional data from live shifts — fill time and first-recommendation acceptance rate — not proof of 10x capacity, which Wave 1 was never designed to deliver.
+You're right — 8 weeks doesn't work for a board update in 6. The plan has been restructured accordingly. Parallel outreach and the coordinator approval gate, the two things you said you need to see working, are the core of Wave 1 and will be live on 20–30 shifts by week 6. What moves out is credential recency checking, no-show backfill, and pre-shift mismatch detection; all three are now Wave 2, with a condition-triggered start at month 5 once the pilot data meets the readiness thresholds. The board deliverable at week 6 is directional data from live shifts, specifically fill time and first-recommendation acceptance rate, not proof of 10x capacity, which Wave 1 was never designed to deliver.
 
 ---
 
@@ -26,7 +26,7 @@ Credential verification has been removed from Wave 1. The compliance team will c
 
 **On the failure path**
 
-Kim's question was the right one to ask and it exposed a real gap. A failure path section is now in the architecture covering four specific scenarios: no confirmation within the outreach window, pool exhausted, parsing error caught at the coordinator approval gate, and no-show detected post-placement. Each has a defined agent action, a coordinator action, and a hospital notification SLA. The short version: the coordinator owns the hospital relationship in all failure cases. The agent pre-drafts the status message and surfaces the remaining pool state so the coordinator has everything they need to make that call within 15–30 minutes of escalation. The agent does not contact the hospital directly under any circumstances — that call belongs to Kim's team.
+Kim's question was the right one to ask and it exposed a real gap. A failure path section is now in the architecture covering four specific scenarios: no confirmation within the outreach window, pool exhausted, parsing error caught at the coordinator approval gate, and no-show detected post-placement. Each has a defined agent action, a coordinator action, and a hospital notification SLA. The short version: the coordinator owns the hospital relationship in all failure cases. The agent pre-drafts the status message and surfaces the remaining pool state so the coordinator has everything they need to make that call within 15–30 minutes of escalation. The agent does not contact the hospital directly under any circumstances; that call belongs to Kim's team.
 
 ---
 
