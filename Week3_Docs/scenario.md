@@ -191,6 +191,22 @@ The architecture is designed across two waves. Wave 1 demonstrates the design wo
 | Weeks 2–5 | Build: LLM-assisted intake parser, deterministic eligibility filter, candidate ranking agent, parallel outreach automation, response tracking scheduler, coordinator approval interface, hospital notification | Integration with CRM and outreach channels (SMS, email, phone) |
 | Week 6 | Pilot on 20–30 live shifts; fill time and coordinator acceptance rate tracked | Board presentation: early directional data, not statistically significant proof |
 
+**Pilot selection criteria for week 6:**
+
+The 20–30 shifts are a structured sample, not a random cross-section of all fills. Selection criteria limit exposure while producing meaningful data:
+
+| Criterion | Scope | Rationale |
+|---|---|---|
+| Coordinators | 1–2 from Kim's team | Limits blast radius; keeps the pilot controllable and debriefable |
+| Shift type | Standard fills with >24h lead time, known facility types, standard credentials only | Excludes urgent same-day fills and specialist high-acuity shifts where a failure carries the highest relationship risk |
+| Hospital clients | 2–3 accounts with established MedFlex relationships | Ensures a slower or failed fill during the pilot does not immediately cost a contract |
+| Coordinator role | Approves every placement, as per Wave 1 design | Agent never confirms with the hospital unilaterally during the pilot |
+
+**What is measured across the 20–30 shifts:**
+- Average fill time from intake to hospital confirmation
+- First-recommendation acceptance rate: did the coordinator approve the agent's top-ranked nurse, or override?
+- Escalation path frequency: how many fills hit each escalation type (no confirmation within window, pool exhausted, parsing ambiguity)
+
 **Realistic results at week 6:**
 
 | Outcome | Realistic range | What determines it |
